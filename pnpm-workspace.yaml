@@ -2,8 +2,10 @@ packages:
   - "apps/*"
   - "packages/*"
 allowBuilds:
+  '@parcel/watcher': true
   '@prisma/engines': true
   prisma: true
+  unrs-resolver: true
 catalogs:
   prisma:
     prisma: ^7.10.0

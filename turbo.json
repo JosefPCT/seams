@@ -12,7 +12,7 @@
       "persistent": true
     },
     "test": {
-      "cache": true
+      "cache": false,
     },
     "db:generate": { 
       "cache": false

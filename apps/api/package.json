@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --runInBand --detectOpenHandles",
     "dev": "node --watch index.js",
     "build": "echo 'No build step required for Node.js'"
   },
@@ -12,9 +12,19 @@
   "author": "",
   "license": "ISC",
   "type": "module",
+  "jest": {
+    "setupFiles": ["dotenv/config"]
+  },
   "dependencies": {
+    "@repo/database": "workspace:*",
     "dotenv": "^18.0.3",
     "express": "^5.2.1",
-    "@repo/database" : "workspace:*"
+    "supertest": "^7.3.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^8.0.6",
+    "@babel/preset-env": "^8.0.6",
+    "babel-jest": "^30.5.2",
+    "jest": "^30.5.2"
   }
 }
