@@ -1,3 +1,9 @@
 packages:
   - "apps/*"
   - "packages/*"
+allowBuilds:
+  '@prisma/engines': true
+  prisma: true
+catalogs:
+  prisma:
+    prisma: ^7.10.0
