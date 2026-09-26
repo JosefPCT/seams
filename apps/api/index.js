@@ -15,7 +15,7 @@ app.get('/api', (req, res) => {
 app.get('/user', async (req, res) => {
   const user = await prisma.user.findFirst();
   console.log(user);
-  res.status(200).json({ userId: user.id, username: user.username, password: user.password });
+  res.status(200).json({ userId: user.id, username: user.username, password: user.hash, addtl: user.addtl });
 })
 
 app.listen(PORT, () => {
