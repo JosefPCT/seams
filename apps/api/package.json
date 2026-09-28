@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --runInBand --detectOpenHandles",
-    "dev": "node --watch index.js",
+    "dev": "node --watch src/server.js",
     "build": "echo 'No build step required for Node.js'"
   },
   "keywords": [],
