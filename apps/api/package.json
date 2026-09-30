@@ -13,12 +13,16 @@
   "license": "ISC",
   "type": "module",
   "jest": {
-    "setupFiles": ["dotenv/config"]
+    "setupFiles": [
+      "dotenv/config"
+    ]
   },
   "dependencies": {
+    "@quixo3/prisma-session-store": "^3.1.21",
     "@repo/database": "workspace:*",
     "dotenv": "^18.0.3",
     "express": "^5.2.1",
+    "express-session": "^1.19.0",
     "supertest": "^7.3.0"
   },
   "devDependencies": {
