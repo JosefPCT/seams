@@ -5,8 +5,7 @@ export const createNewUser = async(email, hash, first_name, last_name) => {
     data: {
       email: email,
       hash: hash,
-      firstName: first_name,
-      lastName: last_name,
+      addtl: first_name
     }
   })
   return newUser;

@@ -38,12 +38,12 @@ async function main(){
   await prisma.user.upsert({
     where: { id: 1},
     update: {
-      username: "First Test User",
+      email: "firstuser@gmail.com",
       hash: "Test hash password",
       addtl: "Test additional info"    
     },
     create: {
-      username: "First Test User",
+      email: "firstuser@gmail.com",
       hash: "Test hash password",
       addtl: "Test additional info"
     }
