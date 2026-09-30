@@ -1,4 +1,4 @@
-import * as passwordUtils from '../../utils/passwordUtils';
+import * as passwordUtils from '../../utils/passwordUtils.js';
 import * as authQueries from "./auth-queries.js";
 
 export const registerUser = async(email, password, first_name, last_name) => {
