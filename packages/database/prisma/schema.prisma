@@ -13,10 +13,10 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  username String?
-  hash     String?
-  addtl    String?
+  id    Int     @id @default(autoincrement())
+  email String? @unique
+  hash  String?
+  addtl String?
 }
 
 model Session {
