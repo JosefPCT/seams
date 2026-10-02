@@ -4,7 +4,7 @@ import * as profileController from "./profile-controller.js";
 
 const profileRouter = express.Router();
 
-profileRouter.post('', profileController.profilePostRoute);
+profileRouter.post('/', profileController.profilePostRoute);
 
 profileRouter.get('/', profileController.profileGetRoute);
 
