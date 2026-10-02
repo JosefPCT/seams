@@ -22,6 +22,11 @@ export const createProfileByUserId = async(profileData) => {
       bio: profileData.bio,
       userId: profileData.userId
     }
-  })
+  });
+  return newProfile;
 }
 
+export const findAllProfiles = async() => {
+  const profiles = await prisma.profile.findMany();
+  return profiles;
+}

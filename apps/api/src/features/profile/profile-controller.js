@@ -26,7 +26,9 @@ export const profilePostRoute = [
 // OR redirect to the user's specific profile '/profile/:profilePublicId'
 export const profileGetRoute = [
   async(req, res, next) => {
-    res.status(200).json({ message: "Profile get route"});
+
+    const profiles = await profileService.fetchAllProfiles();
+    res.status(200).json({ message: "/profile GET route, showing all profiles", data: profiles});
   }
 ]
 

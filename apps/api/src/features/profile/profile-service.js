@@ -17,3 +17,13 @@ export const createProfile = async(profileData) => {
     throw error;
   }
 }
+
+export const fetchAllProfiles = async() => {
+  try {
+    const profiles = await profileQueries.findAllProfiles();
+    return profiles;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
