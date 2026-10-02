@@ -54,4 +54,19 @@ const validateUser = [
     .withMessage(`Last name field ${emptyErr}`),
 ];
 
-export { validateUser }
+const validateProfile = [
+  body("name")
+    .trim()
+    .notEmpty()
+    .withMessage(`Name field ${emptyErr}`),
+  body("pronouns")
+    .trim()
+    .notEmpty()
+    .withMessage(`Pronoun field ${emptyErr}`),
+  body("bio")
+    .trim()
+    .notEmpty()
+    .withMessage(`Bio field ${emptyErr}`),
+]
+
+export { validateUser, validateProfile }
