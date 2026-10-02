@@ -57,3 +57,11 @@ export const updateProfileByPublicId = async(profilePublicId, data) => {
     data,
   })
 }
+
+export const deleteProfileByPublicId = async(profilePublicId) => {
+  return await prisma.profile.delete({
+    where: {
+      publicId: profilePublicId
+    }
+  })
+}

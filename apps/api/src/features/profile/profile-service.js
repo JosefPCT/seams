@@ -57,3 +57,18 @@ export const updateSpecificProfile = async(profilePublicId, data) => {
     throw error;
   }
 }
+
+export const deleteSpecificProfile = async(profilePublicId) => {
+  try {
+    const profile = await profileQueries.getProfileByPublicId(profilePublicId);
+    if(!profile){
+      throw new customError.BadRequest(`Profile does not exist`);
+    }
+
+    const deletedProfile = await profileQueries.deleteProfileByPublicId(profilePublicId);
+    return deletedProfile;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}

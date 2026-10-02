@@ -60,6 +60,9 @@ export const specificProfileUpdateRoute = [
 export const specificProfileDeleteRoute = [
   isOwnProfile,
   async(req, res, next) => {
-    res.status(200).json({ message: "Deleted your own profile"});
+    const { profilePublicId } = req.params;
+    const deletedProfile = await profileService.deleteSpecificProfile(profilePublicId);
+
+    res.status(200).json({ message: "Deleted your own profile", data: deletedProfile});
   }
 ]
