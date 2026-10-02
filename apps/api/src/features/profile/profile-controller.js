@@ -17,6 +17,9 @@ export const profilePostRoute = [
     const { name, pronouns, bio } = matchedData(req);
     const userId = req.user.id;
     const createdProfile = await profileService.createProfile({name, pronouns, bio, userId});
+    if(!createdProfile){
+      return res.status(400).json({ error: true, message: "Profile was not created succesfully"});
+    }
 
     res.status(200).json({ message: 'You created a new profile', data: createdProfile});
   }
@@ -28,6 +31,9 @@ export const profilePostRoute = [
 export const profileGetRoute = [
   async(req, res, next) => {
     const profiles = await profileService.fetchAllProfiles();
+    if(!profiles){
+      return res.status(400).json({ error: true, message: "No Profiles detected"});
+    }
     res.status(200).json({ message: "/profile GET route, showing all profiles", data: profiles});
   }
 ]
@@ -37,6 +43,11 @@ export const specificProfileGetRoute = [
     console.log("Specific Profile of public id:");
     console.log(req.params.profilePublicId);
     const profile = await profileService.fetchSpecificProfile(req.params);
+
+    if(!profile){
+      return res.status(400).json({ error: true, message: "No profile with this public id is detected"});
+    }
+
     res.status(200).json({ message: `/profile/:profilePublicId GET route, profilePublicId: ${req.params.profilePublicId}`, data: profile});
   }
 ]
@@ -53,6 +64,10 @@ export const specificProfileUpdateRoute = [
 
     const updatedProfile = await profileService.updateSpecificProfile(profilePublicId, matchedData(req));
 
+    if(!updatedProfile){
+      return res.status(400).json({ error: true, message: "Profile was not updated succesfully"});
+    }
+
     res.status(200).json({ message: `/profile/:profilePublicID PUT route, profilePublicId: ${profilePublicId}`, data: updatedProfile});
   }
 ]
@@ -61,7 +76,11 @@ export const specificProfileDeleteRoute = [
   isOwnProfile,
   async(req, res, next) => {
     const { profilePublicId } = req.params;
+
     const deletedProfile = await profileService.deleteSpecificProfile(profilePublicId);
+    if(!deletedProfile){
+      return res.status(400).json({ error: true, message: "Profile was not deleted succesfully"});
+    }
 
     res.status(200).json({ message: "Deleted your own profile", data: deletedProfile});
   }
