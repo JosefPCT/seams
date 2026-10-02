@@ -17,6 +17,9 @@ const verifyCallback = async (username, password, done) => {
       where: {
         email: username,
       },
+      include: {
+        profile: true
+      }
     });
 
     if (!user) {

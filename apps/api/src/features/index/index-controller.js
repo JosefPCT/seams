@@ -10,6 +10,9 @@ export const indexGetRoute = [
     console.log(req);
     console.log(req.session);
     const user = await indexService.getSampleUser();
+    console.log("Showing user?");
+    console.log(req.user);
+    console.log(req.user.profile);
     res.status(200).json({ userId: user.id, username: user.username, password: user.hash, addtl: user.addtl });
   }
 ]

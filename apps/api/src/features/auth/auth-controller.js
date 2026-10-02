@@ -52,6 +52,9 @@ export const logoutGetRoute = [
 export const testProtectedGetRoute = [
   isAuth,
   async(req, res, next) => {
+    console.log("Showing user...");
+    console.log(req.user);
+    console.log(req.user.profile);
     res.status(200).json({ message: "Current user is authorized, is now viewing a protected route"})
   }
 ]
