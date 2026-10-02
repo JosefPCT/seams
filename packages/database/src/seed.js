@@ -1,4 +1,5 @@
 import { prisma } from "./client.js";
+import * as passwordUtils from "./utils/passwordUtils.js";
 
 async function main(){
 //   const startTime = new Date('2026-09-02T07:04:00Z');
@@ -35,19 +36,64 @@ async function main(){
 //     }
 //   })
 
+  const password = "admin";
+  const resultHash = await passwordUtils.genPassword(password);
+  const hashedPassword = resultHash.hash;
+
   await prisma.user.upsert({
-    where: { id: 1},
+    where: { 
+      email: "firstuser@gmail.com"
+    },
     update: {
       email: "firstuser@gmail.com",
-      hash: "Test hash password",
-      addtl: "Test additional info"    
+      hash: hashedPassword,
+      addtl: "Test additional info, a seeded first user created",
+      profile: {
+        upsert: {
+          where: { userId: 1 },
+          update: {
+            name: "First User",
+            pronouns: "him/his",
+            bio: "Test bio about this user",
+          },
+          create: {
+            name: "First User",
+            pronouns: "him/his",
+            bio: "Test bio about this user",
+          }
+        }
+      }    
     },
     create: {
       email: "firstuser@gmail.com",
-      hash: "Test hash password",
-      addtl: "Test additional info"
+      hash: hashedPassword,
+      addtl: "Test additional info, a seeded first user created",
+      profile: {
+        create: {
+          name: "First User",
+          pronouns: "him/his",
+          bio: "Test bio about this user",
+        }
+      }
     }
   })
+
+  // await prisma.profile.upsert({
+  //   where: { id: 1 },
+  //   update: {
+  //     name: "First User",
+  //     pronouns: "him/his",
+  //     bio: "Test bio about this user",
+  //     userId: 1
+  //   },
+  //   create: {
+  //     id: 1,
+  //     name: "First User",
+  //     pronouns: "him/his",
+  //     bio: "Test bio about this user",
+  //     userId: 1
+  //   }
+  // })
 
 }
 
