@@ -1,3 +1,5 @@
+import { validationResult, matchedData } from 'express-validator';
+
 import { isAuth, isOwnProfile } from "../../middleware/authMiddleware.js";
 import * as profileService from "./profile-service.js";
 import * as validation from "../../middleware/validation.js"
@@ -6,7 +8,16 @@ import * as validation from "../../middleware/validation.js"
 export const profilePostRoute = [
   validation.validateProfile,
   async(req, res, next) => {
-    res.status(200).json({ message: 'You created a new profile'});
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      return res.status(400).json(errors);
+    }
+
+    const { name, pronouns, bio } = matchedData(req);
+    const userId = req.user.id;
+    const createdProfile = await profileService.createProfile({name, pronouns, bio, userId});
+
+    res.status(200).json({ message: 'You created a new profile', data: createdProfile});
   }
 ]
 
