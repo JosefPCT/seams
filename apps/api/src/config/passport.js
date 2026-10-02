@@ -57,6 +57,9 @@ passport.deserializeUser(async (userId, done) => {
       where: {
         id: userId,
       },
+      include: {
+        profile: true
+      }
     });
 
     if (user) {

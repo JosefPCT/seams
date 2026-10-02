@@ -55,6 +55,7 @@ export const testProtectedGetRoute = [
     console.log("Showing user...");
     console.log(req.user);
     console.log(req.user.profile);
-    res.status(200).json({ message: "Current user is authorized, is now viewing a protected route"})
+    res.status(200).json(req.user);
+    // res.status(200).json({ message: "Current user is authorized, is now viewing a protected route"})
   }
 ]
