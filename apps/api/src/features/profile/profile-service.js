@@ -30,8 +30,28 @@ export const fetchAllProfiles = async() => {
 
 export const fetchSpecificProfile = async(params) => {
   try {
-    const profile = await profileQueries.findSpecificProfileByUserId(params.profilePublicId);
+    const profile = await profileQueries.findSpecificProfileByProfileId(params.profilePublicId);
     return profile;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export const updateSpecificProfile = async(profilePublicId, data) => {
+  try {
+    console.log("Updating...");
+    console.log(profilePublicId);
+    console.log(data);
+
+    const profile = await profileQueries.getProfileByPublicId(profilePublicId);
+    if(!profile){
+      throw new customError.BadRequest(`Profile does not exist`);
+    }
+
+    const updatedProfile = await profileQueries.updateProfileByPublicId(profilePublicId, data);
+    return updatedProfile;
+
   } catch (error) {
     console.log(error);
     throw error;

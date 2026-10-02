@@ -11,6 +11,15 @@ export const getProfileByUserId = async(userId) => {
   return profile;
 }
 
+export const getProfileByPublicId = async(profilePublicId) => {
+  return await prisma.profile.findUnique({
+    where: {
+      publicId: profilePublicId
+    }
+  })
+  
+}
+
 // Main Queries
 
 // profileData has: name, pronouns, bio, userId
@@ -31,11 +40,20 @@ export const findAllProfiles = async() => {
   return profiles;
 }
 
-export const findSpecificProfileByUserId = async(profilePublicId) => {
+export const findSpecificProfileByProfileId = async(profilePublicId) => {
   const profile = await prisma.profile.findUnique({
     where: {
       publicId: profilePublicId
     }
   });
   return profile;
+}
+
+export const updateProfileByPublicId = async(profilePublicId, data) => {
+  return await prisma.profile.update({
+    where: {
+      publicId: profilePublicId
+    },
+    data,
+  })
 }

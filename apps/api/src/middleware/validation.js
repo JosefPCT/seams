@@ -69,4 +69,22 @@ const validateProfile = [
     .withMessage(`Bio field ${emptyErr}`),
 ]
 
-export { validateUser, validateProfile }
+const validateUpdateProfile = [
+  body("name")
+    .trim()
+    .notEmpty()
+    .withMessage(`Name field ${emptyErr}`)
+    .optional(),
+  body("pronouns")
+    .trim()
+    .notEmpty()
+    .withMessage(`Pronoun field ${emptyErr}`)
+    .optional(),
+  body("bio")
+    .trim()
+    .notEmpty()
+    .withMessage(`Bio field ${emptyErr}`)
+    .optional(),
+]
+
+export { validateUser, validateProfile, validateUpdateProfile }

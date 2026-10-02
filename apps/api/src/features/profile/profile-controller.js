@@ -43,8 +43,17 @@ export const specificProfileGetRoute = [
 
 export const specificProfileUpdateRoute = [
   isOwnProfile,
+  validation.validateUpdateProfile,
   async(req, res, next) => {
-    res.status(200).json({ message: "You are now updating a profile... authorized"})
+    const { profilePublicId } = req.params;
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      return res.status(400).json(errors);
+    }
+
+    const updatedProfile = await profileService.updateSpecificProfile(profilePublicId, matchedData(req));
+
+    res.status(200).json({ message: `/profile/:profilePublicID PUT route, profilePublicId: ${profilePublicId}`, data: updatedProfile});
   }
 ]
 
