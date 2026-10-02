@@ -27,3 +27,13 @@ export const fetchAllProfiles = async() => {
     throw error;
   }
 }
+
+export const fetchSpecificProfile = async(params) => {
+  try {
+    const profile = await profileQueries.findSpecificProfileByUserId(params.profilePublicId);
+    return profile;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}

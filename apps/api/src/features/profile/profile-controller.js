@@ -5,6 +5,7 @@ import * as profileService from "./profile-service.js";
 import * as validation from "../../middleware/validation.js"
 
 // A route to create a new profile for the user if a profile has not existed yet
+// Uses a validation middleware to check for empty fields, then sends those fields along with the current user's userId to the service layer
 export const profilePostRoute = [
   validation.validateProfile,
   async(req, res, next) => {
@@ -26,7 +27,6 @@ export const profilePostRoute = [
 // OR redirect to the user's specific profile '/profile/:profilePublicId'
 export const profileGetRoute = [
   async(req, res, next) => {
-
     const profiles = await profileService.fetchAllProfiles();
     res.status(200).json({ message: "/profile GET route, showing all profiles", data: profiles});
   }
@@ -36,7 +36,8 @@ export const specificProfileGetRoute = [
   async(req,res,next) => {
     console.log("Specific Profile of public id:");
     console.log(req.params.profilePublicId);
-    res.status(200).json({ id: req.params.profilePublicId});
+    const profile = await profileService.fetchSpecificProfile(req.params);
+    res.status(200).json({ message: `/profile/:profilePublicId GET route, profilePublicId: ${req.params.profilePublicId}`, data: profile});
   }
 ]
 

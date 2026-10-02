@@ -30,3 +30,12 @@ export const findAllProfiles = async() => {
   const profiles = await prisma.profile.findMany();
   return profiles;
 }
+
+export const findSpecificProfileByUserId = async(profilePublicId) => {
+  const profile = await prisma.profile.findUnique({
+    where: {
+      publicId: profilePublicId
+    }
+  });
+  return profile;
+}
