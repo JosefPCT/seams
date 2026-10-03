@@ -28,7 +28,10 @@ export const usersPostRoute = [
 // Shows a list of all users
 export const usersGetRoute = [
   async(req, res, next) => {
-    res.status(200).json({ message: "You are in GET '/users' route"});
+
+    const users = await usersService.getAllUsers();
+
+    res.status(200).json({ message: "You are in GET '/users' route", data: users});
   }
 ]
 

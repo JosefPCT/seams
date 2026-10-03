@@ -22,3 +22,7 @@ export const createNewUser = async(userData) => {
     }
   })
 }
+
+export const fetchAllUsers = async() => {
+  return await prisma.user.findMany();
+}

@@ -3,8 +3,9 @@ import * as customError from "../../utils/extended-errors.js";
 
 import * as passwordUtils from '../../utils/passwordUtils.js';
 
-// profileData has: name, pronouns, bio, userId
-// TODO: create a check if already created profile for the user
+// userData object has: email, password, confirm_password, first_name, last_name (optional: isAdmin)
+// Double checks if user's email already exists in the database
+// Uses password utility to transform the password string into hash, add the hash into the userData object and passed onto the query
 export const createUser = async(userData) => {
   try {
     const user = await usersQueries.findUserByEmail(userData.email);
@@ -18,6 +19,16 @@ export const createUser = async(userData) => {
 
     const newUser = await usersQueries.createNewUser(userData);
     return newUser;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export const getAllUsers = async() => {
+  try {
+    const users = await usersQueries.fetchAllUsers();
+    return users; 
   } catch (error) {
     console.log(error);
     throw error;
