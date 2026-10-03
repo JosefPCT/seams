@@ -8,10 +8,14 @@ usersRouter.post('/', usersController.usersPostRoute);
 
 usersRouter.get('/', usersController.usersGetRoute);
 
+usersRouter.get('/me', usersController.userMeGetRoute);
+
 usersRouter.get('/:profilePublicId', usersController.userByPublicIdGetRoute);
 
 usersRouter.put('/:profilePublicId', usersController.userPutRoute);
 
 usersRouter.delete('/:profilePublicId', usersController.userDeleteRoute);
+
+
 
 export default usersRouter;

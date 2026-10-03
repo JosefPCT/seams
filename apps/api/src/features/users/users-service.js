@@ -34,3 +34,13 @@ export const getAllUsers = async() => {
     throw error;
   }
 }
+
+export const getCurrentUser = async(userPublicId) => {
+  try {
+    const user = await usersQueries.fetchCurrentUserByPublicId(userPublicId);
+    return user;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}

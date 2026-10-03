@@ -26,3 +26,11 @@ export const createNewUser = async(userData) => {
 export const fetchAllUsers = async() => {
   return await prisma.user.findMany();
 }
+
+export const fetchCurrentUserByPublicId = async(targetPublicId) => {
+  return await prisma.user.findUnique({
+    where: {
+      publicId: targetPublicId
+    }
+  })
+}

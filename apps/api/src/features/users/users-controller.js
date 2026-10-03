@@ -35,6 +35,16 @@ export const usersGetRoute = [
   }
 ]
 
+// GET '/users/me'
+// Show the current user
+export const userMeGetRoute = [
+  async(req, res, next) => {
+    const user = await usersService.getCurrentUser(req.user.publicId);
+    
+    res.status(200).json({ message: "You are in GET '/users/me' route", data: user });
+  }
+]
+
 // GET '/users/:userPublicId'
 // Show a specific user by their public id
 export const userByPublicIdGetRoute = [
