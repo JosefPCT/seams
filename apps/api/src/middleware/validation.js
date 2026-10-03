@@ -52,6 +52,10 @@ const validateUser = [
     .trim()
     .notEmpty()
     .withMessage(`Last name field ${emptyErr}`),
+  body("isAdmin")
+    .notEmpty()
+    .withMessage(`isAdmin field ${emptyErr}`)
+    .optional(),
 ];
 
 const validateProfile = [

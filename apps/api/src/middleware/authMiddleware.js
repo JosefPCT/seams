@@ -15,4 +15,8 @@ const isOwnProfile = (req,res, next) => {
 
 }
 
-export { isAuth, isOwnProfile }
+const isAdmin = (req, res, next) => {
+  req.user.isAdmin ? next() : res.status(401).json({ message: "You are not an admin"});
+}
+
+export { isAuth, isOwnProfile, isAdmin }

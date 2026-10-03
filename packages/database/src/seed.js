@@ -48,6 +48,7 @@ async function main(){
       email: "firstuser@gmail.com",
       hash: hashedPassword,
       addtl: "Test additional info, a seeded first user created",
+      isAdmin: true,
       profile: {
         upsert: {
           where: { userId: 1 },
@@ -68,6 +69,7 @@ async function main(){
       email: "firstuser@gmail.com",
       hash: hashedPassword,
       addtl: "Test additional info, a seeded first user created",
+      isAdmin: true,
       profile: {
         create: {
           name: "First User",
