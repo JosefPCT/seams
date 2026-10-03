@@ -13,11 +13,12 @@ datasource db {
 }
 
 model User {
-  id      Int      @id @default(autoincrement())
-  email   String?  @unique
-  hash    String?
-  addtl   String?
-  profile Profile?
+  id       Int      @id @default(autoincrement())
+  publicId String   @unique @default(uuid()) @map("public_id") @db.Uuid
+  email    String?  @unique
+  hash     String?
+  addtl    String?
+  profile  Profile?
 }
 
 model Session {
