@@ -2,7 +2,7 @@ import { validationResult, matchedData } from 'express-validator';
 
 import * as validation from "../../middleware/validation.js"
 import * as usersService from "./users-service.js";
-import { isAdmin, isAdminOrIsOwnUserData } from "../../middleware/authMiddleware.js";
+import { isAdmin, isAdminOrIsOwnUserData, isAuth } from "../../middleware/authMiddleware.js";
 
 // POST '/users'
 // Handles creation of a new user internally (use '/register' for normal registration)
@@ -38,8 +38,14 @@ export const usersGetRoute = [
 // GET '/users/me'
 // Show the current user
 export const userMeGetRoute = [
+  isAuth,
   async(req, res, next) => {
     const user = await usersService.getCurrentUser(req.user.publicId);
+
+    if(!user){
+        return res.status(400).json({ error: true, message: "User was not found"});
+    }
+
     
     res.status(200).json({ message: "You are in GET '/users/me' route", data: user });
   }
@@ -84,6 +90,26 @@ export const userPutRoute = [
 // TODO: Only access if user is deleting their account or user is an admin
 export const userDeleteRoute = [
   async(req, res, next) => {
-    res.status(200).json({ message: `You are in DELETE '/users/${userPublicId}' route` });
+    const { userPublicId } = req.params;
+
+    
+
+    const deletedUser = await usersService.deleteUser(userPublicId);
+    if(!deletedUser){
+        return res.status(400).json({ error: true, message: "User was not deleted succesfully"});
+    }
+
+    // Block of code responsible for clearing the current session cookies automatically
+    req.session.destroy((err) => {
+      if (err) {
+        return next(err); // Handle session destruction error
+      }
+
+      // 3. Clear the session cookie from the client's browser
+      res.clearCookie('connect.sid'); // Replace 'connect.sid' with your cookie name if custom
+      
+    //   return res.status(200).json({ message: "Account deleted and logged out successfully" });
+        res.status(200).json({ message: `You are in DELETE '/users/${userPublicId}' route`, data: deletedUser });
+    });
   }
 ]

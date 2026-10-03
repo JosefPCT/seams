@@ -38,6 +38,9 @@ export const getAllUsers = async() => {
 export const getCurrentUser = async(userPublicId) => {
   try {
     const user = await usersQueries.fetchCurrentUserByPublicId(userPublicId);
+    if(!user){
+      throw new customError.NotFound(`User with public id: ${userPublicId} not found`);
+    }
     return user;
   } catch (error) {
     console.log(error);
@@ -48,8 +51,10 @@ export const getCurrentUser = async(userPublicId) => {
 export const getUserByPublicId = async(userPublicId) => {
   try {
     const user = await usersQueries.findUserByPublicId(userPublicId);
+    console.log("Showing current user");
+    console.log(user);
     if(!user){
-      throw new customErrorType.NotFound(`User with public id: ${userPublicId} not found`);
+      throw new customError.NotFound(`User with public id: ${userPublicId} not found`);
     }
 
     return user;
@@ -81,6 +86,22 @@ export const updateUser = async(userPublicId, userData) => {
     
     const updatedUser = await usersQueries.updateUserByPublicId(userPublicId, filteredUserData);
     return updatedUser;
+
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export const deleteUser = async(userPublicId) => {
+  try {
+    const user = await usersQueries.findUserByPublicId(userPublicId);
+    if(!user){
+      throw new customError.BadRequest(`User does not exist`);
+    }
+
+    const deletedUser = await usersQueries.deleteUserByPublicId(userPublicId);
+    return deletedUser;
 
   } catch (error) {
     console.log(error);

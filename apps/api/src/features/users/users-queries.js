@@ -54,3 +54,11 @@ export const updateUserByPublicId = async(userPublicId, data) => {
     data
   })
 }
+
+export const deleteUserByPublicId = async(targetUserPublicId) => {
+  return await prisma.user.delete({
+    where: {
+      publicId: targetUserPublicId
+    }
+  })
+}
