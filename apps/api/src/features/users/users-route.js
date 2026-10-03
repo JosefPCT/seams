@@ -10,11 +10,11 @@ usersRouter.get('/', usersController.usersGetRoute);
 
 usersRouter.get('/me', usersController.userMeGetRoute);
 
-usersRouter.get('/:profilePublicId', usersController.userByPublicIdGetRoute);
+usersRouter.get('/:userPublicId', usersController.userByPublicIdGetRoute);
 
-usersRouter.put('/:profilePublicId', usersController.userPutRoute);
+usersRouter.put('/:userPublicId', usersController.userPutRoute);
 
-usersRouter.delete('/:profilePublicId', usersController.userDeleteRoute);
+usersRouter.delete('/:userPublicId', usersController.userDeleteRoute);
 
 
 

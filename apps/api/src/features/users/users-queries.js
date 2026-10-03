@@ -10,6 +10,17 @@ export const findUserByEmail = async(targetEmail) => {
   });
 }
 
+export const findUserByPublicId = async(targetUserPublicId) => {
+  return await prisma.user.findUnique({
+    where: {
+      publicId: targetUserPublicId
+    },
+    include: {
+        profile: true
+    }
+  })
+}
+
 
 // Main Queries
 

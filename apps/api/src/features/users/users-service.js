@@ -44,3 +44,18 @@ export const getCurrentUser = async(userPublicId) => {
     throw error;
   }
 }
+
+export const getUserByPublicId = async(userPublicId) => {
+  try {
+    const user = await usersQueries.findUserByPublicId(userPublicId);
+    if(!user){
+      throw new customErrorType.NotFound(`User with public id: ${userPublicId} not found`);
+    }
+
+    return user;
+
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}

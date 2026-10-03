@@ -49,7 +49,10 @@ export const userMeGetRoute = [
 // Show a specific user by their public id
 export const userByPublicIdGetRoute = [
   async(req, res, next) => {
-    res.status(200).json({ message: "You are in GET '/users/:userPublicId' route"});
+    const { userPublicId } = req.params;
+    const user = await usersService.getUserByPublicId(userPublicId);
+
+    res.status(200).json({ message: `You are in GET '/users/${userPublicId}' route`, data: user});
   }
 ]
 
@@ -58,7 +61,7 @@ export const userByPublicIdGetRoute = [
 // TODO: Only access if user is updating their own info (password) or user is an admin
 export const userPutRoute = [
   async(req, res, next) => {
-    res.status(200).json({ message: "You are in PUT '/users/:userPublicId' route"});
+    res.status(200).json({ message: `You are in PUT '/users/${userPublicId}' route` });
   }
 ]
 
@@ -67,6 +70,6 @@ export const userPutRoute = [
 // TODO: Only access if user is deleting their account or user is an admin
 export const userDeleteRoute = [
   async(req, res, next) => {
-    res.status(200).json({ message: "You are in DELETE '/users/:userPublicId' route"});
+    res.status(200).json({ message: `You are in DELETE '/users/${userPublicId}' route` });
   }
 ]
