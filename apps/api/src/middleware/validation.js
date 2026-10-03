@@ -52,6 +52,11 @@ const validateUser = [
     .trim()
     .notEmpty()
     .withMessage(`Last name field ${emptyErr}`),
+  body("addtl")
+    .trim()
+    .notEmpty()
+    .withMessage(`addtl field ${emptyErr}`)
+    .optional(),
   body("isAdmin")
     .notEmpty()
     .withMessage(`isAdmin field ${emptyErr}`)
@@ -66,7 +71,6 @@ const validateUpdateUser = [
     .normalizeEmail()
     .isEmail()
     .withMessage(`Email must be a valid email`)
-    .custom(emailExists)
     .optional(),
   body("password").trim().notEmpty().withMessage(`Password field ${emptyErr}`).optional(),
   body("confirm_password")
@@ -84,6 +88,11 @@ const validateUpdateUser = [
     .trim()
     .notEmpty()
     .withMessage(`Last name field ${emptyErr}`)
+    .optional(),
+  body("addtl")
+    .trim()
+    .notEmpty()
+    .withMessage(`addtl field ${emptyErr}`)
     .optional(),
   body("isAdmin")
     .notEmpty()

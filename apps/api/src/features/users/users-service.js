@@ -59,3 +59,31 @@ export const getUserByPublicId = async(userPublicId) => {
     throw error;
   }
 }
+
+export const updateUser = async(userPublicId, userData) => {
+  try {
+    const user = await usersQueries.findUserByPublicId(userPublicId);
+    if(!user){
+      throw new customError.BadRequest(`User does not exist`);
+    }
+
+    if(userData.password){
+      const hashedPassword = await passwordUtils.genPassword(userData.password);
+      const hash = hashedPassword.hash;
+      userData.hash = hash;
+    }
+
+    const filteredUserData = {
+      email: userData.email,
+      hash: userData.hash,
+      addtl: userData.addtl
+    }
+    
+    const updatedUser = await usersQueries.updateUserByPublicId(userPublicId, filteredUserData);
+    return updatedUser;
+
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}

@@ -45,3 +45,12 @@ export const fetchCurrentUserByPublicId = async(targetPublicId) => {
     }
   })
 }
+
+export const updateUserByPublicId = async(userPublicId, data) => {
+  return await prisma.user.update({
+    where: {
+      publicId: userPublicId
+    },
+    data
+  })
+}
