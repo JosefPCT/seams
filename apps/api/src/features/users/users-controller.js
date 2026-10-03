@@ -2,7 +2,7 @@ import { validationResult, matchedData } from 'express-validator';
 
 import * as validation from "../../middleware/validation.js"
 import * as usersService from "./users-service.js";
-import { isAdmin } from "../../middleware/authMiddleware.js";
+import { isAdmin, isAdminOrIsOwnUserData } from "../../middleware/authMiddleware.js";
 
 // POST '/users'
 // Handles creation of a new user internally (use '/register' for normal registration)
@@ -60,7 +60,9 @@ export const userByPublicIdGetRoute = [
 // Update a specific user by their public id
 // TODO: Only access if user is updating their own info (password) or user is an admin
 export const userPutRoute = [
+  isAdminOrIsOwnUserData,
   async(req, res, next) => {
+    const { userPublicId } = req.params;    
     res.status(200).json({ message: `You are in PUT '/users/${userPublicId}' route` });
   }
 ]

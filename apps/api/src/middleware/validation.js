@@ -58,6 +58,39 @@ const validateUser = [
     .optional(),
 ];
 
+const validateUpdateUser = [
+  body("email")
+    .trim()
+    .notEmpty()
+    .withMessage(`Email field ${emptyErr}`)
+    .normalizeEmail()
+    .isEmail()
+    .withMessage(`Email must be a valid email`)
+    .custom(emailExists)
+    .optional(),
+  body("password").trim().notEmpty().withMessage(`Password field ${emptyErr}`).optional(),
+  body("confirm_password")
+    .trim()
+    .notEmpty()
+    .withMessage(`Confirm Password field ${emptyErr}`)
+    .custom(isSamePass)
+    .optional(),
+  body("first_name")
+    .trim()
+    .notEmpty()
+    .withMessage(`First name field ${emptyErr}`)
+    .optional(),
+  body("last_name")
+    .trim()
+    .notEmpty()
+    .withMessage(`Last name field ${emptyErr}`)
+    .optional(),
+  body("isAdmin")
+    .notEmpty()
+    .withMessage(`isAdmin field ${emptyErr}`)
+    .optional(),
+];
+
 const validateProfile = [
   body("name")
     .trim()
@@ -91,4 +124,4 @@ const validateUpdateProfile = [
     .optional(),
 ]
 
-export { validateUser, validateProfile, validateUpdateProfile }
+export { validateUser, validateUpdateUser, validateProfile, validateUpdateProfile }
