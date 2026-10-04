@@ -3,6 +3,10 @@ import * as customError from "../../utils/extended-errors.js";
 
 import * as passwordUtils from '../../utils/passwordUtils.js';
 
+// Constants
+const PROFILE_URL = `/api/v1/profiles`
+
+
 // userData object has: email, password, confirm_password, first_name, last_name (optional: isAdmin)
 // Double checks if user's email already exists in the database
 // Uses password utility to transform the password string into hash, add the hash into the userData object and passed onto the query
@@ -25,9 +29,17 @@ export const createUser = async(userData) => {
   }
 }
 
-export const getAllUsers = async() => {
+// For GET '/users' routes, we also create 'profileUrl' fields to add onto the JSON response body for easy access to their user profiles
+// Uses a constant for the profile URL, protocol and host from `req.protocol` and `req.get('host')` respectively to create the URL
+export const getAllUsers = async(protocol, host) => {
   try {
     const users = await usersQueries.fetchAllUsers();
+
+    // Might slow down the app if getting high number of users, unless we limit how many users per request via 'page' query
+    users.forEach(user => {
+      user.profileUrl = new URL(`${PROFILE_URL}?userPublicId=${user.publicId}`, `${protocol}://${host}`);
+    })
+
     return users; 
   } catch (error) {
     console.log(error);
@@ -35,12 +47,15 @@ export const getAllUsers = async() => {
   }
 }
 
-export const getCurrentUser = async(userPublicId) => {
+export const getCurrentUser = async(userPublicId, protocol, host) => {
   try {
     const user = await usersQueries.fetchCurrentUserByPublicId(userPublicId);
     if(!user){
       throw new customError.NotFound(`User with public id: ${userPublicId} not found`);
     }
+
+    user.profileUrl = new URL(`${PROFILE_URL}?userPublicId=${userPublicId}`, `${protocol}://${host}`);
+
     return user;
   } catch (error) {
     console.log(error);
@@ -48,7 +63,7 @@ export const getCurrentUser = async(userPublicId) => {
   }
 }
 
-export const getUserByPublicId = async(userPublicId) => {
+export const getUserByPublicId = async(userPublicId, protocol, host) => {
   try {
     const user = await usersQueries.findUserByPublicId(userPublicId);
     console.log("Showing current user");
@@ -56,6 +71,8 @@ export const getUserByPublicId = async(userPublicId) => {
     if(!user){
       throw new customError.NotFound(`User with public id: ${userPublicId} not found`);
     }
+
+    user.profileUrl = new URL(`${PROFILE_URL}?userPublicId=${userPublicId}`, `${protocol}://${host}`);
 
     return user;
 
