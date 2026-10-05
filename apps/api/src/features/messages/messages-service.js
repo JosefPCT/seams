@@ -1,7 +1,8 @@
+import * as messagesQueries from "./messages-queries.js";
 
 export const sendMessage = async() => {
   try {
-    const newMessage = { message: "Test" }
+    const newMessage = await messagesQueries.createMessage();
     return newMessage;
   } catch (error) {
     console.log(error);
@@ -11,7 +12,7 @@ export const sendMessage = async() => {
 
 export const getAllMessages = async() => {
   try {
-    const messages = { messages: "Test" }
+    const messages = await messagesQueries.fetchAllMessages();
     return messages;
   } catch (error) {
     console.log(error);
@@ -21,7 +22,7 @@ export const getAllMessages = async() => {
 
 export const getMessage = async() => {
   try {
-    const message = { message: "Test" }
+    const message = await messagesQueries.fetchMessageByPublicId();
     return message;
   } catch (error) {
     console.log(error);
@@ -31,7 +32,7 @@ export const getMessage = async() => {
 
 export const updateMessage = async() => {
   try {
-    const updatedMessage = { messages: "Test" }
+    const updatedMessage = await messagesQueries.updateMessageByPublicId();
     return updatedMessage;
   } catch (error) {
     console.log(error);
@@ -41,7 +42,7 @@ export const updateMessage = async() => {
 
 export const deleteMessage = async() => {
   try {
-    const deletedMessage = { messages: "Test" }
+    const deletedMessage = await messagesQueries.deleteMessageByPublicId();
     return deletedMessage;
   } catch (error) {
     console.log(error);
