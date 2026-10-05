@@ -15,6 +15,10 @@ const isAuth = (req, res, next) => {
     }
 };
 
+const isUserNoProfile = (req, res, next) => {
+  !req.user.profile ? next() : res.status(401).json({ message: "User already has a profile"});
+}
+
 const isOwnProfile = (req,res, next) => {
 
 
@@ -40,4 +44,4 @@ const isAdminOrIsOwnUserData = (req, res, next) => {
   }
 }
 
-export { isAuth, isOwnProfile, isAdmin, isAdminOrIsOwnUserData }
+export { isAuth, isOwnProfile, isAdmin, isAdminOrIsOwnUserData, isUserNoProfile }

@@ -1,6 +1,6 @@
 import { validationResult, matchedData } from 'express-validator';
 
-import { isAuth, isOwnProfile } from "../../middleware/authMiddleware.js";
+import { isAuth, isOwnProfile, isUserNoProfile } from "../../middleware/authMiddleware.js";
 import * as profileService from "./profiles-service.js";
 import * as validation from "../../middleware/validation.js"
 
@@ -10,6 +10,8 @@ import * as validation from "../../middleware/validation.js"
 // Todo: POST resource should create a profile based on the passed user id/publicId via search parameter?
 // A check: passed userId should be the same as the current user's id (by req.user)
 export const profilesPostRoute = [
+  isAuth,
+  isUserNoProfile,
   validation.validateProfile,
   async(req, res, next) => {
     const errors = validationResult(req);
@@ -42,6 +44,11 @@ export const profilesGetRoute = [
     if(!profiles){
       return res.status(400).json({ error: true, message: "No Profiles detected"});
     }
+
+    // console.log("Checking truth status:");
+    // console.log(req.user);
+    // console.log(!!req.user.profile);
+
     res.status(200).json({ message: "/profile GET route, showing all profiles", data: profiles});
   }
 ]
