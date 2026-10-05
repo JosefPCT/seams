@@ -14,6 +14,6 @@ apiRouter.get('/', (req, res) => {
 apiRouter.use('/api/v1', indexRoutes);
 apiRouter.use('/api/v1', authRoutes);
 apiRouter.use('/api/v1/users', usersRouter);
-apiRouter.use('/api/v1/profile', profilesRoutes);
+apiRouter.use('/api/v1/profiles', profilesRoutes);
 
 export default apiRouter;

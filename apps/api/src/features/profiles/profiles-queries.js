@@ -35,8 +35,12 @@ export const createProfileByUserId = async(profileData) => {
   return newProfile;
 }
 
-export const findAllProfiles = async() => {
-  const profiles = await prisma.profile.findMany();
+export const findAllProfiles = async(targetUserId) => {
+  const profiles = await prisma.profile.findMany({
+    where: {
+      userId: targetUserId
+    }
+  });
   return profiles;
 }
 

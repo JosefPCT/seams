@@ -34,7 +34,9 @@ export const profilesPostRoute = [
 // TODO: If a search parameter is included (user_public_id), query in to the user model to get the internal id and use the `id` for a condition on the search query
 export const profilesGetRoute = [
   async(req, res, next) => {
-    const profiles = await profileService.fetchAllProfiles();
+    const { userPublicId } = req.query;
+    console.log(`User public id: ${userPublicId}`);
+    const profiles = await profileService.fetchAllProfiles(userPublicId);
     if(!profiles){
       return res.status(400).json({ error: true, message: "No Profiles detected"});
     }

@@ -1,4 +1,5 @@
-import * as profileQueries from "./profile-queries.js";
+import * as profileQueries from "./profiles-queries.js";
+import * as usersQueries from "../users/users-queries.js";
 import * as customError from "../../utils/extended-errors.js";
 
 // profileData has: name, pronouns, bio, userId
@@ -18,9 +19,16 @@ export const createProfile = async(profileData) => {
   }
 }
 
-export const fetchAllProfiles = async() => {
+export const fetchAllProfiles = async(userPublicId) => {
   try {
-    const profiles = await profileQueries.findAllProfiles();
+
+    let user;
+    if(userPublicId){
+      user = await usersQueries.findUserByPublicId(userPublicId);
+    }
+
+    const profiles = user ? await profileQueries.findAllProfiles(user.id) : await profileQueries.findAllProfiles();
+    
     return profiles;
   } catch (error) {
     console.log(error);
