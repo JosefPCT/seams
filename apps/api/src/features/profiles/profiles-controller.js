@@ -1,7 +1,7 @@
 import { validationResult, matchedData } from 'express-validator';
 
 import { isAuth, isOwnProfile } from "../../middleware/authMiddleware.js";
-import * as profileService from "./profile-service.js";
+import * as profileService from "./profiles-service.js";
 import * as validation from "../../middleware/validation.js"
 
 // A route to create a new profile for the user if a profile has not existed yet
@@ -9,7 +9,7 @@ import * as validation from "../../middleware/validation.js"
 
 // Todo: POST resource should create a profile based on the passed user id/publicId via search parameter?
 // A check: passed userId should be the same as the current user's id (by req.user)
-export const profilePostRoute = [
+export const profilesPostRoute = [
   validation.validateProfile,
   async(req, res, next) => {
     const errors = validationResult(req);
@@ -32,7 +32,7 @@ export const profilePostRoute = [
 // Get all the current profiles in the db
 // OR redirect to the user's specific profile '/profile/:profilePublicId'
 // TODO: If a search parameter is included (user_public_id), query in to the user model to get the internal id and use the `id` for a condition on the search query
-export const profileGetRoute = [
+export const profilesGetRoute = [
   async(req, res, next) => {
     const profiles = await profileService.fetchAllProfiles();
     if(!profiles){
