@@ -1,9 +1,11 @@
 import * as messagesServices from "./messages-service.js";
+import { isAuth } from "../../middleware/authMiddleware.js";
 
 // Route responsible for creating a message
 // TODO: Make sure to attach the correct user and correct chatgroupid
 // Might need to also create the chat group if new chat?
 export const messagesPostRoute = [
+  isAuth,
   async(req, res, next) => {
 
     const createdMessage = await messagesServices.sendMessage();

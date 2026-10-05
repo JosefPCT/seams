@@ -133,4 +133,19 @@ const validateUpdateProfile = [
     .optional(),
 ]
 
-export { validateUser, validateUpdateUser, validateProfile, validateUpdateProfile }
+const validateMessage = [
+  body("content")
+    .trim()
+    .notEmpty()
+    .withMessage(`Content of the message ${emptyErr}`),
+]
+
+const validateUpdateMessage = [
+  body("content")
+    .trim()
+    .notEmpty()
+    .withMessage(`Content of the message ${emptyErr}`)
+    .optional(),
+]
+
+export { validateUser, validateUpdateUser, validateProfile, validateUpdateProfile, validateMessage, validateUpdateMessage }
