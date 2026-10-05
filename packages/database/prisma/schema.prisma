@@ -13,13 +13,14 @@ datasource db {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  publicId String   @unique @default(uuid()) @map("public_id") @db.Uuid
-  email    String?  @unique
+  id       Int       @id @default(autoincrement())
+  publicId String    @unique @default(uuid()) @map("public_id") @db.Uuid
+  email    String?   @unique
   hash     String?
   addtl    String?
-  isAdmin  Boolean  @default(false)
+  isAdmin  Boolean   @default(false)
   profile  Profile?
+  messages Message[]
 }
 
 model Session {
@@ -41,4 +42,16 @@ model Profile {
   userId    Int       @map("user_id")
 
   @@unique([userId])
+}
+
+model Message {
+  id       Int    @id @default(autoincrement())
+  publicId String @unique @default(uuid()) @map("public_id") @db.Uuid
+
+  sentBy   User @relation(fields: [senderId], references: [id])
+  senderId Int  @map("sender_id")
+
+  sentAt   DateTime @default(now()) @map("sent_at") @db.Timestamptz(6)
+  editedAt DateTime @updatedAt @map("edited_at") @db.Timestamptz(6)
+  content  String
 }
