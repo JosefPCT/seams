@@ -1,6 +1,12 @@
+import { prisma } from "@repo/database"
 
-export const createMessage = async() => {
-  return { message: "Created message"}
+export const createMessage = async(messageData, userId) => {
+  return await prisma.message.create({
+    data: {
+      senderId: userId,
+      content: messageData.content
+    }
+  })
 }
 
 export const fetchAllMessages = async() => {

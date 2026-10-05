@@ -14,6 +14,7 @@ export const createProfile = async(profileData) => {
     // Places the internal id of the user to the profile data object
     profileData.userId = currentUser.id;
 
+    // Checks if a user already has created a profile
     const profile = await profileQueries.getProfileByUserId(profileData.userId);
     if(profile){
       throw new customError.BadRequest(`User already has profile`);
