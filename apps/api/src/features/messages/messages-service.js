@@ -21,9 +21,16 @@ export const sendMessage = async(data, userPublicId) => {
   }
 }
 
-export const getAllMessages = async() => {
+export const getAllMessages = async(userPublicId) => {
   try {
-    const messages = await messagesQueries.fetchAllMessages();
+
+    let user;
+    // Checks if userPublicId from the req.query is present on the URL
+    if(userPublicId){
+      user = await usersQueries.findUserByPublicId(userPublicId);
+    }
+
+    const messages = user ? await messagesQueries.fetchAllMessages(user.id) : await messagesQueries.fetchAllMessages();
     return messages;
   } catch (error) {
     console.log(error);

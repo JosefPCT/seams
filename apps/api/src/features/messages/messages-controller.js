@@ -34,8 +34,8 @@ export const messagesPostRoute = [
 
 export const messagesGetRoute = [
   async(req, res, next) => {
-
-    const messages = await messagesServices.getAllMessages();
+    const { userPublicId } = req.query;
+    const messages = await messagesServices.getAllMessages(userPublicId);
     if(!messages){
         return res.status(400).json({ error: true, message: "No messages yet"});
     }
