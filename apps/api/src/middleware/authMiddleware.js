@@ -16,9 +16,14 @@ const isAuth = (req, res, next) => {
 };
 
 const isOwnProfile = (req,res, next) => {
-  req.user.profile.publicId === req.params.profilePublicId ? 
-    next() :
-    res.status(401).json({ message: 'You are not authorized to do this'});
+
+
+  req.user ? 
+    req.user.profile.publicId === req.params.profilePublicId ? 
+    next() : res.status(401).json({ message: 'You are not authorized to do this'}) 
+  : res.status(401).json({ message: "You are not logged in"});
+
+
 
 }
 

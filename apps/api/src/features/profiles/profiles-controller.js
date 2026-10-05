@@ -17,9 +17,11 @@ export const profilesPostRoute = [
       return res.status(400).json(errors);
     }
 
+    const { userPublicId } = req.query;
+
     const { name, pronouns, bio } = matchedData(req);
-    const userId = req.user.id;
-    const createdProfile = await profileService.createProfile({name, pronouns, bio, userId});
+    const targetUserPublicId = userPublicId || req.user.publicId;
+    const createdProfile = await profileService.createProfile({name, pronouns, bio, targetUserPublicId});
     if(!createdProfile){
       return res.status(400).json({ error: true, message: "Profile was not created succesfully"});
     }

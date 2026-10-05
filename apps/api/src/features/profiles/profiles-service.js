@@ -6,6 +6,14 @@ import * as customError from "../../utils/extended-errors.js";
 // TODO: create a check if already created profile for the user
 export const createProfile = async(profileData) => {
   try {
+    const currentUser = await usersQueries.findUserByPublicId(profileData.targetUserPublicId);
+    if(!currentUser){
+      throw new customError.BadRequest(`No selected user to create a profile for`);
+    }
+
+    // Places the internal id of the user to the profile data object
+    profileData.userId = currentUser.id;
+
     const profile = await profileQueries.getProfileByUserId(profileData.userId);
     if(profile){
       throw new customError.BadRequest(`User already has profile`);
@@ -28,7 +36,7 @@ export const fetchAllProfiles = async(userPublicId) => {
     }
 
     const profiles = user ? await profileQueries.findAllProfiles(user.id) : await profileQueries.findAllProfiles();
-    
+
     return profiles;
   } catch (error) {
     console.log(error);
