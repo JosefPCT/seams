@@ -27,6 +27,7 @@ export const createProfile = async(profileData) => {
   }
 }
 
+// Determines if userPublicId query paramter is present, if it is uses it in a query, if not, removes it from the query (undefined)
 export const fetchAllProfiles = async(userPublicId) => {
   try {
 
