@@ -1,14 +1,26 @@
+import { validationResult, matchedData } from 'express-validator';
+
+import * as validation from "../../middleware/validation.js"
 import * as messagesServices from "./messages-service.js";
 import { isAuth } from "../../middleware/authMiddleware.js";
+
 
 // Route responsible for creating a message
 // TODO: Make sure to attach the correct user and correct chatgroupid
 // Might need to also create the chat group if new chat?
 export const messagesPostRoute = [
   isAuth,
+  validation.validateMessage,
   async(req, res, next) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      return res.status(400).json(errors);
+    }
 
-    const createdMessage = await messagesServices.sendMessage();
+    // TODO: Might need to also add the public id of a chat group (chatgroupPublicId) and also pass it on to the service when ChatGroup Model is created
+    const { userPublicId } = req.query;
+    const targetUserPublicId = userPublicId || req.user.publicId;
+    const createdMessage = await messagesServices.sendMessage(matchedData(req), targetUserPublicId);
     if(!createdMessage){
         return res.status(400).json({ error: true, message: "Message was not sent successfully"});
     }
