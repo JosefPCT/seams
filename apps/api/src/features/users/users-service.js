@@ -82,6 +82,7 @@ export const getUserByPublicId = async(userPublicId, protocol, host) => {
   }
 }
 
+// Converts the password into a hash and creates an object with the hash along with other information to pass on to the query layer
 export const updateUser = async(userPublicId, userData) => {
   try {
     const user = await usersQueries.findUserByPublicId(userPublicId);
