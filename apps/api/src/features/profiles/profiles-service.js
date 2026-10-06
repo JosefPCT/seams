@@ -2,8 +2,8 @@ import * as profileQueries from "./profiles-queries.js";
 import * as usersQueries from "../users/users-queries.js";
 import * as customError from "../../utils/extended-errors.js";
 
-// profileData has: name, pronouns, bio, userId
-// TODO: create a check if already created profile for the user
+// profileData has: name, pronouns, bio, targetUserPublicId
+// Checks if already created profile for the user
 export const createProfile = async(profileData) => {
   try {
     const currentUser = await usersQueries.findUserByPublicId(profileData.targetUserPublicId);
@@ -56,6 +56,7 @@ export const fetchSpecificProfile = async(params) => {
   }
 }
 
+// data object has potentially a field of either or all: name, pronouns, bio
 export const updateSpecificProfile = async(profilePublicId, data) => {
   try {
     console.log("Updating...");

@@ -69,3 +69,40 @@ Accepts a req.body of mostly optional:
 ### DELETE /users:userPublicId
 Deletes a user based on the passed :userPublicId
 Also returns a JSON payload of information of the deleted user.
+
+
+### POST /profiles?userPublicId={id}
+Creates a profile based on the current user logged in or optionally by the passed search query parameter userPublicId
+Accepts a req.body of:
+- name
+- pronouns
+- bio
+
+### GET /profiles?userPublicId={id}
+Returns a JSON  of all created profiles if no query is given
+If given a query of 'userPublicId', filters the selection of profiles to only display profile/profiles created by a certain user 
+
+### GET /profiles/:profilePublicId
+Returns a JSON of a specific profile based on the route parameter (:profilePublicId) the profile's public id
+
+### PUT /profiles/:profilePublicId
+Updates a profile based on the route parameter(:profilePublicId) the profile's public id
+Accessible only by a logged in user and if the user owns the profile.
+Also returns a JSON of the updated profile with the new updated information
+Accepts a req.body mostly optional:
+- name
+- pronouns
+- bio
+
+### DELETE /profiles:profilePublicId
+Deletes a profile based on the route parameter(:profilePublicId) the profile's public id
+Accessible only by a logged in user and if the user owns the profile
+Also returns a JSON of the deleted profile
+
+### POST /messages?userPublicId={id}
+
+### GET /messages?userPublicId={id}
+
+### PUT /messages?userPublicId={id}
+
+### DELETE /messages?userPublicId={id}
