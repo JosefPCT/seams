@@ -100,9 +100,28 @@ Accessible only by a logged in user and if the user owns the profile
 Also returns a JSON of the deleted profile
 
 ### POST /messages?userPublicId={id}
+Create/Sends a new message to a chat, based on the current logged in user
+TODO: potentially to refactor to either/or use the current logged in user's public id or pass a userPublicId search query
+Accessible only be a logged in user
+Returns a JSON payload information of the created/sent message
+Accepts a req.body of:
+- content
 
 ### GET /messages?userPublicId={id}
+Returns a JSON payload information of the list of all messages in the database, or if passed a search query (userPublicId) filters the list to only show messages sent by the passed user
 
-### PUT /messages?userPublicId={id}
 
-### DELETE /messages?userPublicId={id}
+### GET /messages/:messagePublicId
+Returns a JSON data of a specific message based on it route parameter (:messagePublicId), the message's public id in the database
+
+### PUT /messages/:messagePublicId
+Updates the content of a specific message based on it route parameter (:messagePublicId), the message's public id in the database
+Also returns a JSON data of the updated message
+Accessible only by a logged in user and if that user owns the message
+Accepts a req.body of mostly optional:
+- content
+
+### DELETE /messages/:messagePublicId
+Deletes a specific message based on it route parameter (:messagePublicId), the message's public id in the database
+Also returns a JSON data of the deleted message
+Accessible only by a logged in user and if that user owns the message

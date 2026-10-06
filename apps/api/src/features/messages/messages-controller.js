@@ -5,10 +5,10 @@ import * as messagesServices from "./messages-service.js";
 import { isAuth, isOwnMessage, isOwnProfile } from "../../middleware/authMiddleware.js";
 
 
-// Route responsible for creating a message
+// Endpoint: POST '/messages?userPublicId={id}
+// Route responsible for creating/sending a message
 // TODO: Make sure to attach the correct user and correct chatgroupid
 // Might need to also create the chat group if new chat?
-
 export const messagesPostRoute = [
   isAuth,
   validation.validateMessage,
@@ -32,6 +32,8 @@ export const messagesPostRoute = [
   }
 ]
 
+// Endpoint: GET '/messages?userPublicId={id}'
+// Returns a JSON list of all messages or if userPublicId search query is present filters only messages sent by that user
 export const messagesGetRoute = [
   async(req, res, next) => {
     const { userPublicId } = req.query;
@@ -44,6 +46,8 @@ export const messagesGetRoute = [
   }
 ]
 
+// Endpoint: GET '/messages/:messagePublicId
+// Returns a JSON data of a specific message based on it route parameter (:messagePublicId), the message's public id in the database
 export const messageByPublicIdGetRoute = [
   async(req, res, next) => {
     const { messagePublicId } = req.params;
@@ -56,6 +60,10 @@ export const messageByPublicIdGetRoute = [
   }
 ]
 
+// Endpoint: PUT '/messages/:messagePublicId'
+// Updates the content of a specific message based on it route parameter (:messagePublicId), the message's public id in the database
+// Also returns a JSON data of the updated message
+// Checks if the validated data object is empty, and returns a proper status and message as a JSON
 export const messagePutRoute = [
   isAuth,
   isOwnMessage,
@@ -81,7 +89,13 @@ export const messagePutRoute = [
   }
 ]
 
+// Endpoint: DELETE '/messages/:messagePublicId'
+// Deletes a specific message based on it route parameter (:messagePublicId), the message's public id in the database
+// Returns a JSON payload information of the deleted message
+// Accessible only by a logged in user and if that user owns the message
 export const messageDeleteRoute = [
+  isAuth,
+  isOwnMessage,
   async(req, res, next) => {
     const { messagePublicId } = req.params;
     const deletedMessage = await messagesServices.deleteMessage(messagePublicId);

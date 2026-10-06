@@ -2,16 +2,14 @@ import * as messagesQueries from "./messages-queries.js";
 import * as usersQueries from "../users/users-queries.js";
 import * as customError from "../../utils/extended-errors.js";
 
+// data object includes a field of: content
 export const sendMessage = async(data, userPublicId) => {
   try {
+    // Checks if user of the passed userPublicId argument exists on the database and to also get the user's internal id to be passed on to the query layer
     const currentUser = await usersQueries.findUserByPublicId(userPublicId)
     if(!currentUser){
       throw new customError.BadRequest(`Invalid user to send messages with`);
     }
-
-    // Places the internal id of the user to the profile data object
-    console.log("Showing data validated");
-    console.log(data);
 
     const newMessage = await messagesQueries.createMessage(data, currentUser.id);
     return newMessage;
@@ -21,6 +19,8 @@ export const sendMessage = async(data, userPublicId) => {
   }
 }
 
+// Gets the user based on the user's public id to retrieve it's internal id
+// Passes on the internal id if a search query is present
 export const getAllMessages = async(userPublicId) => {
   try {
 
@@ -48,6 +48,7 @@ export const getMessage = async(messagePublicId) => {
   }
 }
 
+// data object fields include: content
 export const updateMessage = async(data, messagePublicId) => {
   try {
     const message = await messagesQueries.fetchMessageByPublicId(messagePublicId)
