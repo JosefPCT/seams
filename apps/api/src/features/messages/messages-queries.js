@@ -17,8 +17,12 @@ export const fetchAllMessages = async(targetUserId) => {
   })
 }
 
-export const fetchMessageByPublicId = async() => {
-  return { message: 'Get specific message'}
+export const fetchMessageByPublicId = async(targetPublicId) => {
+  return await prisma.message.findUnique({
+    where: {
+      publicId: targetPublicId
+    }
+  })
 }
 
 export const updateMessageByPublicId = async() => {

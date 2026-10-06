@@ -46,8 +46,8 @@ export const messagesGetRoute = [
 
 export const messageByPublicIdGetRoute = [
   async(req, res, next) => {
-
-    const message = await messagesServices.getMessage();
+    const { messagePublicId } = req.params;
+    const message = await messagesServices.getMessage(messagePublicId);
     if(!message){
         return res.status(400).json({ error: true, message: "No messages with this particular public id"});
     }

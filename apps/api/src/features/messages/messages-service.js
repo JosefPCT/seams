@@ -38,9 +38,9 @@ export const getAllMessages = async(userPublicId) => {
   }
 }
 
-export const getMessage = async() => {
+export const getMessage = async(messagePublicId) => {
   try {
-    const message = await messagesQueries.fetchMessageByPublicId();
+    const message = await messagesQueries.fetchMessageByPublicId(messagePublicId);
     return message;
   } catch (error) {
     console.log(error);

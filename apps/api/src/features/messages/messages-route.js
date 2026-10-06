@@ -8,10 +8,10 @@ messagesRouter.post('/', messagesController.messagesPostRoute);
 
 messagesRouter.get('/', messagesController.messagesGetRoute);
 
-messagesRouter.get('/:profilePublicId', messagesController.messageByPublicIdGetRoute);
+messagesRouter.get('/:messagePublicId', messagesController.messageByPublicIdGetRoute);
 
-messagesRouter.put('/:profilePublicId', messagesController.messagePutRoute);
+messagesRouter.put('/:messagePublicId', messagesController.messagePutRoute);
 
-messagesRouter.delete('/:profilePublicId', messagesController.messageDeleteRoute);
+messagesRouter.delete('/:messagePublicId', messagesController.messageDeleteRoute);
 
 export default messagesRouter;
