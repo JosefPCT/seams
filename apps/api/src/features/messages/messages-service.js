@@ -48,9 +48,14 @@ export const getMessage = async(messagePublicId) => {
   }
 }
 
-export const updateMessage = async() => {
+export const updateMessage = async(data, messagePublicId) => {
   try {
-    const updatedMessage = await messagesQueries.updateMessageByPublicId();
+    const message = await messagesQueries.fetchMessageByPublicId(messagePublicId)
+    if(!message){
+      throw new customError.BadRequest(`Message by this id does not exist, aborting deletion operation`);
+    }
+
+    const updatedMessage = await messagesQueries.updateMessageByPublicId(data, messagePublicId);
     return updatedMessage;
   } catch (error) {
     console.log(error);

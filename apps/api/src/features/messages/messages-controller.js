@@ -59,9 +59,21 @@ export const messageByPublicIdGetRoute = [
 export const messagePutRoute = [
   isAuth,
   isOwnMessage,
+  validation.validateUpdateMessage,
   async(req, res, next) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      return res.status(400).json(errors);
+    }
 
-    const editedMessage = await messagesServices.updateMessage();
+    // Checks if the matchedData(req) object is empty
+    if(Object.keys(matchedData(req)).length === 0 && matchedData(req).constructor === Object){
+      return res.status(401).json({ warning: true, message: "No valid fields to update"})
+    }
+
+    const { messagePublicId } = req.params;
+
+    const editedMessage = await messagesServices.updateMessage(matchedData(req), messagePublicId);
     if(!editedMessage){
         return res.status(400).json({ error: true, message: "Editing the message not successful"});
     }

@@ -25,8 +25,13 @@ export const fetchMessageByPublicId = async(targetPublicId) => {
   })
 }
 
-export const updateMessageByPublicId = async() => {
-  return { message: 'Update specific messsage '}
+export const updateMessageByPublicId = async(data, targetPublicId) => {
+  return await prisma.message.update({
+    where: {
+      publicId: targetPublicId
+    },
+    data
+  })
 }
 
 export const deleteMessageByPublicId = async(targetPublicId) => {
