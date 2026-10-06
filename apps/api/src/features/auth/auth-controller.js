@@ -5,7 +5,9 @@ import * as authService from "./auth-service.js";
 import * as validation from "../../middleware/validation.js"
 import { isAuth } from "../../middleware/authMiddleware.js";
 
-
+// Endpoint: 'POST /api/v1/register'
+// Validates and gets the user input in req.body and passes it on to the service layer
+// TODO: Pass the `matchedData(req)` directly as an argument and let the service layer handle the data itself
 export const registerPostRoute = [
   validation.validateUser,
   async(req, res, next) => {
@@ -21,6 +23,9 @@ export const registerPostRoute = [
   }
 ]
 
+// Endpoint: 'POST api/v1/login'
+// Handles the login of a user via 'passport.authenticate' uses the serialize function in the 'passport.js' file to create a req.user object that is accessed by authenticated routes
+// Redirects to endpoints depending on success status
 export const loginPostRoute = [
   passport.authenticate('local', {
     failureRedirect: '/api/v1/login-failure',
@@ -40,6 +45,8 @@ export const loginFailureGetRoute = [
   }
 ]
 
+// Endpoint: 'GET /api/v1/logout'
+// Handles logging out of user via 'req.logout' uses the deserialize function to remove information from 'req.user' object
 export const logoutGetRoute = [
   async(req, res, next) => {
     req.logout((err) => {
