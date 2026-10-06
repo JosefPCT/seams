@@ -2,7 +2,7 @@ import { validationResult, matchedData } from 'express-validator';
 
 import * as validation from "../../middleware/validation.js"
 import * as messagesServices from "./messages-service.js";
-import { isAuth } from "../../middleware/authMiddleware.js";
+import { isAuth, isOwnMessage, isOwnProfile } from "../../middleware/authMiddleware.js";
 
 
 // Route responsible for creating a message
@@ -57,6 +57,8 @@ export const messageByPublicIdGetRoute = [
 ]
 
 export const messagePutRoute = [
+  isAuth,
+  isOwnMessage,
   async(req, res, next) => {
 
     const editedMessage = await messagesServices.updateMessage();

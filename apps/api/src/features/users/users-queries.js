@@ -43,6 +43,10 @@ export const fetchCurrentUserByPublicId = async(targetPublicId) => {
   return await prisma.user.findUnique({
     where: {
       publicId: targetPublicId
+    },
+    include: {
+      profile: true,
+      messages: true
     }
   })
 }

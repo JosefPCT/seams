@@ -30,7 +30,7 @@ const isOwnProfile = (req,res, next) => {
 
 const isOwnMessage = (req, res, next) => {
   const { messagePublicId } = req.params;
-  const flag = false;
+  let flag = false;
   req.user.messages.forEach(message => {
     if(message.publicId === messagePublicId){
       flag = true;

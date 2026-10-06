@@ -59,7 +59,8 @@ passport.deserializeUser(async (userId, done) => {
         id: userId,
       },
       include: {
-        profile: true
+        profile: true,
+        messages: true
       }
     });
 
