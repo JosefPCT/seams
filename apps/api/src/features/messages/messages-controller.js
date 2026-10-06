@@ -69,7 +69,8 @@ export const messagePutRoute = [
 
 export const messageDeleteRoute = [
   async(req, res, next) => {
-    const deletedMessage = await messagesServices.deleteMessage();
+    const { messagePublicId } = req.params;
+    const deletedMessage = await messagesServices.deleteMessage(messagePublicId);
     if(!deletedMessage){
         return res.status(400).json({ error: true, message: "Deleting the message not successful"});
     }
