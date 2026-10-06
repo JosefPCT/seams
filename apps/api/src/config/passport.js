@@ -18,7 +18,8 @@ const verifyCallback = async (username, password, done) => {
         email: username,
       },
       include: {
-        profile: true
+        profile: true,
+        messages: true
       }
     });
 

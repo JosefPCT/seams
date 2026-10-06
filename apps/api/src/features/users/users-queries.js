@@ -16,7 +16,8 @@ export const findUserByPublicId = async(targetUserPublicId) => {
       publicId: targetUserPublicId
     },
     include: {
-        profile: true
+        profile: true,
+        messages: true
     }
   })
 }

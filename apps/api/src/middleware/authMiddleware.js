@@ -21,14 +21,23 @@ const isUserNoProfile = (req, res, next) => {
 
 const isOwnProfile = (req,res, next) => {
 
-
   req.user ? 
     req.user.profile.publicId === req.params.profilePublicId ? 
     next() : res.status(401).json({ message: 'You are not authorized to do this'}) 
   : res.status(401).json({ message: "You are not logged in"});
 
+}
 
-
+const isOwnMessage = (req, res, next) => {
+  const { messagePublicId } = req.params;
+  const flag = false;
+  req.user.messages.forEach(message => {
+    if(message.publicId === messagePublicId){
+      flag = true;
+      return;
+    }
+  });
+  flag ? next() : res.status(401).json({ message: "You are not authorized to do this"});
 }
 
 const isAdmin = (req, res, next) => {
@@ -44,4 +53,4 @@ const isAdminOrIsOwnUserData = (req, res, next) => {
   }
 }
 
-export { isAuth, isOwnProfile, isAdmin, isAdminOrIsOwnUserData, isUserNoProfile }
+export { isAuth, isOwnProfile, isAdmin, isAdminOrIsOwnUserData, isUserNoProfile, isOwnMessage }
