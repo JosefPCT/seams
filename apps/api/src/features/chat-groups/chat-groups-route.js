@@ -8,11 +8,11 @@ chatGroupsRouter.post('/', chatGroupsController.chatGroupsPostRoute);
 
 chatGroupsRouter.get('/', chatGroupsController.chatGroupsGetRoute);
 
-chatGroupsRouter.get('/:userPublicId', chatGroupsController.chatGroupByPublicIdRoute);
+chatGroupsRouter.get('/:chatGroupPublicId', chatGroupsController.chatGroupByPublicIdRoute);
 
-chatGroupsRouter.put('/:userPublicId', chatGroupsController.chatGroupPutRoute);
+chatGroupsRouter.put('/:chatGroupPublicId', chatGroupsController.chatGroupPutRoute);
 
-chatGroupsRouter.delete('/:userPublicId', chatGroupsController.chatGroupDeleteRoute);
+chatGroupsRouter.delete('/:chatGroupPublicId', chatGroupsController.chatGroupDeleteRoute);
 
 
 
