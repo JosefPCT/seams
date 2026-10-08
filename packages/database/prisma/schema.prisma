@@ -59,12 +59,12 @@ model Message {
   id       Int      @id @default(autoincrement())
   publicId String   @unique @default(uuid()) @map("public_id") @db.Uuid
   sentAt   DateTime @default(now()) @map("sent_at") @db.Timestamptz(6)
-  editedAt DateTime @updatedAt @map("edited_at") @db.Timestamptz(6)
+  editedAt DateTime? @updatedAt @map("edited_at") @db.Timestamptz(6)
   content  String
 
   // Relations
   sentBy   User      @relation(fields: [senderId], references: [id])
   senderId Int       @map("sender_id")
   group    ChatGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  groupId  Int       @map("grouo_id")
+  groupId  Int       @map("group_id")
 }
