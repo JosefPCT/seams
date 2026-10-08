@@ -12,6 +12,13 @@ datasource db {
   provider = "postgresql"
 }
 
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String   @db.Text
+  expiresAt DateTime
+}
+
 model User {
   id       Int       @id @default(autoincrement())
   publicId String    @unique @default(uuid()) @map("public_id") @db.Uuid
@@ -23,11 +30,15 @@ model User {
   messages Message[]
 }
 
-model Session {
-  id        String   @id
-  sid       String   @unique
-  data      String   @db.Text
-  expiresAt DateTime
+model ChatGroup {
+  id        Int       @id @default(autoincrement())
+  publicId  String    @unique @default(uuid()) @map("public_id") @db.Uuid
+  name      String    @default("New Chat")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  messages Message[]
 }
 
 model Profile {
@@ -45,13 +56,15 @@ model Profile {
 }
 
 model Message {
-  id       Int    @id @default(autoincrement())
-  publicId String @unique @default(uuid()) @map("public_id") @db.Uuid
-
-  sentBy   User @relation(fields: [senderId], references: [id])
-  senderId Int  @map("sender_id")
-
+  id       Int      @id @default(autoincrement())
+  publicId String   @unique @default(uuid()) @map("public_id") @db.Uuid
   sentAt   DateTime @default(now()) @map("sent_at") @db.Timestamptz(6)
   editedAt DateTime @updatedAt @map("edited_at") @db.Timestamptz(6)
   content  String
+
+  // Relations
+  sentBy   User      @relation(fields: [senderId], references: [id])
+  senderId Int       @map("sender_id")
+  group    ChatGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId  Int       @map("grouo_id")
 }

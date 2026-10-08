@@ -63,7 +63,7 @@ async function main(){
             bio: "Test bio about this user",
           }
         }
-      }    
+      },    
     },
     create: {
       email: "firstuser@gmail.com",
