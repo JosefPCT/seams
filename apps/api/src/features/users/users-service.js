@@ -11,7 +11,6 @@ const PROFILE_URL = `/api/v1/profiles`
 // Double checks if user's email already exists in the database
 // Uses password utility to transform the password string into hash, add the hash into the userData object and passed onto the query
 export const createUser = async(userData) => {
-  try {
     const user = await usersQueries.findUserByEmail(userData.email);
     if(user){
       throw new customError.BadRequest(`Email already exists`);
@@ -23,10 +22,6 @@ export const createUser = async(userData) => {
 
     const newUser = await usersQueries.createNewUser(userData);
     return newUser;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
 }
 
 // For GET '/users' routes, we also create 'profileUrl' fields to add onto the JSON response body for easy access to their user profiles

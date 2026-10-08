@@ -1,6 +1,17 @@
+import { Prisma } from "@repo/database";
+
 export const globalErrorHandler = (err, req, res, next) => {
+  console.log("GLOBAL ERROR HANDLING....");
+  
   console.error(err.stack);
-  const statusCode = err.code || 500;
+  console.log(err);
+
+  let isPrismaError = false;
+  if(err instanceof Prisma.PrismaClientKnownRequestError){
+    console.log("Prisma Error");
+    isPrismaError = true;
+  }
+  const statusCode = isPrismaError ? 500 : err.code || 500;
   const message = err.message || 'Internal Server Error';
 
   // Don't send error stack in production environment

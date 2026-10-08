@@ -4,6 +4,8 @@ import * as validation from "../../middleware/validation.js"
 import * as usersService from "./users-service.js";
 import { isAdmin, isAdminOrIsOwnUserData, isAuth } from "../../middleware/authMiddleware.js";
 
+
+
 // POST '/users'
 // Handles creation of a new user internally (use '/register' for normal registration)
 // Decide if using shared service/queries with the `/register' route from auth resource
@@ -60,6 +62,13 @@ export const userByPublicIdGetRoute = [
     if(!user){
         return res.status(400).json({ error: true, message: "User was not found"});
     }
+
+    // console.log("Showing...");
+    // console.log(req.protocol);
+    // console.log(req.get('host'));
+    // console.log(req.originalUrl);
+    // console.log(req);
+    // console.log(PROFILE_URL);
 
     res.status(200).json({ message: `You are in GET '/users/${userPublicId}' route`, data: user});
   }
