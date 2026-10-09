@@ -34,6 +34,9 @@ export const chatGroupByPublicIdRoute = [
   async(req, res, next) => {
     const { chatGroupPublicId } = req.params;
     const chatGroup = await service.getChatGroupByPublicId(chatGroupPublicId);
+    if(!chatGroup){
+      res.status(404).json({ status: "not found", message: `Chat group with public id of ${chatGroupPublicId} is not found`, data: chatGroup})
+    }
     res.status(200).json({ status: "success", message: `In 'GET /chat-groups/${chatGroupPublicId}', Here is the chat group data`, data: chatGroup})
   }
 ]
@@ -50,6 +53,7 @@ export const chatGroupPutRoute = [
       res.status(400).json({ status: 'warning', message: `No valid fields to update`});
     }
     const updatedChatGroup = await service.updateChatGroup(chatGroupPublicId, matchedData(req))
+
     res.status(200).json({ status: "success", message: `In 'PUT /chat-groups/${chatGroupPublicId}', Here is the updated chat group data`, data: updatedChatGroup});
   }
 ]
