@@ -14,7 +14,7 @@ export const createNewChatGroup = async(data) => {
 // Can add filtering, sorting, pagination logic here
 export const getAllChatGroups = async(searchTarget) => {
   let isSearchEmpty = false;
-  let whereObject = {};
+  let whereObject = { orderBy: { createdAt: 'asc' }};
 
   // Checks if there is a req.query parameter
   if(!!searchTarget){
@@ -29,6 +29,9 @@ export const getAllChatGroups = async(searchTarget) => {
                     }
                 }
             ]
+        },
+        orderBy: {
+          createdAt: 'desc'
         }
     }
   }
@@ -40,4 +43,9 @@ export const getAllChatGroups = async(searchTarget) => {
 export const getChatGroupByPublicId = async(publicId) => {
   const chatGroup = await chatGroupsQuery.findChatGroupByPublicId(publicId); 
   return chatGroup;
+}
+
+export const updateChatGroup = async(publicId, data) => {
+  const updatedChatGroup = await chatGroupsQuery.updateChatGroupByPublicId(publicId, data);
+  return updatedChatGroup;
 }

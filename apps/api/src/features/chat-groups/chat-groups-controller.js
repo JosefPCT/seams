@@ -39,9 +39,17 @@ export const chatGroupByPublicIdRoute = [
 ]
 
 export const chatGroupPutRoute = [
+  validation.validateUpdateChatGroup,
   async(req, res, next) => {
     const { chatGroupPublicId } = req.params;
-    const updatedChatGroup = {};
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      return res.status(400).json(errors);
+    }
+    if(Object.keys(matchedData(req)).length === 0 && matchedData(req).constructor === Object){
+      res.status(400).json({ status: 'warning', message: `No valid fields to update`});
+    }
+    const updatedChatGroup = await service.updateChatGroup(chatGroupPublicId, matchedData(req))
     res.status(200).json({ status: "success", message: `In 'PUT /chat-groups/${chatGroupPublicId}', Here is the updated chat group data`, data: updatedChatGroup});
   }
 ]

@@ -17,3 +17,11 @@ export const findChatGroupByPublicId = async(targetPublicId) => {
     }
   })
 }
+export const updateChatGroupByPublicId = async(targetPublicId, data) => {
+  return await prisma.chatGroup.update({
+    where:{
+      publicId: targetPublicId
+    },
+    data
+  })
+}
