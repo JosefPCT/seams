@@ -148,4 +148,20 @@ const validateUpdateMessage = [
     .optional(),
 ]
 
-export { validateUser, validateUpdateUser, validateProfile, validateUpdateProfile, validateMessage, validateUpdateMessage }
+const validateCreateChatGroup = [
+  body("name")
+    .trim()
+    .notEmpty()
+    .withMessage(`COntent of the name ${emptyErr}`)
+    .optional(),
+]
+
+const validateUpdateChatGroup = [
+  body("name")
+    .trim()
+    .notEmpty()
+    .withMessage(`COntent of the name ${emptyErr}`)
+    .optional(),
+]
+
+export { validateUser, validateUpdateUser, validateProfile, validateUpdateProfile, validateMessage, validateUpdateMessage, validateCreateChatGroup, validateUpdateChatGroup }

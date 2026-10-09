@@ -5,9 +5,17 @@ import { isAuth } from "../../middleware/authMiddleware.js";
 import * as chatGroupsService from "./chat-groups-service.js";
 
 // 'POST /chat-groups'
+// TODO FUTURE: Might need to add a search query to pass on the two initial users/chat members (or need to do in on the message resource)
+// A chat group just need to be made and get their id/public id
 export const chatGroupsPostRoute = [
+  validation.validateCreateChatGroup,
   async(req, res, next) => {
-    const createdChatGroup = {};
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      return res.status(400).json(errors);
+    }
+    const createdChatGroup = await chatGroupsService.createNewChatGroup(matchedData(req));
+    // const createdChatGroup = {}
     res.status(201).json({ status: "success", message: "In 'POST /chat-groups', Chat Group Created!", data: createdChatGroup});
   }
 ]
