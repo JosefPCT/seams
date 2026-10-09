@@ -2,7 +2,7 @@ import { validationResult, matchedData } from 'express-validator';
 
 import * as validation from "../../middleware/validation.js";
 import { isAuth } from "../../middleware/authMiddleware.js";
-import * as chatGroupsService from "./chat-groups-service.js";
+import * as service from "./chat-groups-service.js";
 
 // 'POST /chat-groups'
 // TODO FUTURE: Might need to add a search query to pass on the two initial users/chat members (or need to do in on the message resource)
@@ -14,16 +14,17 @@ export const chatGroupsPostRoute = [
     if(!errors.isEmpty()){
       return res.status(400).json(errors);
     }
-    const createdChatGroup = await chatGroupsService.createNewChatGroup(matchedData(req));
+    const createdChatGroup = await service.createNewChatGroup(matchedData(req));
     // const createdChatGroup = {}
     res.status(201).json({ status: "success", message: "In 'POST /chat-groups', Chat Group Created!", data: createdChatGroup});
   }
 ]
 
-// 'GET /chat-groups'
+// 'GET /chat-groups?searchString={string}'
 export const chatGroupsGetRoute = [
   async(req, res, next) => {
-    const chatGroups = {};
+    const { searchString } = req.query ;
+    const chatGroups = await service.getAllChatGroups(searchString);
     res.status(200).json({ status: "success", message: "In 'GET /chat-groups', Here are the list of chat groups", data: chatGroups})
   }
 ]

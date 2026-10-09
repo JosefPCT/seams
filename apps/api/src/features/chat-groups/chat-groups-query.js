@@ -5,3 +5,9 @@ export const createChatGroup = async(data) => {
     data
   })
 }
+
+export const findAllChatGroups = async(whereOrObject) => {
+  return await prisma.chatGroup.findMany({
+    where: whereOrObject
+  });
+}
