@@ -41,6 +41,7 @@ model ChatGroup {
   messages Message[]
 }
 
+
 model Profile {
   id        Int       @id @default(autoincrement())
   publicId  String    @unique @default(uuid()) @map("public_id") @db.Uuid
@@ -67,4 +68,9 @@ model Message {
   senderId Int       @map("sender_id")
   group    ChatGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
   groupId  Int       @map("group_id")
+}
+
+enum GroupRole {
+  ADMIN
+  MEMBER
 }
