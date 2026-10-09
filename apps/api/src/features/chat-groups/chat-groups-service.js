@@ -14,20 +14,33 @@ export const createNewChatGroup = async(data) => {
 // Can add filtering, sorting, pagination logic here
 export const getAllChatGroups = async(searchTarget) => {
   let isSearchEmpty = false;
-  if(!searchTarget){
-    console.log("Search String is empty")
-  }
-  const whereOrObject = {
-    OR: [
-        {
-          name: {
-            contains: searchTarget,
-            mode: 'insensitive'
-          }
+  let whereObject = {};
+
+  // Checks if there is a req.query parameter
+  if(!!searchTarget){
+    console.log("Search String is not empty")
+    whereObject = {
+        where: {
+            OR: [
+                {
+                    name: {
+                        contains: searchTarget,
+                        mode: 'insensitive'
+                    }
+                }
+            ]
         }
-    ]
+    }
   }
-  const chatGroups = isSearchEmpty ? await chatGroupsQuery.findAllChatGroups() : await chatGroupsQuery.findAllChatGroups(whereOrObject);
+
+  
+
+  
+  const chatGroups = isSearchEmpty ? await chatGroupsQuery.findAllChatGroups() : await chatGroupsQuery.findAllChatGroups(whereObject);
   return chatGroups;
 }
 
+export const getChatGroupByPublicId = async(publicId) => {
+  const chatGroup = await chatGroupsQuery.findChatGroupByPublicId(publicId); 
+  return chatGroup;
+}

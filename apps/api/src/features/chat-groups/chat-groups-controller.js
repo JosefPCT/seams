@@ -33,7 +33,7 @@ export const chatGroupsGetRoute = [
 export const chatGroupByPublicIdRoute = [
   async(req, res, next) => {
     const { chatGroupPublicId } = req.params;
-    const chatGroup = {};
+    const chatGroup = await service.getChatGroupByPublicId(chatGroupPublicId);
     res.status(200).json({ status: "success", message: `In 'GET /chat-groups/${chatGroupPublicId}', Here is the chat group data`, data: chatGroup})
   }
 ]

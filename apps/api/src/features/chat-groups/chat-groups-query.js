@@ -6,8 +6,14 @@ export const createChatGroup = async(data) => {
   })
 }
 
-export const findAllChatGroups = async(whereOrObject) => {
-  return await prisma.chatGroup.findMany({
-    where: whereOrObject
-  });
+export const findAllChatGroups = async(conditionalObj) => {
+  return await prisma.chatGroup.findMany(conditionalObj);
+}
+
+export const findChatGroupByPublicId = async(targetPublicId) => {
+  return await prisma.chatGroup.findUnique({
+    where: {
+        publicId: targetPublicId
+    }
+  })
 }
