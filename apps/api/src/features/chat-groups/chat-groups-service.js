@@ -33,9 +33,6 @@ export const getAllChatGroups = async(searchTarget) => {
     }
   }
 
-  
-
-  
   const chatGroups = isSearchEmpty ? await chatGroupsQuery.findAllChatGroups() : await chatGroupsQuery.findAllChatGroups(whereObject);
   return chatGroups;
 }
