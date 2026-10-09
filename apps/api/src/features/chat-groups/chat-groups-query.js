@@ -25,3 +25,11 @@ export const updateChatGroupByPublicId = async(targetPublicId, data) => {
     data
   })
 }
+
+export const deleteChatGroupByPublicId = async(targetPublicId) => {
+  return await prisma.chatGroup.delete({
+    where: {
+      publicId: targetPublicId
+    }
+  })
+}

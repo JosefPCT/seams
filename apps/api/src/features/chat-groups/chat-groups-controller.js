@@ -57,7 +57,7 @@ export const chatGroupPutRoute = [
 export const chatGroupDeleteRoute = [
   async(req, res, next) => {
     const { chatGroupPublicId } = req.params;
-    const deletedChatGroup = {};
+    const deletedChatGroup = await service.deleteChatGroup(chatGroupPublicId);
     res.status(200).json({ status: "success", message: `In 'DELETE /chat-groups/${chatGroupPublicId}, Here is the deleted chat group data:`, data: deletedChatGroup});
   }
 ]

@@ -49,3 +49,8 @@ export const updateChatGroup = async(publicId, data) => {
   const updatedChatGroup = await chatGroupsQuery.updateChatGroupByPublicId(publicId, data);
   return updatedChatGroup;
 }
+
+export const deleteChatGroup = async(publicId) => {
+  const deletedChatGroup = await chatGroupsQuery.deleteChatGroupByPublicId(publicId);
+  return deletedChatGroup;
+}
