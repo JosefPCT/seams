@@ -26,8 +26,10 @@ model User {
   hash     String?
   addtl    String?
   isAdmin  Boolean   @default(false)
+
   profile  Profile?
   messages Message[]
+  groups  ChatParticipant[]
 }
 
 model ChatGroup {
@@ -39,8 +41,25 @@ model ChatGroup {
 
   // Relations
   messages Message[]
+  participants  ChatParticipant[]
 }
 
+// Join/Junction table for User and ChatGroup
+model ChatParticipant {
+  id  Int  @id @default(autoincrement())
+  publicId  String  @unique @default(uuid()) @map("public_id") @db.Uuid
+  role  GroupRole @default(MEMBER)
+  joinedAt  DateTime @default(now()) @map("joined_at") @db.Timestamptz(6)
+
+  // Relations
+  userId  Int  @map("user_id")
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  groupId  Int @map("group_id")
+  group  ChatGroup  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId])
+}
 
 model Profile {
   id        Int       @id @default(autoincrement())
