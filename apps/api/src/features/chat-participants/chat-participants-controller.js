@@ -1,8 +1,21 @@
+import { matchedData, validationResult } from "express-validator";
+
 import * as service from "./chat-participants-service.js";
+import { isAuth } from "../../middleware/authMiddleware.js";
+import * as validation from "../../middleware/validation.js";
 
 export const participantsPostRoute = [
+  validation.validateCreateParticipant,
   async(req, res) => {
-    res.status(201).json({ status: "Ok", message: "In 'POST /chat-participants' "});
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json(errors);
+    }
+
+    const { userPublicId, groupPublicId, role, joinedAt } = matchedData(req);
+    const result = await service.createChatParticipants({userPublicId, groupPublicId, role, joinedAt});
+    
+    res.status(201).json({ status: "Ok", message: "In 'POST /chat-participants'", data: result});
   }
 ]
 

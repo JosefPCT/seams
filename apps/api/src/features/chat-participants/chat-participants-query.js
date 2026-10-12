@@ -26,6 +26,12 @@ export const getIdOfGroupByPublicId = async(targetPublicId) => {
 
 // Main Query Functions
 
+export const createChatParticipants = async(data) => {
+  return await prisma.chatParticipant.create({
+    data: data
+  })
+}
+
 export const fetchAllChatParticipants = async(whereObj={}) => {
   return await prisma.chatParticipant.findMany({
     where: whereObj

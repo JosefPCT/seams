@@ -1,5 +1,5 @@
 import { body } from 'express-validator';
-import { prisma } from "@repo/database"
+import { prisma, GroupRole } from "@repo/database"
 
 // Validation Messages
 const emptyErr = `must not be empty`;
@@ -26,6 +26,14 @@ const emailExists = async (value) => {
   }
   return true;
 };
+
+const isValidRole = (targetValue) => {
+  const isValid = Object.values(GroupRole).includes(targetValue);
+  if(!isValid){
+    throw new Error(`Invalid role. Allowed roles are: ${Object.values(GroupRole).join(', ')}`)
+  }
+  return true
+}
 
 // Validation Middleware
 // Uses custom methods from express-validator package
@@ -164,4 +172,72 @@ const validateUpdateChatGroup = [
     .optional(),
 ]
 
-export { validateUser, validateUpdateUser, validateProfile, validateUpdateProfile, validateMessage, validateUpdateMessage, validateCreateChatGroup, validateUpdateChatGroup }
+const validateCreateParticipant = [
+  body("userPublicId")
+    .trim()
+    .notEmpty()
+    .withMessage(`userPublicId field ${emptyErr}`)
+    .isUUID()
+    .withMessage(`userPublicId field must be a valid UUID`),
+  body("groupPublicId")
+    .trim()
+    .notEmpty()
+    .withMessage(`groupPublicId field ${emptyErr}`)
+    .isUUID()
+    .withMessage(`groupPublicId field must be a valid UUID`),
+  body("role")
+    .trim()
+    .notEmpty()
+    .withMessage(`role field ${emptyErr}`)
+    .custom(isValidRole)
+    .optional(),
+  body("joinedAt")
+    .trim()
+    .notEmpty()
+    .withMessage(`joinedAt field ${emptyErr}`)
+    .isDate()
+    .withMessage(`must be a valid date`)
+    .optional()
+]
+
+const validateUpdateParticipant = [
+  body("userPublicId")
+    .trim()
+    .notEmpty()
+    .withMessage(`userPublicId field ${emptyErr}`)
+    .isUUID()
+    .withMessage(`userPublicId field must be a valid UUID`)
+    .optional(),
+  body("groupPublicId")
+    .trim()
+    .notEmpty()
+    .withMessage(`groupPublicId field ${emptyErr}`)
+    .isUUID()
+    .withMessage(`groupPublicId field must be a valid UUID`)
+    .optional(),
+  body("role")
+    .trim()
+    .notEmpty()
+    .withMessage(`role field ${emptyErr}`)
+    .custom(isValidRole)
+    .optional(),
+  body("joinedAt")
+    .trim()
+    .notEmpty()
+    .withMessage(`joinedAt field ${emptyErr}`)
+    .isDate()
+    .withMessage(`must be a valid date`)
+    .optional()
+]
+
+export { 
+  validateUser, 
+  validateUpdateUser, 
+  validateProfile, 
+  validateUpdateProfile, 
+  validateMessage, 
+  validateUpdateMessage, 
+  validateCreateChatGroup, 
+  validateUpdateChatGroup,
+  validateCreateParticipant,
+  validateUpdateParticipant }

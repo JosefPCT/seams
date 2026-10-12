@@ -4,7 +4,7 @@ import * as controller from './chat-participants-controller.js'
 
 const router = express.Router();
 
-// router.post('/', controller.participantsPostRoute);
+router.post('/', controller.participantsPostRoute);
 
 router.get('/', controller.participantsGetRoute);
 

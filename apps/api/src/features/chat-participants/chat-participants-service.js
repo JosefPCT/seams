@@ -1,6 +1,28 @@
 import * as participantsQuery from "./chat-participants-query.js";
 
-// quuery object has: userPublicId, groupPublicId
+export const createChatParticipants = async(data) => {
+  
+  const userId = data.userPublicId ? await participantsQuery.getIdOfUserByPublicId(data.userPublicId) : undefined
+  const groupId = data.groupPublicId ? await participantsQuery.getIdOfGroupByPublicId(data.groupPublicId) : undefined
+
+  console.log(`User id: ${userId.id}`);
+  console.log(`Group id: ${groupId.id}`)
+
+  const organizedData = {
+    userId: userId.id,
+    groupId: groupId.id,
+    role: data.role,
+    joinedAt: data.joinedAt
+  }
+
+  console.log(organizedData);
+
+  const createdParticipant = await participantsQuery.createChatParticipants(organizedData);
+
+  return createdParticipant;
+}
+
+// searchQuery object has: userPublicId, groupPublicId
 export const listChatParticipants = async(searchQuery) => {
   console.log("Service Layer of `GET /chat-participants'");
 
