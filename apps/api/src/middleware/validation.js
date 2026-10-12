@@ -200,6 +200,30 @@ const validateCreateParticipant = [
     .optional()
 ]
 
+const validateCreateBatchParticipants = [
+  body("participants")
+    .isArray({ min: 1})
+    .withMessage("Participants must be an array with at least one"),
+  body("participants.*.userPublicId")
+    .trim()
+    .notEmpty().withMessage(`userPublicId field ${emptyErr}`)
+    .isUUID().withMessage('userPublicId field must be a valid UUID'),
+  body("participants.*.groupPublicId")
+    .trim()
+    .notEmpty().withMessage(`groupPublicId field ${emptyErr}`)
+    .isUUID().withMessage(`groupPublicId field must be valid UUID`),
+  body("participants.*.role")
+    .trim()
+    .notEmpty().withMessage(`role field ${emptyErr}`)
+    .custom(isValidRole)
+    .optional(),
+  body("participants.*.joinedAt")
+    .trim()
+    .notEmpty().withMessage(`joinedAt field ${emptyErr}`)
+    .isDate().withMessage(`must be a valid date`)
+    .optional()
+]
+
 const validatePatchParticipant = [
   body("role")
     .trim()
@@ -218,4 +242,5 @@ export {
   validateCreateChatGroup, 
   validateUpdateChatGroup,
   validateCreateParticipant,
+  validateCreateBatchParticipants,
   validatePatchParticipant }

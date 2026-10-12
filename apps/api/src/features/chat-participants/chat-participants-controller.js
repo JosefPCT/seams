@@ -19,6 +19,23 @@ export const participantsPostRoute = [
   }
 ]
 
+// A specific route to create participants in a batch
+// Accepts a req.body of one field "participants" which should have an array of objects that has fields of (required: 'userPublicId', 'groupPublicId' and optional: 'role', 'joinedAt')
+export const participantsPostBatchRoute = [
+  validation.validateCreateBatchParticipants,
+  async(req, res) => {
+    const errors = validationResult(req)
+    if(!errors.isEmpty()){
+      return res.status(400).json(errors);
+    }
+
+    const { participants } = matchedData(req);
+    const result = await service.createBatchChatParticipants({participants})
+
+    res.status(201).json({ status: "ok", message: "In 'POST /chat-participants/batch'", data: result})
+  }
+]
+
 export const participantsGetRoute = [
   async(req, res) => {
     const { userPublicId, groupPublicId } = req.query;

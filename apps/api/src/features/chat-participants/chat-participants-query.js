@@ -28,7 +28,15 @@ export const getIdOfGroupByPublicId = async(targetPublicId) => {
 
 export const createChatParticipants = async(data) => {
   return await prisma.chatParticipant.create({
-    data: data
+    data: data,
+    
+  })
+}
+
+export const createManyChatParticipants = async(data) => {
+  return await prisma.chatParticipant.createManyAndReturn({
+    data: data,
+    skipDuplicates: true, // Optional: skips records that violate unique constraints (relational databases only)
   })
 }
 

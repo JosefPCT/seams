@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.post('/', controller.participantsPostRoute);
 
+router.post('/batch', controller.participantsPostBatchRoute);
+
 router.get('/', controller.participantsGetRoute);
 
 router.get('/:publicId', controller.participantByPublicIdRoute);

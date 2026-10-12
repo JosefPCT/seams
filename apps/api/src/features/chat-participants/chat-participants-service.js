@@ -24,6 +24,31 @@ export const createChatParticipants = async(data) => {
   return createdParticipant;
 }
 
+// See controller file to check on what fields the data object have
+export const createBatchChatParticipants = async(data) => {
+  console.log(data);
+
+  // An async map function to convert the public ids (UUID) to internal ids (Int)
+  const processingData = data.participants.map(async ({ userPublicId, groupPublicId, ...rest }) => {
+    
+    const user = await participantsQuery.getIdOfUserByPublicId(userPublicId);
+    const group  = await participantsQuery.getIdOfGroupByPublicId(groupPublicId)
+
+    return {
+      ...rest,
+      userId: user?.id,
+      groupId: group?.id
+    }
+  });
+
+  // Uses Promise.all to resolve the promises in the async map function
+  const promisedData = await Promise.all(processingData)
+
+  const createdBatchData = await participantsQuery.createManyChatParticipants(promisedData);
+
+  return createdBatchData;
+}
+
 // searchQuery object has: userPublicId, groupPublicId
 export const listChatParticipants = async(searchQuery) => {
   console.log("Service Layer of `GET /chat-participants'");
