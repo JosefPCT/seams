@@ -8,7 +8,7 @@ router.post('/', controller.participantsPostRoute);
 
 router.get('/', controller.participantsGetRoute);
 
-// router.get('/:publicId', controller.participantByPublicIdRoute);
+router.get('/:publicId', controller.participantByPublicIdRoute);
 
 // router.put('/:publicId', controller.participantPutRoute);
 

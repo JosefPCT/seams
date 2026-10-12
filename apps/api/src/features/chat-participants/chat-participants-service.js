@@ -51,6 +51,11 @@ export const listChatParticipants = async(searchQuery) => {
   return await searchQuery ? participantsQuery.fetchAllChatParticipants(whereObj) : participantsQuery.fetchAllChatParticipants()
 }
 
+export const getChatParticipant = async(publicId) => {
+  const participant = await participantsQuery.getChatParticipant(publicId);
+  return participant;
+}
+
 export const deleteChatParticipant = async(publicId) => {
   const isValidPublicId = await participantsQuery.getChatParticipant(publicId);
   if(!isValidPublicId){

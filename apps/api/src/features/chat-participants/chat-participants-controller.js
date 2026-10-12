@@ -27,6 +27,15 @@ export const participantsGetRoute = [
   }
 ]
 
+export const participantByPublicIdRoute = [
+  async(req, res) => {
+    const { publicId } = req.params;
+    
+    const result = await service.getChatParticipant(publicId)
+    res.status(200).json({ status: "ok", message: "In 'GET /chat-participants/:publicId'", data: result})
+  }
+]
+
 export const participantDeleteRoute = [
   async(req, res) => {
     const { publicId } = req.params;
