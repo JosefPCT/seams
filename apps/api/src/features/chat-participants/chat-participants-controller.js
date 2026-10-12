@@ -36,6 +36,23 @@ export const participantByPublicIdRoute = [
   }
 ]
 
+// Only patch a single field for now: 'role'
+export const participantPatchRoute = [
+  validation.validatePatchParticipant,
+  async(req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json(errors);
+    }
+
+    const { publicId } = req.params;
+    const { role } = matchedData(req)
+
+    const result = await service.patchChatParticipant(publicId, { role })
+    res.status(200).json({ status: "ok", message: "In 'PATCH /chat-participants/:publicId'", data: result})
+  }
+]
+
 export const participantDeleteRoute = [
   async(req, res) => {
     const { publicId } = req.params;

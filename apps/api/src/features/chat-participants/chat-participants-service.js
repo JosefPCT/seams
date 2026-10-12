@@ -1,5 +1,6 @@
 import * as participantsQuery from "./chat-participants-query.js";
 import { BadRequest } from "../../utils/extended-errors.js";
+import { preparePatchData, preparePatchDataAlternative } from "../../utils/organizeDataUtils.js";
 
 export const createChatParticipants = async(data) => {
   
@@ -56,10 +57,26 @@ export const getChatParticipant = async(publicId) => {
   return participant;
 }
 
+export const patchChatParticipant = async(publicId, data) => {
+
+  const isValidChatParticipant = await participantsQuery.getChatParticipant(publicId);
+  if(!isValidChatParticipant){
+    throw BadRequest("This chat participant does not exist");
+  }
+
+  const organizedData = preparePatchData(data);
+//   console.log("Organized Data");
+//   console.log(organizedData);
+
+  const updatedParticipant = await participantsQuery.updateChatParticipant(publicId, organizedData);
+  return updatedParticipant;
+
+}
+
 export const deleteChatParticipant = async(publicId) => {
-  const isValidPublicId = await participantsQuery.getChatParticipant(publicId);
-  if(!isValidPublicId){
-    throw BadRequest("This public id is not valid")
+  const isValidChatParticipant = await participantsQuery.getChatParticipant(publicId);
+  if(!isValidChatParticipant){
+    throw BadRequest("This chat participant does not exist");
   }
 
   const deletedParticipant = await participantsQuery.deleteChatParticipant(publicId)

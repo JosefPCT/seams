@@ -46,6 +46,15 @@ export const getChatParticipant = async(targetPublicId) => {
   })
 }
 
+export const updateChatParticipant = async(targetPublicId, data) => {
+  return await prisma.chatParticipant.update({
+    where: {
+      publicId: targetPublicId
+    },
+    data: data
+  })
+}
+
 export const deleteChatParticipant = async(targetPublicId) => {
   return await prisma.chatParticipant.delete({
     where: {

@@ -200,34 +200,12 @@ const validateCreateParticipant = [
     .optional()
 ]
 
-const validateUpdateParticipant = [
-  body("userPublicId")
-    .trim()
-    .notEmpty()
-    .withMessage(`userPublicId field ${emptyErr}`)
-    .isUUID()
-    .withMessage(`userPublicId field must be a valid UUID`)
-    .optional(),
-  body("groupPublicId")
-    .trim()
-    .notEmpty()
-    .withMessage(`groupPublicId field ${emptyErr}`)
-    .isUUID()
-    .withMessage(`groupPublicId field must be a valid UUID`)
-    .optional(),
+const validatePatchParticipant = [
   body("role")
     .trim()
     .notEmpty()
     .withMessage(`role field ${emptyErr}`)
     .custom(isValidRole)
-    .optional(),
-  body("joinedAt")
-    .trim()
-    .notEmpty()
-    .withMessage(`joinedAt field ${emptyErr}`)
-    .isDate()
-    .withMessage(`must be a valid date`)
-    .optional()
 ]
 
 export { 
@@ -240,4 +218,4 @@ export {
   validateCreateChatGroup, 
   validateUpdateChatGroup,
   validateCreateParticipant,
-  validateUpdateParticipant }
+  validatePatchParticipant }
