@@ -1,3 +1,4 @@
+import * as service from "./chat-participants-service.js";
 
 export const participantsPostRoute = [
   async(req, res) => {
@@ -7,6 +8,8 @@ export const participantsPostRoute = [
 
 export const participantsGetRoute = [
   async(req, res) => {
-    res.status(200).json({ status: "Ok", message: "In 'GET /chat-participants?userPublicId={id}&groupPublicId={id}'"});
+    const { userPublicId, groupPublicId } = req.query;
+    const result = await service.listChatParticipants({userPublicId, groupPublicId});
+    res.status(200).json({ status: "Ok", message: "In 'GET /chat-participants?userPublicId={id}&groupPublicId={id}'", data: result});
   }
 ]
