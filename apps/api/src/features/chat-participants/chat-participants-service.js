@@ -1,4 +1,5 @@
 import * as participantsQuery from "./chat-participants-query.js";
+import { BadRequest } from "../../utils/extended-errors.js";
 
 export const createChatParticipants = async(data) => {
   
@@ -48,4 +49,14 @@ export const listChatParticipants = async(searchQuery) => {
   console.log(whereObj);
 
   return await searchQuery ? participantsQuery.fetchAllChatParticipants(whereObj) : participantsQuery.fetchAllChatParticipants()
+}
+
+export const deleteChatParticipant = async(publicId) => {
+  const isValidPublicId = await participantsQuery.getChatParticipant(publicId);
+  if(!isValidPublicId){
+    throw BadRequest("This public id is not valid")
+  }
+
+  const deletedParticipant = await participantsQuery.deleteChatParticipant(publicId)
+  return deletedParticipant;
 }

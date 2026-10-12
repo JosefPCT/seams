@@ -26,3 +26,12 @@ export const participantsGetRoute = [
     res.status(200).json({ status: "Ok", message: "In 'GET /chat-participants?userPublicId={id}&groupPublicId={id}'", data: result});
   }
 ]
+
+export const participantDeleteRoute = [
+  async(req, res) => {
+    const { publicId } = req.params;
+
+    const result = await service.deleteChatParticipant(publicId);
+    res.status(204).json({ status: 'Ok', message: "In 'DELETE /chat-participants", data: result});
+  }
+]

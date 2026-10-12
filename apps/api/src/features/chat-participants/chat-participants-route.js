@@ -12,7 +12,7 @@ router.get('/', controller.participantsGetRoute);
 
 // router.put('/:publicId', controller.participantPutRoute);
 
-// router.delete('/:publicId', controller.participantDeleteRoute);
+router.delete('/:publicId', controller.participantDeleteRoute);
 
 
 

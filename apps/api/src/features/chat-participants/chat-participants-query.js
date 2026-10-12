@@ -37,3 +37,19 @@ export const fetchAllChatParticipants = async(whereObj={}) => {
     where: whereObj
   })
 }
+
+export const getChatParticipant = async(targetPublicId) => {
+  return await prisma.chatParticipant.findUnique({
+    where: {
+        publicId: targetPublicId
+    }
+  })
+}
+
+export const deleteChatParticipant = async(targetPublicId) => {
+  return await prisma.chatParticipant.delete({
+    where: {
+      publicId: targetPublicId
+    }
+  })
+}
