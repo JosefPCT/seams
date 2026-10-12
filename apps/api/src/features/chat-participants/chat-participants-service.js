@@ -30,9 +30,17 @@ export const listChatParticipants = async(searchQuery) => {
   const groupId = searchQuery && searchQuery.groupPublicId ? await participantsQuery.getIdOfGroupByPublicId(searchQuery.groupPublicId) : undefined;
 //   console.log(`User id:`, userId)
 //   return userId;
+
+  if(userId === null){
+    throw Error("No user with that public id");
+  }
+
+  if(groupId === null){
+    throw Error("No group with that public id");
+  }
     
   const whereObj = {
-    userId: userId && userId.id,
+    userId: userId && userId.id !== null && userId.id || undefined,
     groupId: groupId && groupId.id
   }
 
