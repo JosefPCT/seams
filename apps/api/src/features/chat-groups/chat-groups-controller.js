@@ -14,7 +14,8 @@ export const chatGroupsPostRoute = [
     if(!errors.isEmpty()){
       return res.status(400).json(errors);
     }
-    const createdChatGroup = await service.createNewChatGroup(matchedData(req));
+    const { name } = matchedData(req);
+    const createdChatGroup = await service.createNewChatGroup({name});
     // const createdChatGroup = {}
     res.status(201).json({ status: "success", message: "In 'POST /chat-groups', Chat Group Created!", data: createdChatGroup});
   }

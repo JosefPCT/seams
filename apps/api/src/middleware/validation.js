@@ -170,10 +170,10 @@ const validateUpdateMessage = [
 
 const validateCreateChatGroup = [
   body("name")
+    .optional({ values: 'falsy'})
     .trim()
     .notEmpty()
     .withMessage(`COntent of the name ${emptyErr}`)
-    .optional(),
 ]
 
 const validateUpdateChatGroup = [

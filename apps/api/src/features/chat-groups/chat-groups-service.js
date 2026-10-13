@@ -4,6 +4,8 @@ import * as chatGroupsQuery from "./chat-groups-query.js";
 
 export const createNewChatGroup = async(data) => {
   let isDataEmpty = false;
+  console.log(`Showing chat group post data...`);
+  console.log(data);
   if(Object.keys(data).length === 0 && data.constructor === Object){
     isDataEmpty = true
   }
