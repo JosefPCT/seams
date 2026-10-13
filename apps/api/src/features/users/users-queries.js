@@ -48,7 +48,22 @@ export const fetchCurrentUserByPublicId = async(targetPublicId) => {
     include: {
       profile: true,
       messages: true,
-      groups: true
+      groups: {
+        select: {
+          publicId: true,
+          role: true,
+          joinedAt: true,
+          group: {
+            select: {
+              publicId: true,
+              name: true,
+              createdAt: true,
+              updatedAt: true,
+              messages: true
+            }
+          }
+        }
+      }
     }
   })
 }
