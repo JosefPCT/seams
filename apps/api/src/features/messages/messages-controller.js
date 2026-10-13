@@ -5,7 +5,7 @@ import * as messagesServices from "./messages-service.js";
 import { isAuth, isOwnMessage, isOwnProfile } from "../../middleware/authMiddleware.js";
 
 
-// Endpoint: POST '/messages?userPublicId={id}
+// Endpoint: POST '/messages
 // Route responsible for creating/sending a message
 // TODO: Make sure to attach the correct user and correct chatgroupid
 // Might need to also create the chat group if new chat?
@@ -19,11 +19,10 @@ export const messagesPostRoute = [
     }
 
     // TODO: Might need to also add the public id of a chat group (chatgroupPublicId) and also pass it on to the service when ChatGroup Model is created
-    // DECIDE: If we want to accept a req.query to get the userPublicId (/messages?userPublicId={id}) or we just want the current logged in user to send only their messages
-    const { userPublicId } = req.query;
-    // const targetUserPublicId = userPublicId || req.user.publicId;
-    const targetUserPublicId = req.user.publicId;
-    const createdMessage = await messagesServices.sendMessage(matchedData(req), targetUserPublicId);
+
+    const { userPublicId, groupPublicId , content } = matchedData(req);
+    const targetUserPublicId = userPublicId || req.user.publicId;
+    const createdMessage = await messagesServices.sendMessage({content}, targetUserPublicId, groupPublicId);
     if(!createdMessage){
         return res.status(400).json({ error: true, message: "Message was not sent successfully"});
     }

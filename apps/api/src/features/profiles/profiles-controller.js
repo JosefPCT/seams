@@ -4,11 +4,11 @@ import { isAuth, isOwnProfile, isUserNoProfile } from "../../middleware/authMidd
 import * as profileService from "./profiles-service.js";
 import * as validation from "../../middleware/validation.js"
 
-// Endpoint: POST '/profiles?userPublicId={id}
+// Endpoint: POST '/profiles
 // A route to create a new profile for the user if a profile has not existed yet
 // Uses a validation middleware to check for empty fields, then sends those fields along with the current user's userId to the service layer
 // Validates to check if user already has a profile or not
-// Gets the public id either on the passed query or the current logged in user's public id
+// Gets the public id either on the req.body or the current logged in user's public id
 export const profilesPostRoute = [
   isAuth,
   isUserNoProfile,
@@ -19,9 +19,7 @@ export const profilesPostRoute = [
       return res.status(400).json(errors);
     }
 
-    const { userPublicId } = req.query;
-
-    const { name, pronouns, bio } = matchedData(req);
+    const { userPublicId, name, pronouns, bio } = matchedData(req);
     const targetUserPublicId = userPublicId || req.user.publicId;
     const createdProfile = await profileService.createProfile({name, pronouns, bio, targetUserPublicId});
     if(!createdProfile){

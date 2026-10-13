@@ -109,6 +109,10 @@ const validateUpdateUser = [
 ];
 
 const validateProfile = [
+  body("userPublicId")
+    .trim()
+    .notEmpty().withMessage(`userPublicId ${emptyErr}`)
+    .isUUID().withMessage(`userPublicId must be a valid UUID`),
   body("name")
     .trim()
     .notEmpty()
@@ -142,6 +146,14 @@ const validateUpdateProfile = [
 ]
 
 const validateMessage = [
+  body("userPublicId")
+    .trim()
+    .notEmpty().withMessage(`userPublicId ${emptyErr}`)
+    .isUUID().withMessage(`userPublicId must be a valid UUID`),
+  body("groupPublicId")
+    .trim()
+    .notEmpty().withMessage(`userPublicId ${emptyErr}`)
+    .isUUID().withMessage(`userPublicId must be a valid UUID`),
   body("content")
     .trim()
     .notEmpty()

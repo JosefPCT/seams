@@ -1,17 +1,26 @@
 import * as messagesQueries from "./messages-queries.js";
 import * as usersQueries from "../users/users-queries.js";
+import { findChatGroupByPublicId } from "../chat-groups/chat-groups-query.js"; 
 import * as customError from "../../utils/extended-errors.js";
 
 // data object includes a field of: content
-export const sendMessage = async(data, userPublicId) => {
+export const sendMessage = async(data, userPublicId, groupPublicId) => {
   try {
+    console.log("Argument checks:")
+    console.log(data);
+    console.log(userPublicId)
+    console.log(groupPublicId)
     // Checks if user of the passed userPublicId argument exists on the database and to also get the user's internal id to be passed on to the query layer
     const currentUser = await usersQueries.findUserByPublicId(userPublicId)
     if(!currentUser){
       throw new customError.BadRequest(`Invalid user to send messages with`);
     }
+    const targetGroup = await findChatGroupByPublicId(groupPublicId);
+    if(!targetGroup){
+      throw new customError.BadRequest(`Invalid group to send message on`);
+    }
 
-    const newMessage = await messagesQueries.createMessage(data, currentUser.id);
+    const newMessage = await messagesQueries.createMessage(data, currentUser.id, targetGroup.id);
     return newMessage;
   } catch (error) {
     console.log(error);

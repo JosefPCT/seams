@@ -1,11 +1,15 @@
 import { prisma } from "@repo/database"
 
-export const createMessage = async(messageData, userId) => {
+
+
+
+// Main Queries
+export const createMessage = async(messageData, userId, groupId) => {
   return await prisma.message.create({
     data: {
       senderId: userId,
       // Test value to allow creation of message, need to change to actual query (has to create or find the group chat first)
-      groupId: 1,
+      groupId: groupId,
       content: messageData.content
     }
   })

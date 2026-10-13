@@ -71,12 +71,13 @@ Deletes a user based on the passed :userPublicId
 Also returns a JSON payload of information of the deleted user.
 
 
-### POST /profiles?userPublicId={id}
+### POST /profiles
 Creates a profile based on the current user logged in or optionally by the passed search query parameter userPublicId
 Accepts a req.body of:
-- name
-- pronouns
-- bio
+- userPublicId (UUID string)
+- name (string)
+- pronouns (string)
+- bio (string)
 
 ### GET /profiles?userPublicId={id}
 Returns a JSON  of all created profiles if no query is given
@@ -99,13 +100,14 @@ Deletes a profile based on the route parameter(:profilePublicId) the profile's p
 Accessible only by a logged in user and if the user owns the profile
 Also returns a JSON of the deleted profile
 
-### POST /messages?userPublicId={id}
+### POST /messages
 Create/Sends a new message to a chat, based on the current logged in user
 TODO: potentially to refactor to either/or use the current logged in user's public id or pass a userPublicId search query
 Accessible only be a logged in user
 Returns a JSON payload information of the created/sent message
 Accepts a req.body of:
-- content
+- userPublicId (UUID string)
+- content (string)
 
 ### GET /messages?userPublicId={id}
 Returns a JSON payload information of the list of all messages in the database, or if passed a search query (userPublicId) filters the list to only show messages sent by the passed user
