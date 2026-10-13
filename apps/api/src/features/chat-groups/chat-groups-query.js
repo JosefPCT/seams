@@ -14,6 +14,13 @@ export const findChatGroupByPublicId = async(targetPublicId) => {
   return await prisma.chatGroup.findUnique({
     where: {
         publicId: targetPublicId
+    },
+    include: {
+      messages: true,
+      participants: true,
+      _count: {
+        select: { participants: true }
+      }
     }
   })
 }
