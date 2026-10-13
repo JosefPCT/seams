@@ -42,7 +42,10 @@ export const createManyChatParticipants = async(data) => {
 
 export const fetchAllChatParticipants = async(whereObj={}) => {
   return await prisma.chatParticipant.findMany({
-    where: whereObj
+    where: whereObj,
+    include: {
+      group: true
+    }
   })
 }
 
