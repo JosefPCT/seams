@@ -105,12 +105,21 @@ export const getUserByPublicId = async(userPublicId, protocol, host) => {
       throw new customError.NotFound(`User with public id: ${userPublicId} not found`);
     }
 
-    const { id, publicId, hash, ...rest} = user;
+    const { publicId: userPublicIdAlias, profile, ...rest} = user;
+    const { publicId: profilePublicIdAlias, ...restProfile} = profile;
 
+
+ 
     const filteredUser = {
-      id: publicId,
+      id: userPublicIdAlias,
+      profile: {
+        id: profilePublicIdAlias,
+        ...restProfile
+      },
       ...rest,
-      profileUrl: new URL(`${PROFILE_URL}?userPublicId=${userPublicId}`, `${protocol}://${host}`)
+      profileUrl: profile ? new URL(`${PROFILE_URL}/${userPublicId}`, `${protocol}://${host}`) : "No profile yet",
+      chatGroupsUrl: new URL(`${GROUP_URL}/${userPublicId}`, `${protocol}://${host}`),
+      messagesUrl: new URL(`${MESSSAGE_URL}/${userPublicId}`, `${protocol}://${host}`)
     }
 
     return filteredUser;

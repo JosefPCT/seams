@@ -15,9 +15,31 @@ export const findUserByPublicId = async(targetUserPublicId) => {
     where: {
       publicId: targetUserPublicId
     },
-    include: {
-        profile: true,
-        messages: true
+    select: {
+      publicId: true,
+      email: true,
+      addtl: true,
+      isAdmin: true,
+
+      // Relations
+      profile: {
+        select: {
+          publicId: true,
+          name: true,
+          pronouns: true,
+          bio: true,
+          createdAt: true,
+          updatedAt: true
+        }
+      },
+
+      messages: true,
+      groups: {
+        include: {
+          group: true
+        }
+      }
+
     }
   })
 }
