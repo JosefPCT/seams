@@ -33,6 +33,12 @@ export const createNewUser = async(userData) => {
       hash: userData.hash,
       addtl: `${userData.first_name} ${userData.last_name}`,
       isAdmin: userData.isAdmin
+    },
+    select: {
+      publicId: true,
+      email: true,
+      addtl: true,
+      isAdmin: true,
     }
   })
 }

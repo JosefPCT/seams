@@ -12,6 +12,7 @@ const MESSSAGE_URL = `/api/v1/messages`
 // userData object has: email, password, first_name, last_name (optional: isAdmin)
 // Double checks if user's email already exists in the database
 // Uses password utility to transform the password string into hash, add the hash into the userData object and passed onto the query
+// Filters out sensitive data fields (using destructuring and creating a new object) before returning
 export const createUser = async(userData) => {
     const user = await usersQueries.findUserByEmail(userData.email);
     if(user){
@@ -24,7 +25,7 @@ export const createUser = async(userData) => {
 
     const newUser = await usersQueries.createNewUser(userData);
 
-    const { id, publicId, hash: hashed, ...rest } = newUser;
+    const { publicId, ...rest } = newUser;
 
     const filteredNewUser = {
       id: publicId,
@@ -36,7 +37,8 @@ export const createUser = async(userData) => {
 
 // For GET '/users' routes, we also create 'profileUrl' fields to add onto the JSON response body for easy access to their user profiles
 // Uses a constant for the profile URL, protocol and host from `req.protocol` and `req.get('host')` respectively to create the URL
-// Optional search query parameters
+// Optional search query parameters (page, limit, searchTerm, sortBy, sortOrder)
+// Filters out sensitive data fields (using destructuring and creating a new object) before returning
 export const getAllUsers = async(protocol, host, { page = 1, limit = 5, searchTerm = "", sortBy='id', sortOrder='asc'} = {} ) => {
   try {
 
@@ -99,15 +101,19 @@ export const getCurrentUser = async(userPublicId, protocol, host) => {
 export const getUserByPublicId = async(userPublicId, protocol, host) => {
   try {
     const user = await usersQueries.findUserByPublicId(userPublicId);
-    console.log("Showing current user");
-    console.log(user);
     if(!user){
       throw new customError.NotFound(`User with public id: ${userPublicId} not found`);
     }
 
-    user.profileUrl = new URL(`${PROFILE_URL}?userPublicId=${userPublicId}`, `${protocol}://${host}`);
+    const { id, publicId, hash, ...rest} = user;
 
-    return user;
+    const filteredUser = {
+      id: publicId,
+      ...rest,
+      profileUrl: new URL(`${PROFILE_URL}?userPublicId=${userPublicId}`, `${protocol}://${host}`)
+    }
+
+    return filteredUser;
 
   } catch (error) {
     console.log(error);

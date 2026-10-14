@@ -57,9 +57,11 @@ Returned Object may include fields of:
 #### GET /users?page={num}&limit={num}&searchTerm={string}&sortBy={validField}&sortOrder={'asc'/'desc'}
 Returns a JSON of a list of users in the database, includes a URL to the user's profile
 Optional Search Query Parameters:
-- page(number) and limit(number) for pagination
+- page(number) and
+- limit(number) for pagination
 - searchTerm (string) for filtering
-- sortBy(a valid field to search for) and sortOrder(only two options: asc/desc) for sorting
+- sortBy(a valid field to search for) and 
+- sortOrder(only two options: asc/desc) for sorting
 
 Returned Object may include fields of:
 - id (public id)
