@@ -34,7 +34,9 @@ Handles de-authentication of a user to disable them access of protected routes
 
 ## Standard Endpoints
 
-### POST /users
+### /users
+
+#### POST /users
 Handles creation of a new user internally instead of the normal '/register'.
 Returns a JSON payload of information of the created user.
 Accepts req.body of:
@@ -46,16 +48,20 @@ Accepts req.body of:
 Optional:
 - isAdmin
 
-### GET /users
+#### GET /users?page={num}&limit={num}&searchTerm={string}&sortBy={validField}&sortOrder={'asc'/'desc'}
 Returns a JSON of a list of users in the database, includes a URL to the user's profile
+Optional Search Query Parameters:
+- page(number) and limit(number) for pagination
+- searchTerm (string) for filtering
+- sortBy(a valid field to search for) and sortOrder(only two options: asc/desc) for sorting
 
-### GET /users/me
+#### GET /users/me
 Returns a JSON payload of information of the current logged-in user, includes a URL to the user's profile
 
-### GET /users/:userPublicId
+#### GET /users/:userPublicId
 Returns a JSON payload of information of a user based on the passed :userPublicId, includes a URL to the user's profile
 
-### PUT /users/:userPublicId
+#### PUT /users/:userPublicId
 Updates information of a user based on the passed :userPublicId.
 Also returns a JSON payload of information of the updated user with their updated data.
 Accepts a req.body of mostly optional:
@@ -66,12 +72,13 @@ Accepts a req.body of mostly optional:
 - last_name
 - isAdmin
 
-### DELETE /users:userPublicId
+#### DELETE /users:userPublicId
 Deletes a user based on the passed :userPublicId
 Also returns a JSON payload of information of the deleted user.
 
+### /profiles
 
-### POST /profiles
+#### POST /profiles
 Creates a profile based on the current user logged in or optionally by the passed search query parameter userPublicId
 Accepts a req.body of:
 - userPublicId (UUID string)
@@ -79,14 +86,14 @@ Accepts a req.body of:
 - pronouns (string)
 - bio (string)
 
-### GET /profiles?userPublicId={id}
+#### GET /profiles?userPublicId={id}
 Returns a JSON  of all created profiles if no query is given
 If given a query of 'userPublicId', filters the selection of profiles to only display profile/profiles created by a certain user 
 
-### GET /profiles/:profilePublicId
+#### GET /profiles/:profilePublicId
 Returns a JSON of a specific profile based on the route parameter (:profilePublicId) the profile's public id
 
-### PUT /profiles/:profilePublicId
+#### PUT /profiles/:profilePublicId
 Updates a profile based on the route parameter(:profilePublicId) the profile's public id
 Accessible only by a logged in user and if the user owns the profile.
 Also returns a JSON of the updated profile with the new updated information
@@ -95,12 +102,14 @@ Accepts a req.body mostly optional:
 - pronouns
 - bio
 
-### DELETE /profiles:profilePublicId
+#### DELETE /profiles:profilePublicId
 Deletes a profile based on the route parameter(:profilePublicId) the profile's public id
 Accessible only by a logged in user and if the user owns the profile
 Also returns a JSON of the deleted profile
 
-### POST /messages
+### /messages
+
+#### POST /messages
 Create/Sends a new message to a chat, based on the current logged in user
 TODO: potentially to refactor to either/or use the current logged in user's public id or pass a userPublicId search query
 Accessible only be a logged in user
@@ -109,21 +118,48 @@ Accepts a req.body of:
 - userPublicId (UUID string)
 - content (string)
 
-### GET /messages?userPublicId={id}
+#### GET /messages?userPublicId={id}
 Returns a JSON payload information of the list of all messages in the database, or if passed a search query (userPublicId) filters the list to only show messages sent by the passed user
 
 
-### GET /messages/:messagePublicId
+#### GET /messages/:messagePublicId
 Returns a JSON data of a specific message based on it route parameter (:messagePublicId), the message's public id in the database
 
-### PUT /messages/:messagePublicId
+#### PUT /messages/:messagePublicId
 Updates the content of a specific message based on it route parameter (:messagePublicId), the message's public id in the database
 Also returns a JSON data of the updated message
 Accessible only by a logged in user and if that user owns the message
 Accepts a req.body of mostly optional:
 - content
 
-### DELETE /messages/:messagePublicId
+#### DELETE /messages/:messagePublicId
 Deletes a specific message based on it route parameter (:messagePublicId), the message's public id in the database
 Also returns a JSON data of the deleted message
 Accessible only by a logged in user and if that user owns the message
+
+
+### /chat-groups
+
+#### POST /chat-groups
+
+#### GET /chat-groups?searchString=string
+
+#### GET /chat-groups/:chatGroupPublicId
+
+#### PUT /chat-groups/:chatGroupPublicId
+
+#### DELETE /chat-groups/:chatGroupPublicId
+
+### #chat-participants
+
+#### POST /chat-participants
+
+#### POST /chat-participants/batch
+
+#### GET /chat-participants?userPublicId=uuidString&groupPublicId=uuidString
+
+#### GET /chat-participants/:publicId
+
+#### PATCH /chat-participants/:publicID
+
+#### DELETE /chat-participants/:publicID

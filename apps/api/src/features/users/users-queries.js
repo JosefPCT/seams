@@ -36,8 +36,53 @@ export const createNewUser = async(userData) => {
   })
 }
 
-export const fetchAllUsers = async() => {
-  return await prisma.user.findMany();
+// Will ignore undefined field and/or field values
+export const fetchAllUsers = async({take, skip, searchTerm, sortOrder, sortBy}) => {
+  return await prisma.user.findMany({
+    take: take,
+    skip: skip,
+    where: {
+      OR: [
+        { email: { contains: searchTerm, mode: 'insensitive'}},
+        { addtl: { contains: searchTerm, mode: 'insensitive'}},
+        { profile: { is: {
+          name: { contains: searchTerm, mode: 'insensitive'},
+          pronouns: { contains: searchTerm, mode: 'insensitive'},
+          bio: { contains: searchTerm, mode: 'insensitive'}
+        }}}
+      ]
+    },
+    orderBy: {
+      [sortBy]: sortOrder
+    },
+    select: {
+      publicId: true,
+      email: true,
+      addtl: true,
+      isAdmin: true,
+      profile: {
+        select: {
+          publicId: true
+        }
+      },
+      messages: {
+        select: {
+          publicId: true
+        }
+      },
+      groups: {
+        select: {
+          publicId: true
+        }
+      },
+      _count: {
+        select: {
+          messages: true,
+          groups: true
+        }
+      }
+    },
+  });
 }
 
 export const fetchCurrentUserByPublicId = async(targetPublicId) => {

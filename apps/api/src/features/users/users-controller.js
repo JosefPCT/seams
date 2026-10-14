@@ -28,10 +28,11 @@ export const usersPostRoute = [
 
 // GET '/users'
 // Shows a list of all users
+// Req query: page (int/number), limit (int/number), searchTerm(string), sortOrder('asc'/'desc'), sortBy(ideally a valid field to sort by)
 export const usersGetRoute = [
   async(req, res, next) => {
-
-    const users = await usersService.getAllUsers(req.protocol, req.get('host'));
+    const { page, limit, searchTerm, sortOrder, sortBy } = req.query;
+    const users = await usersService.getAllUsers(req.protocol, req.get('host'), { page, limit, searchTerm, sortBy, sortOrder });
 
     res.status(200).json({ message: "You are in GET '/users' route", data: users});
   }

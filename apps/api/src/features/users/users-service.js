@@ -4,7 +4,9 @@ import * as customError from "../../utils/extended-errors.js";
 import * as passwordUtils from '../../utils/passwordUtils.js';
 
 // Constants
-const PROFILE_URL = `/api/v1/profiles`
+const PROFILE_URL = `/api/v1/profiles`;
+const GROUP_URL = `/api/v1/chat-groups`;
+const MESSSAGE_URL = `/api/v1/messages`
 
 
 // userData object has: email, password, confirm_password, first_name, last_name (optional: isAdmin)
@@ -26,14 +28,42 @@ export const createUser = async(userData) => {
 
 // For GET '/users' routes, we also create 'profileUrl' fields to add onto the JSON response body for easy access to their user profiles
 // Uses a constant for the profile URL, protocol and host from `req.protocol` and `req.get('host')` respectively to create the URL
-export const getAllUsers = async(protocol, host) => {
+// Optional search query parameters
+export const getAllUsers = async(protocol, host, { page = 1, limit = 5, searchTerm = "", sortBy='id', sortOrder='asc'} = {} ) => {
   try {
-    const users = await usersQueries.fetchAllUsers();
+
+    // The option object for the query layer to use
+    const options = {
+      take: Number(limit),
+      skip: (Number(page) * Number(limit)) - limit,
+      searchTerm,
+      sortOrder,
+      sortBy,
+    }
+
+    const returnedUsers = await usersQueries.fetchAllUsers(options);
+
+    if (returnedUsers.length === 0) {
+      return [];
+    }
+
+    // Using map to remove fields from the object (i.e the public id to convert to id in response object) using destructuring
+    // Using map to add fields such as the URLs 
+    const users = returnedUsers.map(({publicId, ...rest}, index, arr) => {
+      const profilePublicId = arr[index].profile ? arr[index].profile.publicId : ""
+      return {
+        ...rest,
+        id: publicId,
+        profileUrl: arr[index].profile ? new URL(`${PROFILE_URL}/${profilePublicId}`, `${protocol}://${host}`) : "No profile yet",
+        chatGroupsUrl:  new URL(`${GROUP_URL}?userPublicId=${publicId}`, `${protocol}://${host}`),
+        messagesUrl: new URL(`${MESSSAGE_URL}?userPublicId=${publicId}`, `${protocol}://${host}`)
+      }
+    })
 
     // Might slow down the app if getting high number of users, unless we limit how many users per request via 'page' query
-    users.forEach(user => {
-      user.profileUrl = new URL(`${PROFILE_URL}?userPublicId=${user.publicId}`, `${protocol}://${host}`);
-    })
+    // users.forEach(user => {
+    //   user.profileUrl = new URL(`${PROFILE_URL}?userPublicId=${user.publicId}`, `${protocol}://${host}`);
+    // })
 
     return users; 
   } catch (error) {
