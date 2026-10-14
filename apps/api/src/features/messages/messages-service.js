@@ -33,13 +33,14 @@ export const sendMessage = async(data, userPublicId, groupPublicId) => {
 export const getAllMessages = async(userPublicId) => {
   try {
 
-    let user;
-    // Checks if userPublicId from the req.query is present on the URL
-    if(userPublicId){
-      user = await usersQueries.findUserByPublicId(userPublicId);
-    }
+    // let user;
+    // // Checks if userPublicId from the req.query is present on the URL
+    // if(userPublicId){
+    //   user = await usersQueries.findUserByPublicId(userPublicId);
+    // }
 
-    const messages = user ? await messagesQueries.fetchAllMessages(user.id) : await messagesQueries.fetchAllMessages();
+    // const messages = user ? await messagesQueries.fetchAllMessages(userPublicId) : await messagesQueries.fetchAllMessages();
+    const messages = await messagesQueries.fetchAllMessages(userPublicId)
     return messages;
   } catch (error) {
     console.log(error);

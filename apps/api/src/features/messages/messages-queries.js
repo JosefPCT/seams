@@ -15,10 +15,14 @@ export const createMessage = async(messageData, userId, groupId) => {
   })
 }
 
-export const fetchAllMessages = async(targetUserId) => {
+export const fetchAllMessages = async(targetPublicId) => {
   return await prisma.message.findMany({
     where: {
-      senderId: targetUserId
+      sentBy: {
+        is: {
+          publicId: targetPublicId
+        }
+      }
     }
   })
 }
