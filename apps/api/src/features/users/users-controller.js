@@ -19,8 +19,10 @@ export const usersPostRoute = [
     if(!errors.isEmpty()){
       return res.status(400).json(errors);
     }
+    
+    const { email, password, first_name, last_name, isAdmin} = matchedData(req);
 
-    const newUser = await usersService.createUser(matchedData(req));
+    const newUser = await usersService.createUser({ email, password, first_name, last_name, isAdmin});
 
     res.status(200).json({ message: "You are in POST '/users' route", data: newUser});
   }

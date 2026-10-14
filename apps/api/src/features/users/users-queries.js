@@ -25,13 +25,14 @@ export const findUserByPublicId = async(targetUserPublicId) => {
 
 // Main Queries
 
+// userData object has email, hash, first_name, last_name, isAdmin
 export const createNewUser = async(userData) => {
   return await prisma.user.create({
     data: {
-      id: 1,
       email: userData.email,
       hash: userData.hash,
-      addtl: userData.first_name
+      addtl: `${userData.first_name} ${userData.last_name}`,
+      isAdmin: userData.isAdmin
     }
   })
 }

@@ -9,7 +9,7 @@ const GROUP_URL = `/api/v1/chat-groups`;
 const MESSSAGE_URL = `/api/v1/messages`
 
 
-// userData object has: email, password, confirm_password, first_name, last_name (optional: isAdmin)
+// userData object has: email, password, first_name, last_name (optional: isAdmin)
 // Double checks if user's email already exists in the database
 // Uses password utility to transform the password string into hash, add the hash into the userData object and passed onto the query
 export const createUser = async(userData) => {
@@ -23,7 +23,15 @@ export const createUser = async(userData) => {
     userData.hash = hash;
 
     const newUser = await usersQueries.createNewUser(userData);
-    return newUser;
+
+    const { id, publicId, hash: hashed, ...rest } = newUser;
+
+    const filteredNewUser = {
+      id: publicId,
+      ...rest
+    }
+
+    return filteredNewUser;
 }
 
 // For GET '/users' routes, we also create 'profileUrl' fields to add onto the JSON response body for easy access to their user profiles
