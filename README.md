@@ -54,7 +54,7 @@ Returned Object may include fields of:
 - addtl
 - isAdmin
 
-#### GET /users?page={num}&limit={num}&searchTerm={string}&sortBy={validField}&sortOrder={'asc'/'desc'}
+#### GET /users?page={num}&limit={num}&searchTerm={string}&sortBy={validField}&sortOrder={'asc'/'desc'}&include=profile&include=messsages&include=groups
 Returns a JSON of a list of users in the database, includes a URL to the user's profile
 Optional Search Query Parameters:
 - page(number) and
@@ -62,6 +62,7 @@ Optional Search Query Parameters:
 - searchTerm (string) for filtering
 - sortBy(a valid field to search for) and 
 - sortOrder(only two options: asc/desc) for sorting
+- include (declared by repeating the include variable to create an array, valid values are: profile, messages, and groups)
 
 Returned Object may include fields of:
 - id (public id)
@@ -72,15 +73,35 @@ Returned Object may include fields of:
 - messages (relation)
 - groups (relation)
 - _count (number of instances in the relation)
-- profileUrl (url to the specific profile attached to this user ('/profile/:publicId'))
-- chatGroupUrl (url to `/chat-groups?userPublicId={id}` with the id of the user passed as search query parameter )
-- messagesUrl (url to `/messages?userPublicId={id}` with the id of the user passed as search query parameter )
+- links
+    - profileUrl (url to the specific profile attached to this user ('/profile/:publicId'))
+    - chatGroupUrl (url to `/chat-groups?userPublicId={id}` with the id of the user passed as search query parameter )
+    - messagesUrl (url to `/messages?userPublicId={id}` with the id of the user passed as search query parameter )
 
 #### GET /users/me
 Returns a JSON payload of information of the current logged-in user, includes a URL to the user's profile
 
+Returned Object includes only the root level information (Does not include relations), includes links though
+
 #### GET /users/:userPublicId
 Returns a JSON payload of information of a user based on the passed :userPublicId, includes a URL to the user's profile
+Optional Search Query Parameters:
+- include (declared by repeating the include variable to create an array, valid values are: profile, messages, and groups)
+
+Returned Object may include fields of:
+- id (public id)
+- email
+- addtl
+- isAdmin
+- profile (relation)
+- messages (relation)
+- groups (relation)
+- _count (number of instances in the relation)
+- links
+    - profileUrl (url to the specific profile attached to this user ('/profile/:publicId'))
+    - chatGroupUrl (url to `/chat-groups?userPublicId={id}` with the id of the user passed as search query parameter )
+    - messagesUrl (url to `/messages?userPublicId={id}` with the id of the user passed as search query parameter )
+
 
 #### PUT /users/:userPublicId
 Updates information of a user based on the passed :userPublicId.
@@ -92,6 +113,7 @@ Accepts a req.body of mostly optional:
 - first_name
 - last_name
 - isAdmin
+
 
 #### DELETE /users:userPublicId
 Deletes a user based on the passed :userPublicId

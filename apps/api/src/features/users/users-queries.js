@@ -10,37 +10,12 @@ export const findUserByEmail = async(targetEmail) => {
   });
 }
 
-export const findUserByPublicId = async(targetUserPublicId) => {
+export const findUserByPublicId = async(targetUserPublicId, selectObj) => {
   return await prisma.user.findUnique({
     where: {
       publicId: targetUserPublicId
     },
-    select: {
-      publicId: true,
-      email: true,
-      addtl: true,
-      isAdmin: true,
-
-      // Relations
-      profile: {
-        select: {
-          publicId: true,
-          name: true,
-          pronouns: true,
-          bio: true,
-          createdAt: true,
-          updatedAt: true
-        }
-      },
-
-      messages: true,
-      groups: {
-        include: {
-          group: true
-        }
-      }
-
-    }
+    select: selectObj
   })
 }
 
@@ -89,31 +64,32 @@ export const fetchAllUsers = async({take, skip, searchTerm, sortOrder, sortBy}, 
   });
 }
 
-export const fetchCurrentUserByPublicId = async(targetPublicId) => {
+export const fetchUserByPublicId = async(targetPublicId, selectObj) => {
   return await prisma.user.findUnique({
     where: {
       publicId: targetPublicId
     },
-    include: {
-      profile: true,
-      messages: true,
-      groups: {
-        select: {
-          publicId: true,
-          role: true,
-          joinedAt: true,
-          group: {
-            select: {
-              publicId: true,
-              name: true,
-              createdAt: true,
-              updatedAt: true,
-              messages: true
-            }
-          }
-        }
-      }
-    }
+    select: selectObj
+    // include: {
+    //   profile: true,
+    //   messages: true,
+    //   groups: {
+    //     select: {
+    //       publicId: true,
+    //       role: true,
+    //       joinedAt: true,
+    //       group: {
+    //         select: {
+    //           publicId: true,
+    //           name: true,
+    //           createdAt: true,
+    //           updatedAt: true,
+    //           messages: true
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
   })
 }
 

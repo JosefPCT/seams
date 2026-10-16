@@ -63,8 +63,12 @@ export const userMeGetRoute = [
 // Show a specific user by their public id
 export const userByPublicIdGetRoute = [
   async(req, res, next) => {
+    const { include } = req.query;
     const { userPublicId } = req.params;
-    const user = await usersService.getUserByPublicId(userPublicId, req.protocol, req.get('host'));
+
+    const includeArr = Array.isArray(include) ?  include : [include].filter(Boolean);
+
+    const user = await usersService.getUserByPublicId(userPublicId, req.protocol, req.get('host'), { includeArr });
 
     if(!user){
         return res.status(400).json({ error: true, message: "User was not found"});
