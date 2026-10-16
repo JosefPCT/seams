@@ -66,7 +66,8 @@ export const createNewUser = async(userData) => {
 }
 
 // Will ignore undefined field and/or field values
-export const fetchAllUsers = async({take, skip, searchTerm, sortOrder, sortBy}) => {
+// Takes in an options object and a select object as an argument
+export const fetchAllUsers = async({take, skip, searchTerm, sortOrder, sortBy}, selectObj) => {
   return await prisma.user.findMany({
     take: take,
     skip: skip,
@@ -84,33 +85,7 @@ export const fetchAllUsers = async({take, skip, searchTerm, sortOrder, sortBy}) 
     orderBy: {
       [sortBy]: sortOrder
     },
-    select: {
-      publicId: true,
-      email: true,
-      addtl: true,
-      isAdmin: true,
-      profile: {
-        select: {
-          publicId: true
-        }
-      },
-      messages: {
-        select: {
-          publicId: true
-        }
-      },
-      groups: {
-        select: {
-          publicId: true
-        }
-      },
-      _count: {
-        select: {
-          messages: true,
-          groups: true
-        }
-      }
-    },
+    select: selectObj
   });
 }
 

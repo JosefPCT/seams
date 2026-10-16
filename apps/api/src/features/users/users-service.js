@@ -2,11 +2,12 @@ import * as usersQueries from "./users-queries.js";
 import * as customError from "../../utils/extended-errors.js";
 
 import * as passwordUtils from '../../utils/passwordUtils.js';
+import { prepareUsersSelectObj } from "../../utils/organizeDataUtils.js";
 
 // Constants
 const PROFILE_URL = `/api/v1/profiles`;
 const GROUP_URL = `/api/v1/chat-groups`;
-const MESSSAGE_URL = `/api/v1/messages`
+const MESSAGE_URL = `/api/v1/messages`
 
 
 // userData object has: email, password, first_name, last_name (optional: isAdmin)
@@ -37,9 +38,10 @@ export const createUser = async(userData) => {
 
 // For GET '/users' routes, we also create 'profileUrl' fields to add onto the JSON response body for easy access to their user profiles
 // Uses a constant for the profile URL, protocol and host from `req.protocol` and `req.get('host')` respectively to create the URL
-// Optional search query parameters (page, limit, searchTerm, sortBy, sortOrder)
+// Optional search query parameters (page, limit, searchTerm, sortBy, sortOrder, include)
+// Uses a utility function from another file that creates the select block for the prisma query
 // Filters out sensitive data fields (using destructuring and creating a new object) before returning
-export const getAllUsers = async(protocol, host, { page = 1, limit = 5, searchTerm = "", sortBy='id', sortOrder='asc'} = {} ) => {
+export const getAllUsers = async(protocol, host, { page = 1, limit = 5, searchTerm = "", sortBy='id', sortOrder='asc', includeArr=[]} = {} ) => {
   try {
 
     // The option object for the query layer to use
@@ -51,31 +53,71 @@ export const getAllUsers = async(protocol, host, { page = 1, limit = 5, searchTe
       sortBy,
     }
 
-    const returnedUsers = await usersQueries.fetchAllUsers(options);
+    const users = await usersQueries.fetchAllUsers(options, prepareUsersSelectObj(includeArr));
 
-    if (returnedUsers.length === 0) {
+    if (users.length === 0) {
       return [];
     }
 
+    // Block of code responsible for formatting the returned object (i.e converting public ids to ids)
     // Using map to remove fields from the object (i.e the public id to convert to id in response object) using destructuring
     // Using map to add fields such as the URLs 
-    const users = returnedUsers.map(({publicId, ...rest}, index, arr) => {
-      const profilePublicId = arr[index].profile ? arr[index].profile.publicId : ""
-      return {
-        ...rest,
-        id: publicId,
-        profileUrl: arr[index].profile ? new URL(`${PROFILE_URL}/${profilePublicId}`, `${protocol}://${host}`) : "No profile yet",
-        chatGroupsUrl:  new URL(`${GROUP_URL}?userPublicId=${publicId}`, `${protocol}://${host}`),
-        messagesUrl: new URL(`${MESSSAGE_URL}?userPublicId=${publicId}`, `${protocol}://${host}`)
+    const formattedUsers = users.map(({ publicId, profile, ...user }) => {
+      const hasProfile = profile && profile !== null;
+      const hasMessages = user.messages && user.messages.length > 0;
+      const hasGroups = user.groups && user.groups.length > 0;
+
+      let formattedProfile = null;
+      if (hasProfile) {
+        const { publicId, ...restOfProfile } = profile;
+        formattedProfile = {
+          id: publicId,
+          ...restOfProfile,
+        };
       }
-    })
 
-    // Might slow down the app if getting high number of users, unless we limit how many users per request via 'page' query
-    // users.forEach(user => {
-    //   user.profileUrl = new URL(`${PROFILE_URL}?userPublicId=${user.publicId}`, `${protocol}://${host}`);
-    // })
+      return {
+        id: publicId,
+        ...user,
+        profileUrl: hasProfile ? new URL(`${PROFILE_URL}/${formattedProfile.id}`, `${protocol}://${host}`): "No profile or profile not included in query",
+        messagesUrl: new URL(`${MESSAGE_URL}?userPublicId=${publicId}`, `${protocol}://${host}`),
+        groupUrl: new URL(`${GROUP_URL}?userPublicId=${publicId}`, `${protocol}://${host}`),
+        profile: formattedProfile,
+        groups: hasGroups
+          ? user.groups.map(
+              ({ publicId: groupPublicId, group, ...restOfGroup }) => {
+                let formattedActualGroup = null;
+                if (group) {
+                  const {
+                    publicId: actualGroupPublicId,
+                    ...restOfActualGroup
+                  } = group;
+                  formattedActualGroup = {
+                    id: actualGroupPublicId,
+                    ...restOfActualGroup,
+                  };
+                }
 
-    return users; 
+                return {
+                  id: groupPublicId,
+                  ...restOfGroup,
+                  group: formattedActualGroup,
+                };
+              },
+            )
+          : [],
+        messages: hasMessages
+          ? user.messages.map(({ publicId, ...messages }) => ({
+              id: publicId,
+              ...messages,
+            }))
+          : [],
+      };
+    });
+
+    console.log(formattedUsers);
+    return formattedUsers; 
+    
   } catch (error) {
     console.log(error);
     throw error;
