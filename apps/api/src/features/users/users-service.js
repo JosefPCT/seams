@@ -2,7 +2,7 @@ import * as usersQueries from "./users-queries.js";
 import * as customError from "../../utils/extended-errors.js";
 
 import * as passwordUtils from '../../utils/passwordUtils.js';
-import { prepareUsersSelectObj } from "../../utils/organizeDataUtils.js";
+import { prepareUsersSelectObj, preparePatchData } from "../../utils/organizeDataUtils.js";
 
 // Constants
 const PROFILE_URL = `/api/v1/profiles`;
@@ -242,20 +242,35 @@ export const updateUser = async(userPublicId, userData) => {
       throw new customError.BadRequest(`User does not exist`);
     }
 
-    if(userData.password){
-      const hashedPassword = await passwordUtils.genPassword(userData.password);
+    const preparedData = preparePatchData(userData);
+    console.log("Prepared data Before");
+    console.log(preparedData)
+
+    const { password, confirm_password, first_name, last_name, ...data } = preparedData
+
+    let cleanData = {
+      ...data,
+    }
+    if(password){
+      const hashedPassword = await passwordUtils.genPassword(password);
       const hash = hashedPassword.hash;
-      userData.hash = hash;
+      cleanData.hash = hash
     }
 
-    const filteredUserData = {
-      email: userData.email,
-      hash: userData.hash,
-      addtl: userData.addtl
-    }
+    // Can change to add a validation field for `addtl` instead
+    cleanData.addtl = first_name + last_name
     
-    const updatedUser = await usersQueries.updateUserByPublicId(userPublicId, filteredUserData);
-    return updatedUser;
+
+    console.log("Prepared data After");
+    console.log(preparedData)
+
+    const updatedUser = await usersQueries.updateUserByPublicId(userPublicId, cleanData);
+    const { publicId, ...rest } = updatedUser;
+    const formattedUser = {
+      id: publicId,
+      ...rest,
+    }
+    return formattedUser;
 
   } catch (error) {
     console.log(error);

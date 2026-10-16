@@ -98,7 +98,13 @@ export const updateUserByPublicId = async(userPublicId, data) => {
     where: {
       publicId: userPublicId
     },
-    data
+    data: data,
+    select: {
+      publicId: true,
+      email: true,
+      addtl: true,
+      isAdmin: true,
+    }
   })
 }
 

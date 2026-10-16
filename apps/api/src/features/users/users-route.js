@@ -12,7 +12,7 @@ usersRouter.get('/me', usersController.userMeGetRoute);
 
 usersRouter.get('/:userPublicId', usersController.userByPublicIdGetRoute);
 
-usersRouter.put('/:userPublicId', usersController.userPutRoute);
+usersRouter.patch('/:userPublicId', usersController.userPatchRoute);
 
 usersRouter.delete('/:userPublicId', usersController.userDeleteRoute);
 

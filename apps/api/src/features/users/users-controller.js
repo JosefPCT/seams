@@ -88,7 +88,7 @@ export const userByPublicIdGetRoute = [
 // PUT '/users/:userPublic'
 // Update a specific user by their public id
 // TODO: Only access if user is updating their own info (password) or user is an admin
-export const userPutRoute = [
+export const userPatchRoute = [
   isAdminOrIsOwnUserData,
   validation.validateUpdateUser,
   async(req, res, next) => {
@@ -97,14 +97,16 @@ export const userPutRoute = [
     if(!errors.isEmpty()){
       return res.status(400).json(errors);
     }
+
+    const { email, password, first_name, last_name, isAdmin} = matchedData(req);
     
-    const updatedUser = await usersService.updateUser(userPublicId, matchedData(req));
+    const updatedUser = await usersService.updateUser(userPublicId, {email, password, first_name, last_name, isAdmin});
 
     if(!updatedUser){
       return res.status(400).json({ error: true, message: "User was not updated succesfully"});
     }
     
-    res.status(200).json({ message: `You are in PUT '/users/${userPublicId}' route`, data: updatedUser });
+    res.status(200).json({ message: `You are in PATCH '/users/${userPublicId}' route`, data: updatedUser });
   }
 ]
 
