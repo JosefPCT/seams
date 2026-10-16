@@ -134,7 +134,7 @@ export const userDeleteRoute = [
       res.clearCookie('connect.sid'); // Replace 'connect.sid' with your cookie name if custom
       
       //return res.status(200).json({ message: "Account deleted and logged out successfully" });
-      res.status(200).json({ message: `You are in DELETE '/users/${userPublicId}' route`, data: deletedUser });
+      res.status(200).json({ message: `You are in DELETE '/users/${userPublicId}' route` });
     });
   }
 ]

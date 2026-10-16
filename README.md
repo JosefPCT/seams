@@ -103,9 +103,9 @@ Returned Object may include fields of:
     - messagesUrl (url to `/messages?userPublicId={id}` with the id of the user passed as search query parameter )
 
 
-#### PUT /users/:userPublicId
+#### PATCH /users/:userPublicId
 Updates information of a user based on the passed :userPublicId.
-Also returns a JSON payload of information of the updated user with their updated data.
+Also returns a JSON payload of information of the updated user with their updated data (minus the sensitive information)
 Accepts a req.body of mostly optional:
 - email
 - password
@@ -117,7 +117,6 @@ Accepts a req.body of mostly optional:
 
 #### DELETE /users:userPublicId
 Deletes a user based on the passed :userPublicId
-Also returns a JSON payload of information of the deleted user.
 
 ### /profiles
 
