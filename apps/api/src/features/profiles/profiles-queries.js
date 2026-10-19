@@ -30,6 +30,22 @@ export const createProfileByUserId = async(profileData) => {
       pronouns: profileData.pronouns,
       bio: profileData.bio,
       userId: profileData.userId
+    },
+    select: {
+      publicId: true,
+      name: true,
+      pronouns: true,
+      bio: true,
+      createdAt: true,
+      updatedAt: true,
+      user: {
+        select: {
+          publicId: true,
+          email: true,
+          addtl: true,
+          isAdmin: true
+        }
+      }
     }
   });
   return newProfile;

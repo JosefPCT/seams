@@ -21,7 +21,17 @@ export const createProfile = async(profileData) => {
     }
 
     const createdProfile = await profileQueries.createProfileByUserId(profileData);
-    return createdProfile;
+    const {publicId, user, ...rest} = createdProfile;
+    const { publicId: userPublicIdAlias, ...restOfUser} = user;
+    const formattedProfile = {
+      id: publicId,
+      ...rest,
+      user: {
+        id: userPublicIdAlias,
+        ...restOfUser
+      }
+    }
+    return formattedProfile;
   } catch (error) {
     console.log(error);
     throw error;
