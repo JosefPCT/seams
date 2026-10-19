@@ -21,7 +21,7 @@ export const profilesPostRoute = [
 
     const { userPublicId, name, pronouns, bio } = matchedData(req);
     const targetUserPublicId = userPublicId || req.user.publicId;
-    const createdProfile = await profileService.createProfile({name, pronouns, bio, targetUserPublicId});
+    const createdProfile = await profileService.createProfile({name, pronouns, bio, targetUserPublicId}, req.protocol, req.get("host"));
     if(!createdProfile){
       return res.status(400).json({ error: true, message: "Profile was not created succesfully"});
     }

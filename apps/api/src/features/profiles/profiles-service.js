@@ -2,9 +2,11 @@ import * as profileQueries from "./profiles-queries.js";
 import * as usersQueries from "../users/users-queries.js";
 import * as customError from "../../utils/extended-errors.js";
 
+const USERS_URL = `/api/v1/users`;
+
 // profileData has: name, pronouns, bio, targetUserPublicId
 // Checks if already created profile for the user
-export const createProfile = async(profileData) => {
+export const createProfile = async(profileData, protocol, host) => {
   try {
     const currentUser = await usersQueries.findUserByPublicId(profileData.targetUserPublicId);
     if(!currentUser){
@@ -29,6 +31,9 @@ export const createProfile = async(profileData) => {
       user: {
         id: userPublicIdAlias,
         ...restOfUser
+      }, 
+      links: {
+        usersUrl: new URL(`${USERS_URL}/${userPublicIdAlias}`, `${protocol}://${host}`),
       }
     }
     return formattedProfile;
