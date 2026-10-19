@@ -60,7 +60,8 @@ Optional Search Query Parameters:
 - page(number) and
 - limit(number) for pagination
 - searchTerm (string) for filtering
-- sortBy(a valid field to search for) and 
+- sortBy(a valid field to search for) and
+    sortBy valid values (id, publicId, email, addtl, isAdmin)
 - sortOrder(only two options: asc/desc) for sorting
 - include (declared by repeating the include variable to create an array, valid values are: profile, messages, and groups)
 
@@ -157,9 +158,41 @@ Returned object may include fields of:
     - self (link to the actual profile (/profiles/:id))
     - usersUrl (link to the related user)
 
-#### GET /profiles?userPublicId={id}
+#### GET /profiles?page={num}&limit={num}&searchTerm={string|UUID}&sortBy={validField}&sortOrder=(asc|desc)&include=user&include=groups
 Returns a JSON  of all created profiles if no query is given
 If given a query of 'userPublicId', filters the selection of profiles to only display profile/profiles created by a certain user 
+Optional Search Query Parameters:
+- page(number) and limit(number) for pagination
+- searchTerm (string) for filtering, you can also use a UUID instead of a string to look for an exact match of a public ID
+- sortBy(a valid field to search for) and sortOrder(only two options: asc/desc) for sorting
+    - sortBy valid values (id, publicId, name, pronouns, bio, createdAt, updatedAt)
+- include (declared by repeating the include variable to create an array, valid values are: users, groups) 
+(To implement: add more includes such as: user's messages (double nested))
+
+Returned Object may include fields of:
+- meta:
+    - current_page
+    - per_page
+    - total_records
+- links:
+    - first
+    - prev 
+    - self
+    - next
+    - last
+- data:
+    - id (public id)
+    - name
+    - pronouns
+    - bio
+    - createdAt
+    - updatedAt
+    - user (relation)
+    - links
+        - self
+        - usersUrl (url to the specific user attached to this profile ('/users/:publicId'))
+
+
 
 #### GET /profiles/:profilePublicId
 Returns a JSON of a specific profile based on the route parameter (:profilePublicId) the profile's public id

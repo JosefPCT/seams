@@ -1,5 +1,6 @@
 import { prisma } from "@repo/database"
 
+
 // Helper Queries
 
 export const getProfileByUserId = async(userId) => {
@@ -18,6 +19,14 @@ export const getProfileByPublicId = async(profilePublicId) => {
     }
   })
   
+}
+
+export const getTotalProfiles = async() => {
+  return await prisma.profile.findMany({
+    select: {
+      publicId: true
+    }
+  });
 }
 
 // Main Queries
@@ -51,11 +60,36 @@ export const createProfileByUserId = async(profileData) => {
   return newProfile;
 }
 
-export const findAllProfiles = async(targetUserId) => {
+export const findAllProfiles = async({take, skip, searchTerm, isSearchTermUUID , sortOrder, sortBy}, selectObj) => {
   const profiles = await prisma.profile.findMany({
+    take: take,
+    skip: skip,
     where: {
-      userId: targetUserId
-    }
+      OR: [
+        { name: { contains: searchTerm, mode: "insensitive" } },
+        { bio: { contains: searchTerm, mode: "insensitive"}},
+        { pronouns: { contains: searchTerm, mode: 'insensitive'}},
+        { publicId: isSearchTermUUID ? searchTerm : undefined},
+        {
+          user: isSearchTermUUID
+            ? {
+                is: {
+                  publicId: searchTerm,
+                },
+              }
+            : undefined,
+        },
+        {
+          user: { is: {
+            email: { contains: searchTerm, mode: 'insensitive'}
+          }}
+        }
+      ],
+    },
+    orderBy: {
+      [sortBy]: sortOrder
+    },
+    select: selectObj
   });
   return profiles;
 }
