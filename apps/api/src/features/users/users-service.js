@@ -1,8 +1,9 @@
 import * as usersQueries from "./users-queries.js";
 import * as customError from "../../utils/extended-errors.js";
+import * as usersUtils from "./users-utils.js"
 
 import * as passwordUtils from '../../utils/passwordUtils.js';
-import { prepareUsersSelectObj, preparePatchData } from "../../utils/organizeDataUtils.js";
+import { preparePatchData } from "../../utils/organizeDataUtils.js";
 
 // Constants
 const USERS_URL = `/api/v1/users`;
@@ -23,8 +24,7 @@ export const createUser = async(userData) => {
     }
 
     const hashedPassword = await passwordUtils.genPassword(userData.password);
-    const hash = hashedPassword.hash;
-    userData.hash = hash;
+    userData.hash = hashedPassword.hash
 
     const newUser = await usersQueries.createNewUser(userData);
 
@@ -35,7 +35,12 @@ export const createUser = async(userData) => {
       ...rest
     }
 
-    return filteredNewUser;
+    return {
+      links: {
+        usersUrl: new URL(`${USERS_URL}/${publicId}`, `${protocol}://${host}`),
+      },
+      data: filteredNewUser
+    }
 }
 
 // For GET '/users' routes, we also create 'profileUrl' fields to add onto the JSON response body for easy access to their user profiles
@@ -56,79 +61,17 @@ export const getAllUsers = async(protocol, host, { page = 1, limit = 5, searchTe
     }
 
     const totalUsers = await usersQueries.getAllUsersLength();
-
     const totalNumberOfPages = totalUsers.length / Number(limit);
 
-    console.log(totalUsers)
-
-    console.log("Total number of pages:")
-    console.log(totalNumberOfPages);
-
-    const users = await usersQueries.fetchAllUsers(options, prepareUsersSelectObj(includeArr));
+    const users = await usersQueries.fetchAllUsers(options, usersUtils.prepareUsersSelectObj(includeArr));
 
     if (users.length === 0) {
       return [];
     }
 
-    // Block of code responsible for formatting the returned object (i.e converting public ids to ids)
-    // Using map to remove fields from the object (i.e the public id to convert to id in response object) using destructuring
-    // Using map to add fields such as the URLs 
-    const formattedUsers = users.map(({ publicId, profile, ...user }) => {
-      const hasProfile = profile && profile !== null;
-      const hasMessages = user.messages && user.messages.length > 0;
-      const hasGroups = user.groups && user.groups.length > 0;
+    // Call the helper function that helps format the list of users (removing internal ids, and renaming public ids to id in the returned object, adding urls)
+    const formattedUsers = await usersUtils.formatUsersList(users, protocol, host);
 
-      let formattedProfile = null;
-      if (hasProfile) {
-        const { publicId, ...restOfProfile } = profile;
-        formattedProfile = {
-          id: publicId,
-          ...restOfProfile,
-        };
-      }
-
-      return {
-        id: publicId,
-        ...user,
-        links: {
-          profileUrl: hasProfile ? new URL(`${PROFILE_URL}/${formattedProfile.id}`, `${protocol}://${host}`): "No profile or profile not included in query",
-          messagesUrl: new URL(`${MESSAGE_URL}?userPublicId=${publicId}`, `${protocol}://${host}`),
-          groupUrl: new URL(`${GROUP_URL}?userPublicId=${publicId}`, `${protocol}://${host}`),
-        },
-        profile: formattedProfile,
-        groups: hasGroups
-          ? user.groups.map(
-              ({ publicId: groupPublicId, group, ...restOfGroup }) => {
-                let formattedActualGroup = null;
-                if (group) {
-                  const {
-                    publicId: actualGroupPublicId,
-                    ...restOfActualGroup
-                  } = group;
-                  formattedActualGroup = {
-                    id: actualGroupPublicId,
-                    ...restOfActualGroup,
-                  };
-                }
-
-                return {
-                  id: groupPublicId,
-                  ...restOfGroup,
-                  group: formattedActualGroup,
-                };
-              },
-            )
-          : [],
-        messages: hasMessages
-          ? user.messages.map(({ publicId, ...messages }) => ({
-              id: publicId,
-              ...messages,
-            }))
-          : [],
-      };
-    });
-
-    console.log(formattedUsers);
     return {
       meta: {
         "current_page": page,
