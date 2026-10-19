@@ -5,9 +5,11 @@ import * as passwordUtils from '../../utils/passwordUtils.js';
 import { prepareUsersSelectObj, preparePatchData } from "../../utils/organizeDataUtils.js";
 
 // Constants
+const USERS_URL = `/api/v1/users`;
 const PROFILE_URL = `/api/v1/profiles`;
 const GROUP_URL = `/api/v1/chat-groups`;
-const MESSAGE_URL = `/api/v1/messages`
+const MESSAGE_URL = `/api/v1/messages`;
+
 
 
 // userData object has: email, password, first_name, last_name (optional: isAdmin)
@@ -83,6 +85,8 @@ export const getAllUsers = async(protocol, host, { page = 1, limit = 5, searchTe
           profileUrl: hasProfile ? new URL(`${PROFILE_URL}/${formattedProfile.id}`, `${protocol}://${host}`): "No profile or profile not included in query",
           messagesUrl: new URL(`${MESSAGE_URL}?userPublicId=${publicId}`, `${protocol}://${host}`),
           groupUrl: new URL(`${GROUP_URL}?userPublicId=${publicId}`, `${protocol}://${host}`),
+          first: Number(page) === 1 ? null : new URL(`${USERS_URL}?page=1`, `${protocol}://${host}`),
+          prev: Number(page) === 1 ? null: new URL(`${USERS_URL}?page=${Number(page) + 1}`, `${protocol}://${host}`)
         },
         profile: formattedProfile,
         groups: hasGroups
