@@ -85,6 +85,7 @@ Returned Object may include fields of:
     - groups (relation)
     - _count (number of instances in the relation)
     - links
+        - createProfileUrl
         - profileUrl (url to the specific profile attached to this user ('/profile/:publicId'))
         - chatGroupUrl (url to `/chat-groups?userPublicId={id}` with the id of the user passed as search query parameter )
         - messagesUrl (url to `/messages?userPublicId={id}` with the id of the user passed as search query parameter )
@@ -109,6 +110,7 @@ Returned Object may include fields of:
 - groups (relation)
 - _count (number of instances in the relation)
 - links
+    - createProfileUrl (Url to create a profile)
     - profileUrl (url to the specific profile attached to this user ('/profile/:publicId'))
     - chatGroupUrl (url to `/chat-groups?userPublicId={id}` with the id of the user passed as search query parameter )
     - messagesUrl (url to `/messages?userPublicId={id}` with the id of the user passed as search query parameter )
