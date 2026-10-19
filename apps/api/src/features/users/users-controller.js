@@ -73,14 +73,6 @@ export const userByPublicIdGetRoute = [
     if(!user){
         return res.status(400).json({ error: true, message: "User was not found"});
     }
-
-    // console.log("Showing...");
-    // console.log(req.protocol);
-    // console.log(req.get('host'));
-    // console.log(req.originalUrl);
-    // console.log(req);
-    // console.log(PROFILE_URL);
-
     res.status(200).json({ message: `You are in GET '/users/${userPublicId}' route`, data: user});
   }
 ]

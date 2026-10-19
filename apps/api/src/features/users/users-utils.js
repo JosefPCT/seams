@@ -19,7 +19,7 @@ export const prepareUsersSelectObj = (targetArray) => {
             pronouns: true,
             bio: true,
             createdAt: true,
-            updatedAt: true
+            updatedAt: true,
           },
         }
       : undefined,
@@ -29,7 +29,7 @@ export const prepareUsersSelectObj = (targetArray) => {
             publicId: true,
             content: true,
             sentAt: true,
-            editedAt: true
+            editedAt: true,
           },
         }
       : undefined,
@@ -44,9 +44,9 @@ export const prepareUsersSelectObj = (targetArray) => {
                 publicId: true,
                 name: true,
                 createdAt: true,
-                updatedAt: true
-              }
-            }
+                updatedAt: true,
+              },
+            },
           },
         }
       : undefined,
@@ -62,13 +62,12 @@ export const prepareUsersSelectObj = (targetArray) => {
       : undefined,
   };
   return selectObj;
-}
-
+};
 
 // Block of code responsible for formatting the returned object (i.e converting public ids to ids)
 // Using map to remove fields from the object (i.e the public id to convert to id in response object) using destructuring
-// Using map to add fields such as the URLs 
-export const formatUsersList = (users, protocol, host) => {
+// Using map to add fields such as the URLs
+export const formatReturnUsersList = (users, protocol, host) => {
   const formattedUsers = users.map(({ publicId, profile, ...user }) => {
     const hasProfile = profile && profile !== null;
     const hasMessages = user.messages && user.messages.length > 0;
@@ -133,4 +132,73 @@ export const formatUsersList = (users, protocol, host) => {
     };
   });
   return formattedUsers;
+};
+
+// Util used by 'GET /users/:publicId' route, specifically getUserByPublicId function
+// Returns a formatted user object (no internal ids, rename public ids to id (root and nested), add helpful urls)
+export const formatReturnUser = (user, protocol, host) => {
+  const hasProfile = user.profile && user.profile !== null;
+  const hasMessages = user.messages && user.messages.length > 0;
+  const hasGroups = user.groups && user.groups.length > 0;
+
+  const { publicId: userPublicIdAlias, profile, ...rest } = user;
+
+  let formattedProfile = null;
+  if (hasProfile) {
+    const { publicId: profilePublicIdAlias, ...restProfile } = profile;
+    formattedProfile = {
+      id: profilePublicIdAlias,
+      ...restProfile,
+    };
+  }
+
+  const formattedUser = {
+    id: userPublicIdAlias,
+    ...rest,
+    links: {
+      profileUrl: hasProfile
+        ? new URL(
+            `${PROFILE_URL}/${formattedProfile.id}`,
+            `${protocol}://${host}`,
+          )
+        : "No profile or profile not included in query",
+      messagesUrl: new URL(
+        `${MESSAGE_URL}?userPublicId=${userPublicIdAlias}`,
+        `${protocol}://${host}`,
+      ),
+      groupUrl: new URL(
+        `${GROUP_URL}?userPublicId=${userPublicIdAlias}`,
+        `${protocol}://${host}`,
+      ),
+    },
+    profile: formattedProfile,
+    messages: hasMessages
+      ? user.messages.map(({ publicId, ...messages }) => ({
+          id: publicId,
+          ...messages,
+        }))
+      : [],
+    groups: hasGroups
+      ? user.groups.map(
+          ({ publicId: groupPublicId, group, ...restOfGroup }) => {
+            let formattedActualGroup = null;
+            if (group) {
+              const { publicId: actualGroupPublicId, ...restOfActualGroup } =
+                group;
+              formattedActualGroup = {
+                id: actualGroupPublicId,
+                ...restOfActualGroup,
+              };
+            }
+
+            return {
+              id: groupPublicId,
+              ...restOfGroup,
+              group: formattedActualGroup,
+            };
+          },
+        )
+      : [],
+  };
+  return formattedUser;
 };

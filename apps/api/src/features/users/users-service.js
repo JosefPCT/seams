@@ -70,7 +70,7 @@ export const getAllUsers = async(protocol, host, { page = 1, limit = 5, searchTe
     }
 
     // Call the helper function that helps format the list of users (removing internal ids, and renaming public ids to id in the returned object, adding urls)
-    const formattedUsers = await usersUtils.formatUsersList(users, protocol, host);
+    const formattedUsers = await usersUtils.formatReturnUsersList(users, protocol, host);
 
     return {
       meta: {
@@ -116,84 +116,12 @@ export const getCurrentUser = async(userPublicId, protocol, host) => {
 
 export const getUserByPublicId = async(userPublicId, protocol, host, { includeArr }) => {
   try {
-
-
-    const user = await usersQueries.fetchUserByPublicId(userPublicId, prepareUsersSelectObj(includeArr));
+    const user = await usersQueries.fetchUserByPublicId(userPublicId, usersUtils.prepareUsersSelectObj(includeArr));
     if(!user){
       throw new customError.NotFound(`User with public id: ${userPublicId} not found`);
     }
 
-    const hasProfile = user.profile && user.profile !== null;
-    const hasMessages = user.messages && user.messages.length > 0;
-    const hasGroups = user.groups && user.groups.length > 0;
-
-
-    const { publicId: userPublicIdAlias, profile, ...rest} = user;
-
-    let formattedProfile = null;
-    if(hasProfile){
-      const { publicId: profilePublicIdAlias, ...restProfile} = profile;
-      formattedProfile = {
-        id: profilePublicIdAlias,
-        ...restProfile
-      }
-    }
-    
-
-    const formattedUser = {
-      id: userPublicIdAlias,
-      ...rest,
-      links: {
-        profileUrl: hasProfile ? new URL(`${PROFILE_URL}/${formattedProfile.id}`, `${protocol}://${host}`): "No profile or profile not included in query",
-        messagesUrl: new URL(`${MESSAGE_URL}?userPublicId=${userPublicIdAlias}`, `${protocol}://${host}`),
-        groupUrl: new URL(`${GROUP_URL}?userPublicId=${userPublicIdAlias}`, `${protocol}://${host}`), 
-      },
-      profile: formattedProfile,
-      messages: hasMessages ? 
-        user.messages.map(({ publicId, ...messages }) => ({
-              id: publicId,
-              ...messages,
-            }))
-          : [],
-      groups: hasGroups ? 
-        user.groups.map(
-            ({ publicId: groupPublicId, group, ...restOfGroup }) => {
-              let formattedActualGroup = null;
-              if (group) {
-                const {
-                  publicId: actualGroupPublicId,
-                  ...restOfActualGroup
-                } = group;
-                formattedActualGroup = {
-                  id: actualGroupPublicId,
-                  ...restOfActualGroup,
-                };
-              }
-
-              return {
-                id: groupPublicId,
-                ...restOfGroup,
-                group: formattedActualGroup,
-              };
-            },
-          )
-        : [],
-      
-    }
-
- 
-    // const filteredUser = {
-    //   id: userPublicIdAlias,
-    //   profile: {
-    //     id: profilePublicIdAlias,
-    //     ...restProfile
-    //   },
-    //   ...rest,
-    //   profileUrl: profile ? new URL(`${PROFILE_URL}/${userPublicId}`, `${protocol}://${host}`) : "No profile yet",
-    //   chatGroupsUrl: new URL(`${GROUP_URL}/${userPublicId}`, `${protocol}://${host}`),
-    //   messagesUrl: new URL(`${MESSAGE_URL}/${userPublicId}`, `${protocol}://${host}`)
-    // }
-
+    const formattedUser = await usersUtils.formatReturnUser(user, protocol, host);
     return formattedUser;
 
   } catch (error) {
