@@ -141,6 +141,22 @@ Accepts a req.body of:
 - pronouns (string)
 - bio (string)
 
+Returned object may include fields of:
+- id (UUID)
+- name (string)
+- bio (string)
+- pronouns (string)
+- createdAt (Date)
+- updatedAt (date)
+- user (relation)
+    - id (UUID)
+    - email (email)
+    - addtl (String)
+    - isAdmin (Boolean, if user is an admin or not)
+- links
+    - self (link to the actual profile (/profiles/:id))
+    - usersUrl (link to the related user)
+
 #### GET /profiles?userPublicId={id}
 Returns a JSON  of all created profiles if no query is given
 If given a query of 'userPublicId', filters the selection of profiles to only display profile/profiles created by a certain user 

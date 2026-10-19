@@ -33,6 +33,7 @@ export const createProfile = async(profileData, protocol, host) => {
         ...restOfUser
       }, 
       links: {
+        self: new URL(`/api/v1/profiles/${publicId}`, `${protocol}://${host}`),
         usersUrl: new URL(`${USERS_URL}/${userPublicIdAlias}`, `${protocol}://${host}`),
       }
     }
