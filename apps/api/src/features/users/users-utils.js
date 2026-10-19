@@ -86,6 +86,9 @@ export const formatReturnUsersList = (users, protocol, host) => {
       id: publicId,
       ...user,
       links: {
+        createProfileUrl: hasProfile
+        ? "Already created a profile"
+        : new URL(`${PROFILE_URL}`, `${protocol}://${host}`),
         profileUrl: hasProfile
           ? new URL(
               `${PROFILE_URL}/${formattedProfile.id}`,
@@ -156,6 +159,9 @@ export const formatReturnUser = (user, protocol, host) => {
     id: userPublicIdAlias,
     ...rest,
     links: {
+      createProfileUrl: hasProfile
+        ? "Already created a profile"
+        : new URL(`${PROFILE_URL}`, `${protocol}://${host}`),
       profileUrl: hasProfile
         ? new URL(
             `${PROFILE_URL}/${formattedProfile.id}`,
