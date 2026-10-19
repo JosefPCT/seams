@@ -65,18 +65,29 @@ Optional Search Query Parameters:
 - include (declared by repeating the include variable to create an array, valid values are: profile, messages, and groups)
 
 Returned Object may include fields of:
-- id (public id)
-- email
-- addtl
-- isAdmin
-- profile (relation)
-- messages (relation)
-- groups (relation)
-- _count (number of instances in the relation)
-- links
-    - profileUrl (url to the specific profile attached to this user ('/profile/:publicId'))
-    - chatGroupUrl (url to `/chat-groups?userPublicId={id}` with the id of the user passed as search query parameter )
-    - messagesUrl (url to `/messages?userPublicId={id}` with the id of the user passed as search query parameter )
+- meta:
+    - current_page
+    - per_page
+    - total_records
+- links:
+    - first
+    - prev 
+    - self
+    - next
+    - last
+- data:
+    - id (public id)
+    - email
+    - addtl
+    - isAdmin
+    - profile (relation)
+    - messages (relation)
+    - groups (relation)
+    - _count (number of instances in the relation)
+    - links
+        - profileUrl (url to the specific profile attached to this user ('/profile/:publicId'))
+        - chatGroupUrl (url to `/chat-groups?userPublicId={id}` with the id of the user passed as search query parameter )
+        - messagesUrl (url to `/messages?userPublicId={id}` with the id of the user passed as search query parameter )
 
 #### GET /users/me
 Returns a JSON payload of information of the current logged-in user, includes a URL to the user's profile

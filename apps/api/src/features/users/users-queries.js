@@ -19,6 +19,14 @@ export const findUserByPublicId = async(targetUserPublicId, selectObj) => {
   })
 }
 
+export const getAllUsersLength = async() => {
+  return await prisma.user.findMany({
+    select: {
+      id: true
+    }
+  })
+}
+
 
 // Main Queries
 

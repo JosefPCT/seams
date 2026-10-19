@@ -55,6 +55,15 @@ export const getAllUsers = async(protocol, host, { page = 1, limit = 5, searchTe
       sortBy,
     }
 
+    const totalUsers = await usersQueries.getAllUsersLength();
+
+    const totalNumberOfPages = totalUsers.length / Number(limit);
+
+    console.log(totalUsers)
+
+    console.log("Total number of pages:")
+    console.log(totalNumberOfPages);
+
     const users = await usersQueries.fetchAllUsers(options, prepareUsersSelectObj(includeArr));
 
     if (users.length === 0) {
@@ -85,8 +94,6 @@ export const getAllUsers = async(protocol, host, { page = 1, limit = 5, searchTe
           profileUrl: hasProfile ? new URL(`${PROFILE_URL}/${formattedProfile.id}`, `${protocol}://${host}`): "No profile or profile not included in query",
           messagesUrl: new URL(`${MESSAGE_URL}?userPublicId=${publicId}`, `${protocol}://${host}`),
           groupUrl: new URL(`${GROUP_URL}?userPublicId=${publicId}`, `${protocol}://${host}`),
-          first: Number(page) === 1 ? null : new URL(`${USERS_URL}?page=1`, `${protocol}://${host}`),
-          prev: Number(page) === 1 ? null: new URL(`${USERS_URL}?page=${Number(page) + 1}`, `${protocol}://${host}`)
         },
         profile: formattedProfile,
         groups: hasGroups
@@ -122,7 +129,21 @@ export const getAllUsers = async(protocol, host, { page = 1, limit = 5, searchTe
     });
 
     console.log(formattedUsers);
-    return formattedUsers; 
+    return {
+      meta: {
+        "current_page": page,
+        "per_page": limit,
+        "total_records": totalUsers.length,
+      },
+      links: {
+        first: Number(page) === 1 ? null : new URL(`${USERS_URL}?page=1`, `${protocol}://${host}`),
+        prev: Number(page) === 1 ? null: new URL(`${USERS_URL}?page=${Number(page) - 1}`, `${protocol}://${host}`),
+        self: new URL(`${USERS_URL}?page=${page}&limit=${limit}`, `${protocol}://${host}`),
+        next: Number(page) >= totalNumberOfPages ? null: new URL(`${USERS_URL}?page=${Number(page) + 1}`, `${protocol}://${host}`),
+        last: Number(page) === totalNumberOfPages ? null: new URL(`${USERS_URL}?page=${Math.floor(totalNumberOfPages)}`, `${protocol}://${host}`)
+      },
+      data: formattedUsers
+    }
 
   } catch (error) {
     console.log(error);
