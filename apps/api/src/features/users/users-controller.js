@@ -77,7 +77,7 @@ export const userByPublicIdGetRoute = [
   }
 ]
 
-// PUT '/users/:userPublic'
+// PATCH '/users/:userPublic'
 // Update a specific user by their public id
 // TODO: Only access if user is updating their own info (password) or user is an admin
 export const userPatchRoute = [
