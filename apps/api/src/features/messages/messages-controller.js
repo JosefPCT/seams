@@ -22,7 +22,7 @@ export const messagesPostRoute = [
 
     const { userPublicId, groupPublicId , content } = matchedData(req);
     const targetUserPublicId = userPublicId || req.user.publicId;
-    const createdMessage = await messagesServices.sendMessage({content}, targetUserPublicId, groupPublicId);
+    const createdMessage = await messagesServices.sendMessage({content}, targetUserPublicId, groupPublicId, req.protocol, req.get('host'));
     if(!createdMessage){
         return res.status(400).json({ error: true, message: "Message was not sent successfully"});
     }

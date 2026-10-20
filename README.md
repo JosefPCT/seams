@@ -246,8 +246,27 @@ TODO: potentially to refactor to either/or use the current logged in user's publ
 Accessible only be a logged in user
 Returns a JSON payload information of the created/sent message
 Accepts a req.body of:
-- userPublicId (UUID string)
+- userPublicId (UUID string) (public id of the user sending the message)
+- groupPublicId (UUID string) (public id of the chat group that will the message be sent to)
 - content (string)
+
+
+Returned object may include fields of:
+- id (UUID)
+- content 
+- sentAt
+- editedAt
+- sentBy (relation) (user)
+    - id (UUID)
+    - email
+- group (relation) (chat group)
+    - id (UUID)
+    - name
+- links
+    - self (link to the actual profile (/profiles/:id))
+    - sentBy (link to the related user)
+    - chatGroup (link to the related chat group)
+
 
 #### GET /messages?userPublicId={id}
 Returns a JSON payload information of the list of all messages in the database, or if passed a search query (userPublicId) filters the list to only show messages sent by the passed user

@@ -1,5 +1,28 @@
 import { prisma } from "@repo/database"
 
+// Helper Query Functions
+
+export const findUserByPublicId = async(publicId) => {
+  return await prisma.user.findUnique({
+    where: {
+      publicId: publicId
+    },
+    select: {
+      id: true
+    }
+  })
+}
+
+export const findChatGroupByPublicId = async(publicId) => {
+  return await prisma.chatGroup.findUnique({
+    where: {
+      publicId: publicId
+    },
+    select: {
+      id: true
+    }
+  })
+}
 
 
 
@@ -11,6 +34,24 @@ export const createMessage = async(messageData, userId, groupId) => {
       // Test value to allow creation of message, need to change to actual query (has to create or find the group chat first)
       groupId: groupId,
       content: messageData.content
+    },
+    select: {
+      publicId: true,
+      content: true,
+      sentAt: true,
+      editedAt: true,
+      sentBy: {
+        select: {
+          publicId: true,
+          email: true,
+        }
+      },
+      group: {
+        select: {
+          publicId: true,
+          name: true
+        }
+      }
     }
   })
 }
