@@ -110,6 +110,14 @@ export const updateProfileByPublicId = async(profilePublicId, data) => {
       publicId: profilePublicId
     },
     data,
+    select: {
+      publicId: true,
+      name: true,
+      pronouns: true,
+      bio: true,
+      createdAt: true,
+      updatedAt: true,
+    }
   })
 }
 

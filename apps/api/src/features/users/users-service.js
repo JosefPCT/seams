@@ -139,28 +139,22 @@ export const updateUser = async(userPublicId, userData) => {
     }
 
     const preparedData = preparePatchData(userData);
-    console.log("Prepared data Before");
-    console.log(preparedData)
-
     const { password, confirm_password, first_name, last_name, ...data } = preparedData
 
     let cleanData = {
       ...data,
     }
+
     if(password){
       const hashedPassword = await passwordUtils.genPassword(password);
       const hash = hashedPassword.hash;
       cleanData.hash = hash
     }
-
     // Can change to add a validation field for `addtl` instead
     cleanData.addtl = first_name + last_name
-    
-
-    console.log("Prepared data After");
-    console.log(preparedData)
 
     const updatedUser = await usersQueries.updateUserByPublicId(userPublicId, cleanData);
+
     const { publicId, ...rest } = updatedUser;
     const formattedUser = {
       id: publicId,

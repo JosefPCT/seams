@@ -78,26 +78,6 @@ export const fetchUserByPublicId = async(targetPublicId, selectObj) => {
       publicId: targetPublicId
     },
     select: selectObj
-    // include: {
-    //   profile: true,
-    //   messages: true,
-    //   groups: {
-    //     select: {
-    //       publicId: true,
-    //       role: true,
-    //       joinedAt: true,
-    //       group: {
-    //         select: {
-    //           publicId: true,
-    //           name: true,
-    //           createdAt: true,
-    //           updatedAt: true,
-    //           messages: true
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
   })
 }
 

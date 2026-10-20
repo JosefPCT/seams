@@ -2,6 +2,7 @@ import * as profileUtils from "./profiles-utils.js";
 import * as profileQueries from "./profiles-queries.js";
 import * as usersQueries from "../users/users-queries.js";
 import * as customError from "../../utils/extended-errors.js";
+import { preparePatchData } from "../../utils/organizeDataUtils.js";
 
 const USERS_URL = `/api/v1/users`;
 const PROFILES_URL = `/api/v1/profiles`
@@ -101,22 +102,19 @@ export const fetchSpecificProfile = async(publicId, { includeArr }, protocol, ho
 }
 // data object has potentially a field of either or all: name, pronouns, bio
 export const updateSpecificProfile = async(profilePublicId, data) => {
-  try {
-    console.log("Updating...");
-    console.log(profilePublicId);
-    console.log(data);
+  const profile = await profileQueries.getProfileByPublicId(profilePublicId);
+  if(!profile){
+    throw new customError.BadRequest(`Profile does not exist`);
+  }
 
-    const profile = await profileQueries.getProfileByPublicId(profilePublicId);
-    if(!profile){
-      throw new customError.BadRequest(`Profile does not exist`);
-    }
+  const preparedData = preparePatchData(data);
 
-    const updatedProfile = await profileQueries.updateProfileByPublicId(profilePublicId, data);
-    return updatedProfile;
+  const updatedProfile = await profileQueries.updateProfileByPublicId(profilePublicId, preparedData);
+  const { publicId, ...rest } = updatedProfile;
 
-  } catch (error) {
-    console.log(error);
-    throw error;
+  return {
+    id: publicId,
+    ...rest
   }
 }
 
