@@ -169,17 +169,11 @@ export const updateUser = async(userPublicId, userData) => {
 }
 
 export const deleteUser = async(userPublicId) => {
-  try {
-    const user = await usersQueries.findUserByPublicId(userPublicId);
-    if(!user){
-      throw new customError.BadRequest(`User does not exist`);
-    }
-
-    const deletedUser = await usersQueries.deleteUserByPublicId(userPublicId);
-    return deletedUser;
-
-  } catch (error) {
-    console.log(error);
-    throw error;
+  const user = await usersQueries.findUserByPublicId(userPublicId);
+  if(!user){
+    throw new customError.BadRequest(`User does not exist`);
   }
+
+  const deletedUser = await usersQueries.deleteUserByPublicId(userPublicId);
+  return deletedUser;
 }
