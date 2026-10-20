@@ -188,6 +188,11 @@ Returned Object may include fields of:
     - createdAt
     - updatedAt
     - user (relation)
+        - id
+        - email
+        - addtl
+        - isAdmin
+        - groups (relation)
     - links
         - self
         - usersUrl (url to the specific user attached to this profile ('/users/:publicId'))
@@ -196,6 +201,26 @@ Returned Object may include fields of:
 
 #### GET /profiles/:profilePublicId
 Returns a JSON of a specific profile based on the route parameter (:profilePublicId) the profile's public id
+Optional Search Query Parameters:
+- include (declared by repeating the include variable to create an array, valid values are: user, groups)
+
+Returned Object may include fields of:
+- id (public id)
+- name
+- pronouns
+- bio
+- createdAt
+- updatedAt
+- user (relation)
+    - id
+    - email
+    - addtl
+    - isAdmin
+    - groups (relation)
+- links
+    - self
+    - usersUrl (url to the specific user attached to this profile ('/users/:publicId'))
+
 
 #### PUT /profiles/:profilePublicId
 Updates a profile based on the route parameter(:profilePublicId) the profile's public id
