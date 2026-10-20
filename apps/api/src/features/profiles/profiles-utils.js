@@ -62,3 +62,28 @@ export const formatReturnProfilesList = (profiles, protocol, host) => {
 
   return formattedProfiles;
 };
+
+export const formatReturnProfile = (profile, protocol, host) => {
+  const hasUser = profile.user && profile.user !== null;
+
+  const { publicId: profilePublicIdAlias, user, ...restOfProfile} = profile;
+
+  let formattedUser = null;
+  if(hasUser){
+    const { publicId: userPublicIdAlias, ...restOfUser} = user;
+    formattedUser = {
+      id: userPublicIdAlias,
+      ...restOfUser
+    }
+  }
+
+  return {
+    id: profilePublicIdAlias,
+    ...restOfProfile,
+    links: {
+      self: new URL(`/api/v1/profile/${profilePublicIdAlias}`, `${protocol}://${host}`),
+      usersUrl: hasUser ? new URL(`/api/v1/users/${formattedUser.id}`, `${protocol}://${host}`) : undefined
+    },
+    user: formattedUser
+  }
+}

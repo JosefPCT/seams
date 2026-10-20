@@ -54,15 +54,18 @@ export const profilesGetRoute = [
 // Get a specific profile based on it's public ID
 export const specificProfileGetRoute = [
   async(req,res,next) => {
-    console.log("Specific Profile of public id:");
-    console.log(req.params.profilePublicId);
-    const profile = await profileService.fetchSpecificProfile(req.params);
+    const { profilePublicId } = req.params;
+    const { include } = req.query;
+
+    const includeArr = Array.isArray(include) ?  include : [include].filter(Boolean);
+
+    const profile = await profileService.fetchSpecificProfile(profilePublicId, { includeArr }, req.protocol, req.get('host'));
 
     if(!profile){
       return res.status(400).json({ error: true, message: "No profile with this public id is detected"});
     }
 
-    res.status(200).json({ message: `/profile/:profilePublicId GET route, profilePublicId: ${req.params.profilePublicId}`, data: profile});
+    res.status(200).json({ message: `/profile/:profilePublicId GET route, profilePublicId: ${profilePublicId}`, data: profile});
   }
 ]
 

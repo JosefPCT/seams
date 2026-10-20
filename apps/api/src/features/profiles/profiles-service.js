@@ -88,16 +88,17 @@ export const fetchAllProfiles = async({page=1, limit=5, searchTerm="", sortBy='c
     }
 }
 
-export const fetchSpecificProfile = async(params) => {
-  try {
-    const profile = await profileQueries.findSpecificProfileByProfileId(params.profilePublicId);
-    return profile;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-}
+export const fetchSpecificProfile = async(publicId, { includeArr }, protocol, host) => {
 
+  const profile = await profileQueries.findProfileByPublicId(publicId, profileUtils.prepareProfileSelectObj(includeArr));
+  if(!profile){
+    throw new customError.NotFound(`Profile with public id: ${userPublicId} not found`);
+  }
+  const formattedProfile = profileUtils.formatReturnProfile(profile, protocol, host);
+  
+  return formattedProfile;
+
+}
 // data object has potentially a field of either or all: name, pronouns, bio
 export const updateSpecificProfile = async(profilePublicId, data) => {
   try {

@@ -94,11 +94,12 @@ export const findAllProfiles = async({take, skip, searchTerm, isSearchTermUUID ,
   return profiles;
 }
 
-export const findSpecificProfileByProfileId = async(profilePublicId) => {
+export const findProfileByPublicId = async(profilePublicId, selectObj) => {
   const profile = await prisma.profile.findUnique({
     where: {
       publicId: profilePublicId
-    }
+    },
+    select: selectObj
   });
   return profile;
 }
