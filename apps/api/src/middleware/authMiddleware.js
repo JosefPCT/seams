@@ -20,6 +20,8 @@ const isUserNoProfile = (req, res, next) => {
 }
 
 const isOwnProfile = (req,res, next) => {
+  console.log("Checking if its own profile...");
+  console.log(req.user);
 
   req.user ? 
     req.user.profile.publicId === req.params.profilePublicId ? 

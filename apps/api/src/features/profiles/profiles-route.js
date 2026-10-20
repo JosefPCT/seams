@@ -10,7 +10,7 @@ profilesRouter.get('/', profilesController.profilesGetRoute);
 
 profilesRouter.get('/:profilePublicId', profilesController.specificProfileGetRoute);
 
-profilesRouter.put('/:profilePublicId', profilesController.specificProfileUpdateRoute);
+profilesRouter.patch('/:profilePublicId', profilesController.specificProfileUpdateRoute);
 
 profilesRouter.delete('/:profilePublicId', profilesController.specificProfileDeleteRoute);
 

@@ -222,7 +222,7 @@ Returned Object may include fields of:
     - usersUrl (url to the specific user attached to this profile ('/users/:publicId'))
 
 
-#### PUT /profiles/:profilePublicId
+#### PATCH /profiles/:profilePublicId
 Updates a profile based on the route parameter(:profilePublicId) the profile's public id
 Accessible only by a logged in user and if the user owns the profile.
 Also returns a JSON of the updated profile with the new updated information
@@ -230,6 +230,8 @@ Accepts a req.body mostly optional:
 - name
 - pronouns
 - bio
+
+Returns a formatted object that removes sensitive fields 
 
 #### DELETE /profiles:profilePublicId
 Deletes a profile based on the route parameter(:profilePublicId) the profile's public id

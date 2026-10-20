@@ -89,7 +89,7 @@ export const specificProfileUpdateRoute = [
       return res.status(400).json({ error: true, message: "Profile was not updated succesfully"});
     }
 
-    res.status(200).json({ message: `/profile/:profilePublicID PUT route, profilePublicId: ${profilePublicId}`, data: updatedProfile});
+    res.status(200).json({ message: `/profile/:profilePublicID PATCH route, profilePublicId: ${profilePublicId}`, data: updatedProfile});
   }
 ]
 
