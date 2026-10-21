@@ -3,6 +3,7 @@ import { createPrismaOrderByObjectArray } from "../../utils/createOrderByObj.js"
 import { isValidV4UUID } from "../../utils/stringUtils.js";
 import { prepareMessageSelectObject, formatReturnMessagesList, formatReturnMessageObject } from "./messages-utils.js";
 import * as customError from "../../utils/extended-errors.js";
+import { preparePatchData } from "../../utils/organizeDataUtils.js";
 
 // data object includes a field of: content
 export const sendMessage = async (data, userPublicId, groupPublicId, protocol, host) => {
@@ -92,32 +93,31 @@ export const getMessage = async(protocol, host, { messagePublicId, includeArr}) 
 }
 
 // data object fields include: content
-export const updateMessage = async(data, messagePublicId) => {
-  try {
-    const message = await messagesQueries.fetchMessageByPublicId(messagePublicId)
-    if(!message){
-      throw new customError.BadRequest(`Message by this id does not exist, aborting deletion operation`);
-    }
+export const updateMessage = async(messagePublicId, { content }) => {
 
-    const updatedMessage = await messagesQueries.updateMessageByPublicId(data, messagePublicId);
-    return updatedMessage;
-  } catch (error) {
-    console.log(error);
-    throw error;
+  const message = await messagesQueries.fetchMessageByPublicId(messagePublicId)
+  if(!message){
+    throw new customError.BadRequest(`Message by this id does not exist, aborting deletion operation`);
+  }
+  const preparedData = preparePatchData({content});
+
+  const updatedMessage = await messagesQueries.updateMessageByPublicId(messagePublicId, preparedData);
+
+  const { publicId, ...rest } = updatedMessage;
+  
+  return {
+    id: publicId,
+    ...rest,
   }
 }
 
 export const deleteMessage = async(messagePublicId) => {
-  try {
-    const message = await messagesQueries.fetchMessageByPublicId(messagePublicId)
-    if(!message){
-      throw new customError.BadRequest(`Message by this id does not exist, aborting deletion operation`);
-    }
 
-    const deletedMessage = await messagesQueries.deleteMessageByPublicId(messagePublicId);
-    return deletedMessage;
-  } catch (error) {
-    console.log(error);
-    throw error;
+  const message = await messagesQueries.fetchMessageByPublicId(messagePublicId)
+  if(!message){
+    throw new customError.BadRequest(`Message by this id does not exist, aborting deletion operation`);
   }
+
+  const deletedMessage = await messagesQueries.deleteMessageByPublicId(messagePublicId);
+  return deletedMessage;
 }

@@ -120,12 +120,18 @@ export const fetchMessageByPublicId = async(targetPublicId, selectObj) => {
   })
 }
 
-export const updateMessageByPublicId = async(data, targetPublicId) => {
+export const updateMessageByPublicId = async(targetPublicId, data) => {
   return await prisma.message.update({
     where: {
       publicId: targetPublicId
     },
-    data
+    data: data,
+    select: {
+      publicId: true,
+      content: true,
+      sentAt: true,
+      editedAt: true,
+    }
   })
 }
 

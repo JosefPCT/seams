@@ -345,7 +345,12 @@ Updates the content of a specific message based on it route parameter (:messageP
 Also returns a JSON data of the updated message
 Accessible only by a logged in user and if that user owns the message
 Accepts a req.body of mostly optional:
-- content
+- content (string)
+
+NOTE: Can only edit the content, not the connection between the user and the group
+
+Returns a formatted object without sensitive fields
+
 
 #### DELETE /messages/:messagePublicId
 Deletes a specific message based on it route parameter (:messagePublicId), the message's public id in the database

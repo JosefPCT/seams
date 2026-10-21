@@ -66,7 +66,7 @@ export const messageByPublicIdGetRoute = [
 // Updates the content of a specific message based on it route parameter (:messagePublicId), the message's public id in the database
 // Also returns a JSON data of the updated message
 // Checks if the validated data object is empty, and returns a proper status and message as a JSON
-export const messagePutRoute = [
+export const messagePatchRoute = [
   isAuth,
   isOwnMessage,
   validation.validateUpdateMessage,
@@ -82,8 +82,9 @@ export const messagePutRoute = [
     }
 
     const { messagePublicId } = req.params;
+    const { content } = matchedData(req)
 
-    const editedMessage = await messagesServices.updateMessage(matchedData(req), messagePublicId);
+    const editedMessage = await messagesServices.updateMessage(messagePublicId, { content } );
     if(!editedMessage){
         return res.status(400).json({ error: true, message: "Editing the message not successful"});
     }
@@ -104,6 +105,6 @@ export const messageDeleteRoute = [
     if(!deletedMessage){
         return res.status(400).json({ error: true, message: "Deleting the message not successful"});
     }
-    res.status(200).json({ message: 'DELETE /messages/:messagePublicId route', data: deletedMessage});
+    res.status(200).json({ message: 'DELETE /messages/:messagePublicId route, deleting successful'});
   }
 ]

@@ -10,7 +10,7 @@ messagesRouter.get('/', messagesController.messagesGetRoute);
 
 messagesRouter.get('/:messagePublicId', messagesController.messageByPublicIdGetRoute);
 
-messagesRouter.put('/:messagePublicId', messagesController.messagePutRoute);
+messagesRouter.patch('/:messagePublicId', messagesController.messagePatchRoute);
 
 messagesRouter.delete('/:messagePublicId', messagesController.messageDeleteRoute);
 
