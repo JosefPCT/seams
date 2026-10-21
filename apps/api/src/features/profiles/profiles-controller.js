@@ -36,11 +36,11 @@ export const profilesPostRoute = [
 // TODO: If a search parameter is included (user_public_id), query in to the user model to get the internal id and use the `id` for a condition on the search query
 export const profilesGetRoute = [
   async(req, res, next) => {
-    const { page, limit, searchTerm, sortOrder, sortBy, include } = req.query;
+    const { page, limit, searchTerm, sort, include } = req.query;
     
     const includeArr = Array.isArray(include) ?  include : [include].filter(Boolean);
     
-    const profiles = await profileService.fetchAllProfiles({page, limit, searchTerm, sortOrder, sortBy, includeArr}, req.protocol, req.get('host'));
+    const profiles = await profileService.fetchAllProfiles({page, limit, searchTerm, sort, includeArr}, req.protocol, req.get('host'));
     if(!profiles){
       return res.status(400).json({ error: true, message: "No Profiles detected"});
     }

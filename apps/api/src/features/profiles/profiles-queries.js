@@ -60,12 +60,13 @@ export const createProfileByUserId = async(profileData) => {
   return newProfile;
 }
 
-export const findAllProfiles = async({take, skip, searchTerm, isSearchTermUUID , sortOrder, sortBy}, selectObj) => {
+export const findAllProfiles = async({take, skip, searchTerm, isSearchTermUUID , createdSortObj, createdSelectObj}) => {
   const profiles = await prisma.profile.findMany({
     take: take,
     skip: skip,
     where: {
       OR: [
+        { publicId: isSearchTermUUID ? searchTerm : undefined },
         { name: { contains: searchTerm, mode: "insensitive" } },
         { bio: { contains: searchTerm, mode: "insensitive"}},
         { pronouns: { contains: searchTerm, mode: 'insensitive'}},
@@ -86,10 +87,8 @@ export const findAllProfiles = async({take, skip, searchTerm, isSearchTermUUID ,
         }
       ],
     },
-    orderBy: {
-      [sortBy]: sortOrder
-    },
-    select: selectObj
+    orderBy: createdSortObj,
+    select: createdSelectObj
   });
   return profiles;
 }

@@ -3,6 +3,8 @@ import * as customError from "../../utils/extended-errors.js";
 import * as usersUtils from "./users-utils.js"
 
 import * as passwordUtils from '../../utils/passwordUtils.js';
+import { isValidV4UUID } from "../../utils/stringUtils.js";
+import { createPrismaOrderByObjectArray } from "../../utils/createOrderByObj.js";
 import { preparePatchData } from "../../utils/organizeDataUtils.js";
 
 // Constants
@@ -48,7 +50,7 @@ export const createUser = async(userData) => {
 // Optional search query parameters (page, limit, searchTerm, sortBy, sortOrder, include)
 // Uses a utility function from another file that creates the select block for the prisma query
 // Filters out sensitive data fields (using destructuring and creating a new object) before returning
-export const getAllUsers = async(protocol, host, { page = 1, limit = 5, searchTerm = "", sortBy='id', sortOrder='asc', includeArr=[]} = {} ) => {
+export const getAllUsers = async(protocol, host, { page = 1, limit = 5, searchTerm = "", sort = "id", includeArr=[]} = {} ) => {
   try {
 
     // The option object for the query layer to use
@@ -56,14 +58,15 @@ export const getAllUsers = async(protocol, host, { page = 1, limit = 5, searchTe
       take: Number(limit),
       skip: (Number(page) * Number(limit)) - limit,
       searchTerm,
-      sortOrder,
-      sortBy,
+      isSearchTermUUID: isValidV4UUID(searchTerm),
+      createdSortObj: createPrismaOrderByObjectArray(sort),
+      createdSelectObj: usersUtils.prepareUsersSelectObj(includeArr)
     }
 
     const totalUsers = await usersQueries.getAllUsersLength();
-    const totalNumberOfPages = totalUsers.length / Number(limit);
+    const totalNumberOfPages = totalUsers.length / Number(limit) <= 1 ? 1 : Math.ceil(totalUsers.length / Number(limit))
 
-    const users = await usersQueries.fetchAllUsers(options, usersUtils.prepareUsersSelectObj(includeArr));
+    const users = await usersQueries.fetchAllUsers(options);
 
     if (users.length === 0) {
       return [];
@@ -79,11 +82,11 @@ export const getAllUsers = async(protocol, host, { page = 1, limit = 5, searchTe
         "total_records": totalUsers.length,
       },
       links: {
-        first: Number(page) === 1 ? null : new URL(`${USERS_URL}?page=1`, `${protocol}://${host}`),
+        first: new URL(`${USERS_URL}?page=1`, `${protocol}://${host}`),
         prev: Number(page) === 1 ? null: new URL(`${USERS_URL}?page=${Number(page) - 1}`, `${protocol}://${host}`),
         self: new URL(`${USERS_URL}?page=${page}&limit=${limit}`, `${protocol}://${host}`),
         next: Number(page) >= totalNumberOfPages ? null: new URL(`${USERS_URL}?page=${Number(page) + 1}`, `${protocol}://${host}`),
-        last: Number(page) === totalNumberOfPages ? null: new URL(`${USERS_URL}?page=${Math.floor(totalNumberOfPages)}`, `${protocol}://${host}`)
+        last: new URL(`${USERS_URL}?page=${totalNumberOfPages}`, `${protocol}://${host}`)
       },
       data: formattedUsers
     }

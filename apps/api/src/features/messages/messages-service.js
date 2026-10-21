@@ -66,7 +66,7 @@ export const getAllMessages = async({page = 1, limit = 5 , searchTerm = "", sort
   const formattedMessages = await formatReturnMessagesList(messages, protocol, host)
 
   const totalMessages = await messagesQueries.getTotalMessages();
-  const totalNumberOfPages = totalMessages.length / Number(limit) < 1 ? 1 : Math.round(totalMessages.length / Number(limit))
+  const totalNumberOfPages = totalMessages.length / Number(limit) < 1 ? 1 : Math.ceil(totalMessages.length / Number(limit))
   return {
     meta: {
       "current_page": page,

@@ -30,15 +30,15 @@ export const usersPostRoute = [
 
 // GET '/users'
 // Shows a list of all users
-// Req query: page (int/number), limit (int/number), searchTerm(string), sortOrder('asc'/'desc'), sortBy(ideally a valid field to sort by), and include(array of strings on what relation to include (profile,messages,groups))
+// Req query: page (int/number), limit (int/number), searchTerm(string), sort(strings separated by comma, can be denoted with - to indicate desc order), and include(array of strings on what relation to include (profile,messages,groups))
 export const usersGetRoute = [
   async(req, res, next) => {
-    const { page, limit, searchTerm, sortOrder, sortBy, include } = req.query;
+    const { page, limit, searchTerm, sort, include } = req.query;
     
     // If only one value is passed to include, makes sure it is turned into an array instead of just a string
     const includeArr = Array.isArray(include) ?  include : [include].filter(Boolean);
 
-    const users = await usersService.getAllUsers(req.protocol, req.get('host'), { page, limit, searchTerm, sortBy, sortOrder, includeArr });
+    const users = await usersService.getAllUsers(req.protocol, req.get('host'), { page, limit, searchTerm, sort, includeArr });
 
     res.status(200).json({ message: "You are in GET '/users' route", data: users});
   }
@@ -108,8 +108,6 @@ export const userPatchRoute = [
 export const userDeleteRoute = [
   async(req, res, next) => {
     const { userPublicId } = req.params;
-
-    
 
     const deletedUser = await usersService.deleteUser(userPublicId);
     if(!deletedUser){

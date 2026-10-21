@@ -54,15 +54,15 @@ Returned Object may include fields of:
 - addtl
 - isAdmin
 
-#### GET /users?page={num}&limit={num}&searchTerm={string}&sortBy={validField}&sortOrder={'asc'/'desc'}&include=profile&include=messsages&include=groups
+#### GET /users?page={num}&limit={num}&searchTerm={string}&sort={string1,string2,-string3}&include=profile&include=messsages&include=groups
 Returns a JSON of a list of users in the database, includes a URL to the user's profile
 Optional Search Query Parameters:
 - page(number) and
 - limit(number) for pagination
 - searchTerm (string) for filtering
-- sortBy(a valid field to search for) and
-    sortBy valid values (id, publicId, email, addtl, isAdmin)
-- sortOrder(only two options: asc/desc) for sorting
+- sort(fields separated by comma, add - symbol if descending, no symbol means ascending) for sorting (i.e sort=name,-createdAt)
+    - sort valid values (id, publicId, email, addtl, isAdmin)
+    - Sorting priority will depend on what field was declared first (i.e sort=content,-createdAt) content will be the primary sort
 - include (declared by repeating the include variable to create an array, valid values are: profile, messages, and groups)
 
 Returned Object may include fields of:
@@ -158,14 +158,15 @@ Returned object may include fields of:
     - self (link to the actual profile (/profiles/:id))
     - usersUrl (link to the related user)
 
-#### GET /profiles?page={num}&limit={num}&searchTerm={string|UUID}&sortBy={validField}&sortOrder=(asc|desc)&include=user&include=groups
+#### GET /profiles?page={num}&limit={num}&searchTerm={string|UUID}&sort={string1,string2,-string3}&include=user&include=groups
 Returns a JSON  of all created profiles if no query is given
 If given a query of 'userPublicId', filters the selection of profiles to only display profile/profiles created by a certain user 
 Optional Search Query Parameters:
 - page(number) and limit(number) for pagination
 - searchTerm (string) for filtering, you can also use a UUID instead of a string to look for an exact match of a public ID
-- sortBy(a valid field to search for) and sortOrder(only two options: asc/desc) for sorting
-    - sortBy valid values (id, publicId, name, pronouns, bio, createdAt, updatedAt)
+- sort(fields separated by comma, add - symbol if descending, no symbol means ascending) for sorting (i.e sort=name,-createdAt)
+    - sort valid values (id, publicId, name, pronouns, bio, createdAt, updatedAt)
+    - Sorting priority will depend on what field was declared first (i.e sort=content,-createdAt) content will be the primary sort
 - include (declared by repeating the include variable to create an array, valid values are: users, groups) 
 (To implement: add more includes such as: user's messages (double nested))
 

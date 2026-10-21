@@ -4,6 +4,7 @@ import * as usersQueries from "../users/users-queries.js";
 import * as customError from "../../utils/extended-errors.js";
 import { preparePatchData } from "../../utils/organizeDataUtils.js";
 import { isValidV4UUID }from "../../utils/stringUtils.js";
+import { createPrismaOrderByObjectArray } from "../../utils/createOrderByObj.js";
 
 const USERS_URL = `/api/v1/users`;
 const PROFILES_URL = `/api/v1/profiles`
@@ -49,7 +50,7 @@ export const createProfile = async(profileData, protocol, host) => {
 }
 
 // Determines if userPublicId query paramter is present, if it is uses it in a query, if not, removes it from the query (undefined)
-export const fetchAllProfiles = async({page=1, limit=5, searchTerm="", sortBy='createdAt', sortOrder='asc', includeArr=[]} = {}, protocol, host) => {
+export const fetchAllProfiles = async({page=1, limit=5, searchTerm="", sort="createdAt", includeArr=[]} = {}, protocol, host) => {
 
   // The option object for the query layer to use
   const options = {
@@ -57,15 +58,15 @@ export const fetchAllProfiles = async({page=1, limit=5, searchTerm="", sortBy='c
     skip: (Number(page) * Number(limit)) - limit,
     searchTerm,
     isSearchTermUUID: isValidV4UUID(searchTerm),
-    sortOrder,
-    sortBy,
+    createdSortObj: createPrismaOrderByObjectArray(sort),
+    createdSelectObj: profileUtils.prepareProfileSelectObj(includeArr)
   }
 
   const totalProfiles = await profileQueries.getTotalProfiles();
-  const totalNumberOfPages = Math.floor(totalProfiles.length / Number(limit)) < 1 ? 1 : Math.floor(totalProfiles.length / Number(limit))
+  const totalNumberOfPages = totalProfiles.length / Number(limit) <= 1 ? 1 : Math.ceil(totalProfiles.length / Number(limit))
 
 
-  const profiles = await profileQueries.findAllProfiles(options, profileUtils.prepareProfileSelectObj(includeArr))
+  const profiles = await profileQueries.findAllProfiles(options)
   if (profiles.length === 0) {
       return [];
   }
@@ -80,11 +81,11 @@ export const fetchAllProfiles = async({page=1, limit=5, searchTerm="", sortBy='c
         "total_records": totalProfiles.length,
       },
       links: {
-        first: Number(page) === 1 ? null : new URL(`${PROFILES_URL}?page=1`, `${protocol}://${host}`),
+        first: new URL(`${PROFILES_URL}?page=1`, `${protocol}://${host}`),
         prev: Number(page) === 1 ? null: new URL(`${PROFILES_URL}?page=${Number(page) - 1}`, `${protocol}://${host}`),
         self: new URL(`${PROFILES_URL}?page=${page}&limit=${limit}`, `${protocol}://${host}`),
         next: Number(page) >= totalNumberOfPages ? null: new URL(`${PROFILES_URL}?page=${Number(page) + 1}`, `${protocol}://${host}`),
-        last: Number(page) === totalNumberOfPages ? null: new URL(`${PROFILES_URL}?page=${totalNumberOfPages}`, `${protocol}://${host}`)
+        last: new URL(`${PROFILES_URL}?page=${totalNumberOfPages}`, `${protocol}://${host}`)
       },
       data: formattedProfiles
     }
