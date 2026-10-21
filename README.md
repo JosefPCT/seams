@@ -268,8 +268,48 @@ Returned object may include fields of:
     - chatGroup (link to the related chat group)
 
 
-#### GET /messages?userPublicId={id}
+#### GET /messages?page={num}&limit={num}&searchTerm={string|UUID}&sort={string1,string2,-string3}&include=sentBy&include=group
 Returns a JSON payload information of the list of all messages in the database, or if passed a search query (userPublicId) filters the list to only show messages sent by the passed user
+Optional Search Query Parameters:
+- page(number) and limit(number) for pagination
+- searchTerm (string) for filtering, you can also use a UUID instead of a string to look for an exact match of a public ID
+- sort(fields separated by comma, add - symbol if descending, no symbol means ascending) for sorting (i.e sort=name,-createdAt)
+    - sort valid values (content, sentAt, editedAt, id)
+    - Sorting priority will depend on what field was declared first (i.e sort=content,-createdAt) content will be the primary sort
+- include (declared by repeating the include variable to create an array, valid values are: users, groups) 
+(To implement: add more includes such as: user's messages (double nested))
+
+Returned Object may include fields of:
+- meta:
+    - current_page
+    - per_page
+    - total_records
+- links:
+    - first
+    - prev 
+    - self
+    - next
+    - last
+- data:
+    - id (public id)
+    - content
+    - sentAt
+    - editedAt
+    - sentBy (relation (user))
+        - id
+        - email
+        - addtl
+        - isAdmin
+        - groups (relation)
+    - group (relation (chat-group))
+        - id
+        - name
+        - createdAt
+        - updatedAt
+    - links
+        - self
+        - sentBy (url to the specific user attached to this message ('/users/:publicId'))
+        - group (url to the specific chat group attached to this message)
 
 
 #### GET /messages/:messagePublicId

@@ -3,6 +3,7 @@ import * as profileQueries from "./profiles-queries.js";
 import * as usersQueries from "../users/users-queries.js";
 import * as customError from "../../utils/extended-errors.js";
 import { preparePatchData } from "../../utils/organizeDataUtils.js";
+import { isValidV4UUID }from "../../utils/stringUtils.js";
 
 const USERS_URL = `/api/v1/users`;
 const PROFILES_URL = `/api/v1/profiles`
@@ -55,7 +56,7 @@ export const fetchAllProfiles = async({page=1, limit=5, searchTerm="", sortBy='c
     take: Number(limit),
     skip: (Number(page) * Number(limit)) - limit,
     searchTerm,
-    isSearchTermUUID: profileUtils.isValidV4UUID(searchTerm),
+    isSearchTermUUID: isValidV4UUID(searchTerm),
     sortOrder,
     sortBy,
   }

@@ -35,8 +35,9 @@ export const messagesPostRoute = [
 // Returns a JSON list of all messages or if userPublicId search query is present filters only messages sent by that user
 export const messagesGetRoute = [
   async(req, res, next) => {
-    const { userPublicId } = req.query;
-    const messages = await messagesServices.getAllMessages(userPublicId);
+    const { page, limit, searchTerm, sort, include } = req.query;
+    const includeArr = Array.isArray(include) ?  include : [include].filter(Boolean);
+    const messages = await messagesServices.getAllMessages({ page, limit, searchTerm, sort, includeArr}, req.protocol, req.get('host'));
     if(!messages){
         return res.status(400).json({ error: true, message: "No messages yet"});
     }

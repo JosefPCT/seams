@@ -24,6 +24,13 @@ export const findChatGroupByPublicId = async(publicId) => {
   })
 }
 
+export const getTotalMessages = async () => {
+  return await prisma.message.findMany({
+    select: {
+      id: true
+    }
+  })
+}
 
 
 // Main Queries
@@ -56,16 +63,52 @@ export const createMessage = async(messageData, userId, groupId) => {
   })
 }
 
-export const fetchAllMessages = async(targetPublicId) => {
+export const fetchAllMessages = async({take, skip, searchTerm, isSearchTermUUID, createdSortObj, createdSelectObj}) => {
   return await prisma.message.findMany({
+    take: take,
+    skip: skip,
     where: {
-      sentBy: {
-        is: {
-          publicId: targetPublicId
+      OR: [
+        { publicId: isSearchTermUUID ? searchTerm: undefined },
+        { content: { contains: searchTerm, mode: 'insensitive'}},
+        {
+          sentBy: isSearchTermUUID
+            ? {
+                is: {
+                  publicId: searchTerm,
+                },
+              }
+            : undefined,
+        },
+        {
+          group: isSearchTermUUID
+            ? {
+              is: {
+                publicId: searchTerm,
+              }
+            } : undefined
+        },
+        {
+          sentBy: { is: {
+            email: { contains: searchTerm, mode: 'insensitive'}
+          }}
+        },
+        {
+          sentBy: { is: {
+            addtl: { contains: searchTerm, mode: 'insensitive'}
+          }}
+        },
+        {
+          group: { is: {
+            name: { contains: searchTerm, mode: 'insensitive'}
+          }}
         }
-      }
-    }
-  })
+      ],
+    },
+    orderBy: createdSortObj,
+    select: createdSelectObj
+  });
+  
 }
 
 export const fetchMessageByPublicId = async(targetPublicId) => {

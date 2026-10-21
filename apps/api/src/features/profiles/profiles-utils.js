@@ -1,10 +1,3 @@
-
-
-export const isValidV4UUID = (str) => {
-  const v4Regex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
-  return v4Regex.test(str);
-}
-
 // Receives an array object that will be checked if certain strings (relations) are present
 // relations: user( nested relation of user: profiles, messages, groups)
 export const prepareProfileSelectObj = (targetArray) => {
