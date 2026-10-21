@@ -1,7 +1,7 @@
 import * as messagesQueries from "./messages-queries.js";
 import { createPrismaOrderByObjectArray } from "../../utils/createOrderByObj.js";
 import { isValidV4UUID } from "../../utils/stringUtils.js";
-import { prepareMessageSelectObject, formatReturnMessagesList } from "./messages-utils.js";
+import { prepareMessageSelectObject, formatReturnMessagesList, formatReturnMessageObject } from "./messages-utils.js";
 import * as customError from "../../utils/extended-errors.js";
 
 // data object includes a field of: content
@@ -85,14 +85,10 @@ export const getAllMessages = async({page = 1, limit = 5 , searchTerm = "", sort
 
 }
 
-export const getMessage = async(messagePublicId) => {
-  try {
-    const message = await messagesQueries.fetchMessageByPublicId(messagePublicId);
-    return message;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+export const getMessage = async(protocol, host, { messagePublicId, includeArr}) => {
+  const message = await messagesQueries.fetchMessageByPublicId(messagePublicId, prepareMessageSelectObject(includeArr));
+  const formattedMessage = formatReturnMessageObject(message, protocol, host);
+  return formattedMessage;
 }
 
 // data object fields include: content

@@ -51,7 +51,9 @@ export const messagesGetRoute = [
 export const messageByPublicIdGetRoute = [
   async(req, res, next) => {
     const { messagePublicId } = req.params;
-    const message = await messagesServices.getMessage(messagePublicId);
+    const { include } = req.query;
+    const includeArr = Array.isArray(include) ?  include : [include].filter(Boolean);
+    const message = await messagesServices.getMessage(req.protocol, req.get('host'), {messagePublicId, includeArr});
     if(!message){
         return res.status(400).json({ error: true, message: "No messages with this particular public id"});
     }

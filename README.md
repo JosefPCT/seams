@@ -277,7 +277,7 @@ Optional Search Query Parameters:
 - sort(fields separated by comma, add - symbol if descending, no symbol means ascending) for sorting (i.e sort=name,-createdAt)
     - sort valid values (content, sentAt, editedAt, id)
     - Sorting priority will depend on what field was declared first (i.e sort=content,-createdAt) content will be the primary sort
-- include (declared by repeating the include variable to create an array, valid values are: users, groups) 
+- include (declared by repeating the include variable to create an array, valid values are: sentBy, group) 
 (To implement: add more includes such as: user's messages (double nested))
 
 Returned Object may include fields of:
@@ -315,6 +315,30 @@ Returned Object may include fields of:
 
 #### GET /messages/:messagePublicId
 Returns a JSON data of a specific message based on it route parameter (:messagePublicId), the message's public id in the database
+Optional Search Query Parameters:
+- include (declared by repeating the include variable to create an array, valid values are: sentBy, group)
+
+Returned Object may include fields of:
+- id (public id)
+- content
+- sentAt
+- editedAt
+- sentBy (relation (user))
+    - id
+    - email
+    - addtl
+    - isAdmin
+    - groups (relation)
+- group (relation (chat-group))
+    - id
+    - name
+    - createdAt
+    - updatedAt
+- links
+    - self
+    - sentBy (url to the specific user attached to this message ('/users/:publicId'))
+    - group (url to the specific group attached to this messsage)
+
 
 #### PUT /messages/:messagePublicId
 Updates the content of a specific message based on it route parameter (:messagePublicId), the message's public id in the database

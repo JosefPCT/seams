@@ -68,3 +68,41 @@ export const formatReturnMessagesList = (messages, protocol, host) => {
   })
   return formattedMessages;
 }
+
+export const formatReturnMessageObject = (message, protocol, host) => {
+  const hasSentBy = message.sentBy && message.sentBy !== null;
+  const hasGroup = message.group && message.group !== null;
+
+  const { publicId: messagePublicIdAlias, sentBy, group, ...restOfMessage } = message;
+
+  let formattedSentBy = undefined;
+  if(hasSentBy){
+    const { publicId: sentByPublicIdAlias, ...restofSentBy} = sentBy;
+    formattedSentBy = {
+    id: sentByPublicIdAlias,
+    ...restofSentBy 
+    }
+  }
+
+  let formattedGroup = undefined;
+  if(hasGroup){
+    const { publicId: groupPublicIdAlias, ...restOfGroup} = group;
+    formattedGroup = {
+    id: groupPublicIdAlias,
+    ...restOfGroup
+    }
+  }
+
+  return {
+    id: messagePublicIdAlias,
+    ...restOfMessage,
+    links: {
+      self: new URL(`/api/v1/messages/${messagePublicIdAlias}`, `${protocol}://${host}`),
+      sentBy: hasSentBy ? new URL(`/api/v1/users/${formattedSentBy.id}`, `${protocol}://${host}`) : undefined,
+      group: hasGroup ? new URL(`/api/v1/chat-groups/${formattedGroup.id}`, `${protocol}://${host}`) : undefined,
+    },
+    sentBy: formattedSentBy,
+    group: formattedGroup,
+  }
+
+}

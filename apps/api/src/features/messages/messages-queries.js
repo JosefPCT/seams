@@ -111,11 +111,12 @@ export const fetchAllMessages = async({take, skip, searchTerm, isSearchTermUUID,
   
 }
 
-export const fetchMessageByPublicId = async(targetPublicId) => {
+export const fetchMessageByPublicId = async(targetPublicId, selectObj) => {
   return await prisma.message.findUnique({
     where: {
       publicId: targetPublicId
-    }
+    },
+    select: selectObj
   })
 }
 
