@@ -1,3 +1,67 @@
+// Object creation
+
+export const prepareChatParticipantsWhereObj = (searchTerm, isSearchTermUUID) => {
+  const orConditions = [];
+
+  isSearchTermUUID
+    ? orConditions.push(
+        { publicId: searchTerm },
+        { user: { is: { publicId: searchTerm } } },
+        { user: { is: { profile: { is: { publicId: searchTerm } } } } },
+        { group: { is: { publicId: searchTerm } } },
+      )
+    : "";
+
+  ["ADMIN", "MEMBER"].includes(searchTerm)
+    ? orConditions.push({ role: searchTerm })
+    : "";
+
+  orConditions.push(
+    { user: { is: { email: { contains: searchTerm, mode: 'insensitive'}}}},
+    { user: { is: { addtl: { contains: searchTerm, mode: 'insensitive'}}}},
+    { user: { is: { profile: { is: { name: { contains: searchTerm, mode: 'insensitive' }}}}}},
+    { group: { is: { name: { contains: searchTerm, mode: 'insensitive'}}}}
+  )
+
+  const whereClause = orConditions.length > 0 ? { OR: orConditions } : {}
+  return whereClause
+}
+
+export const prepareChatParticipantsSelectObj = (targetArray) => {
+  const selectObj = {
+    publicId: true,
+    role: true,
+    joinedAt: true,
+    user: targetArray.includes("user")
+      ? {
+          select: {
+            publicId: true,
+            email: true,
+            addtl: true,
+            profile: {
+              select: {
+                publicId: true,
+                name: true,
+              },
+            },
+          },
+        }
+      : undefined,
+    group: targetArray.includes("group")
+      ? {
+          select: {
+            publicId: true,
+            name: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        }
+      : undefined,
+  };
+  return selectObj;
+}
+
+//  Formatting
 export const formatReturnCreatedParticipantObject = (participant, protocol, host) => {
   const { publicId: participantPublicIdAlias, user, group, ...restOfParticipant} = participant;
   const { publicId: userPublicIdAlias, profile, ...restOfUser } = user;
@@ -27,7 +91,7 @@ export const formatReturnCreatedParticipantObject = (participant, protocol, host
   }
 }
 
-export const formatReturnCreatedBatchParticipantsArray = (participants, protocol, host) => {
+export const formatReturnParticipantsArray = (participants, protocol, host) => {
   const formattedBatchParticipants = participants.map(({ publicId: participantPublicIdAlias, user, group, ...restOfParticipants }) => {
     const hasUser = user && user !== null;
     const hasGroup = group && group !== null;

@@ -383,7 +383,7 @@ Optional Search Query Parameters:
 - page(number) and limit(number) for pagination
 - searchTerm (string) for filtering, you can also use a UUID instead of a string to look for an exact match of a public ID
 - sort(fields separated by comma, add - symbol if descending, no symbol means ascending) for sorting (i.e sort=name,-createdAt)
-    - sort valid values (content, sentAt, editedAt, id)
+    - sort valid values (id, publicId, name, createdAt, updatedAt)
     - Sorting priority will depend on what field was declared first (i.e sort=content,-createdAt) content will be the primary sort
 - include (declared by repeating the include variable to create an array, valid values are: participants, messages) 
 
@@ -557,7 +557,50 @@ Returned array of objects may include fields of:
     - user (url to user linked)
     - chatGroup (url to the chat group linked)
 
-#### GET /chat-participants?userPublicId=uuidString&groupPublicId=uuidString
+#### GET /chat-participants?page={num}&limit={num}&searchTerm={string|UUID|role}&sort={string1,string2,-string3}&include=user&include=group
+Returns a JSON payload information of the list of all chat participants in the database, or if passed a search query (searchTerm) filters the list to only show chat participants that passes the criteria
+Optional Search Query Parameters:
+- page(number) and limit(number) for pagination
+- searchTerm (string) for filtering, you can also use a UUID instead of a string to look for an exact match of a public ID, and an enum role defined in the schema (i.e MEMBER / ADMIN)
+- sort(fields separated by comma, add - symbol if descending, no symbol means ascending) for sorting (i.e sort=name,-createdAt)
+    - sort valid values (id, publicId, role, joinedAt)
+    - Sorting priority will depend on what field was declared first (i.e sort=content,-createdAt) content will be the primary sort
+- include (declared by repeating the include variable to create an array, valid values are: participants, messages) 
+
+Returned Object may include fields of:
+- meta:
+    - current_page
+    - per_page
+    - total_records
+    - total_number_of_pages
+- links:
+    - first
+    - prev 
+    - self
+    - next
+    - last
+- data:
+    - id (UUID)
+    - role
+    - joinedAt
+    - user (relation - user)
+        - id
+        - email
+        - addtl
+        - profile (relation - profile)
+            - id
+            - name
+    - group (relation - chat group)
+        - id
+        - name
+        - createdAt
+        - updatedAt
+    - links
+        - self (url to the GET route of the created chat participant)
+        - user (url to user linked)
+        - chatGroup (url to the chat group linked)
+
+
 
 #### GET /chat-participants/:publicId
 

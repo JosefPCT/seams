@@ -24,6 +24,15 @@ export const getIdOfGroupByPublicId = async(targetPublicId) => {
   })
 }
 
+export const getTotalChatParticipants = async({searchTerm, isSearchTermUUID, createdWhereObj}) => {
+  return await prisma.chatParticipant.findMany({
+    where: createdWhereObj,
+    select: {
+      id: true
+    }
+  })
+}
+
 // Main Query Functions
 
 export const createChatParticipants = async(data) => {
@@ -91,12 +100,13 @@ export const createManyChatParticipants = async(data) => {
   })
 }
 
-export const fetchAllChatParticipants = async(whereObj={}) => {
+export const fetchAllChatParticipants = async({take, skip, searchTerm, isSearchTermUUID, createdWhereObj, createdSortObj, createdSelectObj}) => {
   return await prisma.chatParticipant.findMany({
-    where: whereObj,
-    include: {
-      group: true
-    }
+    take: take,
+    skip: skip,
+    where: createdWhereObj,
+    orderBy: createdSortObj,
+    select: createdSelectObj
   })
 }
 

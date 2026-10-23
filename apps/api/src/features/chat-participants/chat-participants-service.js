@@ -3,6 +3,8 @@ import { BadRequest } from "../../utils/extended-errors.js";
 import { preparePatchData, preparePatchDataAlternative } from "../../utils/organizeDataUtils.js";
 import * as participantsUtils from "./chat-participants-utils.js";
 import * as customError from "../../utils/extended-errors.js"
+import { createPrismaOrderByObjectArray } from "../../utils/createOrderByObj.js";
+import { isValidV4UUID } from "../../utils/stringUtils.js";
 
 export const createChatParticipants = async( protocol, host, {userPublicId, groupPublicId, role, joinedAt} ) => {
   
@@ -56,7 +58,7 @@ export const createBatchChatParticipants = async(protocol, host, { participants 
   const promisedData = await Promise.all(processingData)
 
   const createdBatchData = await participantsQuery.createManyChatParticipants(promisedData);
-  const formattedBatchParticipants = await participantsUtils.formatReturnCreatedBatchParticipantsArray(createdBatchData, protocol, host);
+  const formattedBatchParticipants = await participantsUtils.formatReturnBatchParticipantsArray(createdBatchData, protocol, host);
 
   console.log("showing formatted batch participants before returning to controller");
   console.log(formattedBatchParticipants)
@@ -64,31 +66,41 @@ export const createBatchChatParticipants = async(protocol, host, { participants 
 }
 
 // searchQuery object has: userPublicId, groupPublicId
-export const listChatParticipants = async(searchQuery) => {
+export const listChatParticipants = async( protocol, host, {page = 1, limit = 5 , searchTerm = "", sort="joinedAt", includeArr=[]}) => {
   console.log("Service Layer of `GET /chat-participants'");
 
-  const userId = searchQuery && searchQuery.userPublicId ? await participantsQuery.getIdOfUserByPublicId(searchQuery.userPublicId) : undefined;
-  const groupId = searchQuery && searchQuery.groupPublicId ? await participantsQuery.getIdOfGroupByPublicId(searchQuery.groupPublicId) : undefined;
-//   console.log(`User id:`, userId)
-//   return userId;
-
-  if(userId === null){
-    throw Error("No user with that public id");
+  const options = {
+    take: Number(limit),
+    skip: (Number(page) * Number(limit)) - limit,
+    searchTerm,
+    isSearchTermUUID: isValidV4UUID(searchTerm),
+    createdWhereObj: participantsUtils.prepareChatParticipantsWhereObj(searchTerm, isValidV4UUID(searchTerm)),
+    createdSortObj: createPrismaOrderByObjectArray(sort),
+    createdSelectObj: participantsUtils.prepareChatParticipantsSelectObj(includeArr)
   }
 
-  if(groupId === null){
-    throw Error("No group with that public id");
-  }
-    
-  const whereObj = {
-    userId: userId && userId.id !== null && userId.id || undefined,
-    groupId: groupId && groupId.id
-  }
+  const chatParticipants = await participantsQuery.fetchAllChatParticipants(options);
+  const formattedParticipants = participantsUtils.formatReturnParticipantsArray(chatParticipants, protocol, host);
 
-  console.log("The where conditional object");
-  console.log(whereObj);
+  const totalChatParticipants = await participantsQuery.getTotalChatParticipants(options);
+  const totalNumberOfPages = totalChatParticipants.length / Number(limit) <= 1 ? 1 : Math.ceil(totalChatParticipants.length / Number(limit))
 
-  return await searchQuery ? participantsQuery.fetchAllChatParticipants(whereObj) : participantsQuery.fetchAllChatParticipants()
+  return {
+      meta: {
+        "current_page": page,
+        "per_page": limit,
+        "total_number_of_pages": totalChatParticipants.length > 0 ? totalNumberOfPages : 0,
+        "total_records": totalChatParticipants.length,
+      },
+      links: {
+        first: new URL(`/api/v1/chat-participants?page=1`, `${protocol}://${host}`),
+        prev: Number(page) === 1 ? null: new URL(`/api/v1/chat-participants?page=${Number(page) - 1}`, `${protocol}://${host}`),
+        self: new URL(`/api/v1/chat-participants?page=${page}&limit=${limit}`, `${protocol}://${host}`),
+        next: Number(page) >= totalNumberOfPages ? null: new URL(`/api/v1/chat-participants?page=${Number(page) + 1}`, `${protocol}://${host}`),
+        last: new URL(`/api/v1/chat-participants?page=${totalNumberOfPages}`, `${protocol}://${host}`)
+      },
+      data: formattedParticipants
+    }
 }
 
 export const getChatParticipant = async(publicId) => {
