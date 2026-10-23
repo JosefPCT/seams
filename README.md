@@ -270,7 +270,7 @@ Returned object may include fields of:
 
 
 #### GET /messages?page={num}&limit={num}&searchTerm={string|UUID}&sort={string1,string2,-string3}&include=sentBy&include=group
-Returns a JSON payload information of the list of all messages in the database, or if passed a search query (userPublicId) filters the list to only show messages sent by the passed user
+Returns a JSON payload information of the list of all messages in the database, or if passed a search query (searchTerm) filters the list to only show messages that passes the searchTerm (id or string)
 Optional Search Query Parameters:
 - page(number) and limit(number) for pagination
 - searchTerm (string) for filtering, you can also use a UUID instead of a string to look for an exact match of a public ID
@@ -377,7 +377,63 @@ Returned object may include fields of:
 
 
 
-#### GET /chat-groups?searchString=string
+#### GET /chat-groups?page={num}&limit={num}&searchTerm={string|UUID}&sort={string1,string2,-string3}&include=participants&include=messages
+Returns a JSON payload information of the list of all chat groups in the database, or if passed a search query (searchTerm) filters the list to only show chat-groups that passes the criteria
+Optional Search Query Parameters:
+- page(number) and limit(number) for pagination
+- searchTerm (string) for filtering, you can also use a UUID instead of a string to look for an exact match of a public ID
+- sort(fields separated by comma, add - symbol if descending, no symbol means ascending) for sorting (i.e sort=name,-createdAt)
+    - sort valid values (content, sentAt, editedAt, id)
+    - Sorting priority will depend on what field was declared first (i.e sort=content,-createdAt) content will be the primary sort
+- include (declared by repeating the include variable to create an array, valid values are: participants, messages) 
+
+Returned Object may include fields of:
+- meta:
+    - current_page
+    - per_page
+    - total_records
+    - total_number_of_pages
+- links:
+    - first
+    - prev 
+    - self
+    - next
+    - last
+- data:
+    - id (public id)
+    - name
+    - createdAt
+    - updatedAt
+    - participants (relation (chat-participants))
+        - id
+        - role
+        - joinedAt
+        - user (relation (user))
+            - id
+            - email
+            - addtl
+            - profile (relation (profile))
+                - id
+                - name
+    - messages (relation (messages))
+        - id
+        - content
+        - sentAt
+        - editedAt
+        - sentBy (relation (user))
+            - id
+            - email
+            - profile (relation (profile))
+                - id
+                - name
+    - _count
+        - messages
+        - participants
+    - links
+        - self
+        - messages (url to the messages attached to this chat group ('/users/:publicId'))
+        - participants (url to the participants attached to this chat group)
+
 
 #### GET /chat-groups/:chatGroupPublicId
 

@@ -25,11 +25,15 @@ export const chatGroupsPostRoute = [
   }
 ]
 
-// 'GET /chat-groups?searchString={string}'
+// 'GET /chat-groups?page={num}&limit={num}&searchTerm={string|UUID}&sort={string1,string2,-string3}&include=messages&include=participants
+// Accepts optional req.query: page, limit, searchTerm, sort, include
 export const chatGroupsGetRoute = [
   async(req, res, next) => {
-    const { searchString } = req.query ;
-    const chatGroups = await service.getAllChatGroups(searchString);
+    const { page, limit, searchTerm, sort, include } = req.query;
+    const includeArr = Array.isArray(include) ?  include : [include].filter(Boolean);
+
+    const chatGroups = await service.getAllChatGroups(req.protocol, req.get('host'), { page, limit, searchTerm, sort, includeArr });
+
     res.status(200).json({ status: "success", message: "In 'GET /chat-groups', Here are the list of chat groups", data: chatGroups})
   }
 ]
