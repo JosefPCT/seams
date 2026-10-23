@@ -10,7 +10,7 @@ chatGroupsRouter.get('/', chatGroupsController.chatGroupsGetRoute);
 
 chatGroupsRouter.get('/:chatGroupPublicId', chatGroupsController.chatGroupByPublicIdRoute);
 
-chatGroupsRouter.put('/:chatGroupPublicId', chatGroupsController.chatGroupPutRoute);
+chatGroupsRouter.patch('/:chatGroupPublicId', chatGroupsController.chatGroupPatchRoute);
 
 chatGroupsRouter.delete('/:chatGroupPublicId', chatGroupsController.chatGroupDeleteRoute);
 

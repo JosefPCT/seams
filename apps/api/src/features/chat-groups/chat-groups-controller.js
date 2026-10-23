@@ -42,7 +42,7 @@ export const chatGroupByPublicIdRoute = [
   }
 ]
 
-export const chatGroupPutRoute = [
+export const chatGroupPatchRoute = [
   validation.validateUpdateChatGroup,
   async(req, res, next) => {
     const { chatGroupPublicId } = req.params;
@@ -55,7 +55,7 @@ export const chatGroupPutRoute = [
     }
     const updatedChatGroup = await service.updateChatGroup(chatGroupPublicId, matchedData(req))
 
-    res.status(200).json({ status: "success", message: `In 'PUT /chat-groups/${chatGroupPublicId}', Here is the updated chat group data`, data: updatedChatGroup});
+    res.status(200).json({ status: "success", message: `In 'PATCH /chat-groups/${chatGroupPublicId}', Here is the updated chat group data`, data: updatedChatGroup});
   }
 ]
 
