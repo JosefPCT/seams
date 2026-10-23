@@ -8,6 +8,7 @@ import * as service from "./chat-groups-service.js";
 // TODO FUTURE: Might need to add a search query to pass on the two initial users/chat members (or need to do in on the message resource)
 // A chat group just need to be made and get their id/public id
 export const chatGroupsPostRoute = [
+  isAuth,
   validation.validateCreateChatGroup,
   async(req, res, next) => {
     const errors = validationResult(req);
@@ -15,8 +16,11 @@ export const chatGroupsPostRoute = [
       return res.status(400).json(errors);
     }
     const { name } = matchedData(req);
-    const createdChatGroup = await service.createNewChatGroup({name});
-    // const createdChatGroup = {}
+    const createdChatGroup = await service.createNewChatGroup(req.protocol, req.get('host'), {name});
+    if(!createdChatGroup){
+      res.status(400).json({ status: "error", message: "Something unexpected occurred when creating the chat group"});
+    }
+
     res.status(201).json({ status: "success", message: "In 'POST /chat-groups', Chat Group Created!", data: createdChatGroup});
   }
 ]

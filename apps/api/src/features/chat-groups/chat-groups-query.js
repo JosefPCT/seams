@@ -2,7 +2,13 @@ import { prisma } from "@repo/database";
 
 export const createChatGroup = async(data) => {
   return await prisma.chatGroup.create({
-    data
+    data: data,
+    select: {
+      publicId: true,
+      name: true,
+      createdAt: true,
+      updatedAt: true
+    }
   })
 }
 

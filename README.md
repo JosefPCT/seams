@@ -361,6 +361,21 @@ Accessible only by a logged in user and if that user owns the message
 ### /chat-groups
 
 #### POST /chat-groups
+Create a new chat group
+Accessible only be a logged in user
+Returns a JSON payload information of the created chat-group
+Accepts a req.body of:
+- name(string) (optional: will default to 'New chat' if omitted)
+
+Returned object may include fields of:
+- id (UUID)
+- name
+- createdAt
+- updatedAt
+- links
+    - getChatGroup (URL to the specific chat group created)
+
+
 
 #### GET /chat-groups?searchString=string
 
