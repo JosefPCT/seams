@@ -15,7 +15,7 @@ export const createChatParticipants = async( protocol, host, {userPublicId, grou
 
   const targetGroup = await participantsQuery.getIdOfGroupByPublicId(groupPublicId)
   if(!targetGroup){
-    throw new customError.BadRequest(`No user with this public id exist in the database`);
+    throw new customError.BadRequest(`No group with this public id exist in the database`);
   }
 
   const createdDataObject = {
@@ -31,19 +31,24 @@ export const createChatParticipants = async( protocol, host, {userPublicId, grou
 }
 
 // See controller file to check on what fields the data object have
-export const createBatchChatParticipants = async(data) => {
-  console.log(data);
+export const createBatchChatParticipants = async(protocol, host, { participants = [] }) => {
 
   // An async map function to convert the public ids (UUID) to internal ids (Int)
-  const processingData = data.participants.map(async ({ userPublicId, groupPublicId, ...rest }) => {
+  const processingData = participants.map(async ({ userPublicId, groupPublicId, ...rest }) => {
     
-    const user = await participantsQuery.getIdOfUserByPublicId(userPublicId);
-    const group  = await participantsQuery.getIdOfGroupByPublicId(groupPublicId)
+    const targetUser = await participantsQuery.getIdOfUserByPublicId(userPublicId);
+    if(!targetUser){
+      throw new customError.BadRequest(`No user with this public id exist in the database`);
+    }
+    const targetGroup  = await participantsQuery.getIdOfGroupByPublicId(groupPublicId)
+    if(!targetGroup){
+      throw new customError.BadRequest(`No group with this public id exist in the database`);
+    }
 
     return {
       ...rest,
-      userId: user?.id,
-      groupId: group?.id
+      userId: targetUser?.id,
+      groupId: targetGroup?.id
     }
   });
 
@@ -51,8 +56,11 @@ export const createBatchChatParticipants = async(data) => {
   const promisedData = await Promise.all(processingData)
 
   const createdBatchData = await participantsQuery.createManyChatParticipants(promisedData);
+  const formattedBatchParticipants = await participantsUtils.formatReturnCreatedBatchParticipantsArray(createdBatchData, protocol, host);
 
-  return createdBatchData;
+  console.log("showing formatted batch participants before returning to controller");
+  console.log(formattedBatchParticipants)
+  return formattedBatchParticipants;
 }
 
 // searchQuery object has: userPublicId, groupPublicId

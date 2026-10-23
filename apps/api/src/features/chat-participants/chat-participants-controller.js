@@ -32,7 +32,7 @@ export const participantsPostBatchRoute = [
     }
 
     const { participants } = matchedData(req);
-    const result = await service.createBatchChatParticipants({participants})
+    const result = await service.createBatchChatParticipants( req.protocol, req.get('host'), { participants })
 
     res.status(201).json({ status: "ok", message: "In 'POST /chat-participants/batch'", data: result})
   }

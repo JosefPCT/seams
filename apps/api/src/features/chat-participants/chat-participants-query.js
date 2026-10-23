@@ -62,6 +62,32 @@ export const createManyChatParticipants = async(data) => {
   return await prisma.chatParticipant.createManyAndReturn({
     data: data,
     skipDuplicates: true, // Optional: skips records that violate unique constraints (relational databases only)
+    select: {
+      publicId: true,
+      role: true,
+      joinedAt: true,
+      user: {
+        select: {
+          publicId: true,
+          email: true,
+          addtl: true,
+          profile: {
+            select: {
+              publicId: true,
+              name: true
+            }
+          }
+        }
+      },
+      group: {
+        select: {
+          publicId: true,
+          name: true,
+          createdAt: true,
+          updatedAt: true,
+        }
+      }
+    }
   })
 }
 

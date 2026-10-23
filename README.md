@@ -524,6 +524,38 @@ Returned object may include fields of:
     - chatGroup (url to the chat group linked)
 
 #### POST /chat-participants/batch
+Create a batch of new chat participants
+TODO: Accessible only be a logged in user and ?
+Returns a JSON payload information (array) of the created chat participants
+Accepts a req.body of one field an array:
+- participants ( array of objects)
+    - { userPublicId (UUID), groupPublicId(UUID), role (ADMIN/MEMBER) (optional), joinedAt (DATE) (optional) }
+i.e 
+participants: [
+  { userPublicId: "12312", groupPublicId: "111", role: "ADMIN" },
+  { userPublicId: "332211", groupPublicId: "111", roleL "MEMBER" }
+]
+
+Returned array of objects may include fields of:
+- id (UUID)
+- role
+- joinedAt
+- user (relation - user)
+    - id
+    - email
+    - addtl
+    - profile (relation - profile)
+        - id
+        - name
+- group (relation - chat group)
+    - id
+    - name
+    - createdAt
+    - updatedAt
+- links
+    - self (url to the GET route of the created chat participant)
+    - user (url to user linked)
+    - chatGroup (url to the chat group linked)
 
 #### GET /chat-participants?userPublicId=uuidString&groupPublicId=uuidString
 
