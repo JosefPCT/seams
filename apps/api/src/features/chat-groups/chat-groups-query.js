@@ -36,18 +36,12 @@ export const findAllChatGroups = async({take, skip, createdWhereObj, createdSort
   });
 }
 
-export const findChatGroupByPublicId = async(targetPublicId) => {
+export const findChatGroupByPublicId = async(targetPublicId, selectObj) => {
   return await prisma.chatGroup.findUnique({
     where: {
         publicId: targetPublicId
     },
-    include: {
-      messages: true,
-      participants: true,
-      _count: {
-        select: { participants: true }
-      }
-    }
+    select: selectObj
   })
 }
 export const updateChatGroupByPublicId = async(targetPublicId, data) => {

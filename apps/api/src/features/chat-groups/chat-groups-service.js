@@ -53,9 +53,13 @@ export const getAllChatGroups = async(protocol, host, { page=1, limit=5, searchT
     }
 }
 
-export const getChatGroupByPublicId = async(publicId) => {
-  const chatGroup = await chatGroupsQuery.findChatGroupByPublicId(publicId); 
-  return chatGroup;
+export const getChatGroupByPublicId = async(publicId, protocol, host, { includeArr }) => {
+  const chatGroup = await chatGroupsQuery.findChatGroupByPublicId(publicId, chatGroupUtils.prepareChatGroupSelectObj(includeArr)); 
+  if(!chatGroup){
+    throw new customError.NotFound(`Chat group with public id: ${publicId} not found`);
+  }
+  const formattedChatGroup = await chatGroupUtils.formatReturnChatGroupObject(chatGroup, protocol, host);
+  return formattedChatGroup;
 }
 
 export const updateChatGroup = async(publicId, data) => {

@@ -42,7 +42,9 @@ export const chatGroupsGetRoute = [
 export const chatGroupByPublicIdRoute = [
   async(req, res, next) => {
     const { chatGroupPublicId } = req.params;
-    const chatGroup = await service.getChatGroupByPublicId(chatGroupPublicId);
+    const { include } = req.query;
+    const includeArr = Array.isArray(include) ?  include : [include].filter(Boolean);
+    const chatGroup = await service.getChatGroupByPublicId(chatGroupPublicId, req.protocol, req.get('host'), { includeArr });
     if(!chatGroup){
       res.status(404).json({ status: "not found", message: `Chat group with public id of ${chatGroupPublicId} is not found`, data: chatGroup})
     }

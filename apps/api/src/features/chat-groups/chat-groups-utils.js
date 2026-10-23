@@ -1,23 +1,47 @@
 export const prepareChatGroupsWhereObj = (searchTerm, isSearchTermUUID) => {
- return {
-      OR: [
-        { publicId: isSearchTermUUID ? searchTerm : undefined },
-        { name: { contains: searchTerm, mode: 'insensitive'}},
-        { messages: { some: {
-          publicId: isSearchTermUUID ? searchTerm : undefined
-        }}},
-        { messages: { some: {
-          content: { contains: searchTerm, mode: 'insensitive'}
-        }}},
-        { messages: { some: {
-          sentBy: { is: { publicId: isSearchTermUUID ? searchTerm : undefined }}
-        }}},
-        { messages: { some: { 
-          sentBy: { is: { profile: { is: { name: { contains: searchTerm, mode: 'insensitive'}}}}}
-        }}}
-      ]
-  }
-}
+  return {
+    OR: [
+      { publicId: isSearchTermUUID ? searchTerm : undefined },
+      { name: { contains: searchTerm, mode: "insensitive" } },
+      {
+        messages: {
+          some: {
+            publicId: isSearchTermUUID ? searchTerm : undefined,
+          },
+        },
+      },
+      {
+        messages: {
+          some: {
+            content: { contains: searchTerm, mode: "insensitive" },
+          },
+        },
+      },
+      {
+        messages: {
+          some: {
+            sentBy: {
+              is: { publicId: isSearchTermUUID ? searchTerm : undefined },
+            },
+          },
+        },
+      },
+      {
+        messages: {
+          some: {
+            sentBy: {
+              is: {
+                profile: {
+                  is: { name: { contains: searchTerm, mode: "insensitive" } },
+                },
+              },
+            },
+          },
+        },
+      },
+    ],
+  };
+};
 
 export const prepareChatGroupSelectObj = (targetArray) => {
   const selectObj = {
@@ -40,10 +64,10 @@ export const prepareChatGroupSelectObj = (targetArray) => {
                   select: {
                     publicId: true,
                     name: true,
-                  }
-                }
-              }
-            }
+                  },
+                },
+              },
+            },
           },
         }
       : undefined,
@@ -61,11 +85,11 @@ export const prepareChatGroupSelectObj = (targetArray) => {
                 profile: {
                   select: {
                     publicId: true,
-                    name: true
-                  }
-                }
-              }
-            }
+                    name: true,
+                  },
+                },
+              },
+            },
           },
         }
       : undefined,
@@ -75,7 +99,9 @@ export const prepareChatGroupSelectObj = (targetArray) => {
       ? {
           select: {
             messages: targetArray.includes("messages") ? true : undefined,
-            participants: targetArray.includes("participants") ? true : undefined,
+            participants: targetArray.includes("participants")
+              ? true
+              : undefined,
           },
         }
       : undefined,
@@ -84,88 +110,214 @@ export const prepareChatGroupSelectObj = (targetArray) => {
 };
 
 export const formatReturnChatGroupsList = (chatGroups, protocol, host) => {
-  const formattedGroups = chatGroups.map(({ publicId: chatGroupPublicIdAlias, ...chatGroup }) => {
-    const hasParticipants = chatGroup.participants && chatGroup.participants.length > 0;
-    const hasMessages = chatGroup.messages && chatGroup.messages.length > 0;
+  const formattedGroups = chatGroups.map(
+    ({ publicId: chatGroupPublicIdAlias, ...chatGroup }) => {
+      const hasParticipants =
+        chatGroup.participants && chatGroup.participants.length > 0;
+      const hasMessages = chatGroup.messages && chatGroup.messages.length > 0;
 
-    return {
-      id: chatGroupPublicIdAlias,
-      ...chatGroup,
-      links: {
-        self: new URL(`/api/v1/chat-groups/${chatGroupPublicIdAlias}`, `${protocol}://${host}`),
-        messages: new URL(
-          `/api/v1/messages?searchTerm=${chatGroupPublicIdAlias}`,
-          `${protocol}://${host}`,
-        ),
-        participants: new URL(
-          `/api/v1/chat-participants?searchTerm=${chatGroupPublicIdAlias}`,
-          `${protocol}://${host}`,
-        ),
-      },
-      participants: hasParticipants
-        ? chatGroup.participants.map(
-            ({ publicId: chatParticipantPublicIdAlias, user, ...restofParticipants }) => {
+      return {
+        id: chatGroupPublicIdAlias,
+        ...chatGroup,
+        links: {
+          self: new URL(
+            `/api/v1/chat-groups/${chatGroupPublicIdAlias}`,
+            `${protocol}://${host}`,
+          ),
+          messages: new URL(
+            `/api/v1/messages?searchTerm=${chatGroupPublicIdAlias}`,
+            `${protocol}://${host}`,
+          ),
+          participants: new URL(
+            `/api/v1/chat-participants?searchTerm=${chatGroupPublicIdAlias}`,
+            `${protocol}://${host}`,
+          ),
+        },
+        participants: hasParticipants
+          ? chatGroup.participants.map(
+              ({
+                publicId: chatParticipantPublicIdAlias,
+                user,
+                ...restofParticipants
+              }) => {
+                let formattedUser = null;
+                if (user) {
+                  const {
+                    publicId: userPublicIdAlias,
+                    profile,
+                    ...restOfUser
+                  } = user;
 
-              let formattedUser = null;
-              if (user) {
-                const { publicId: userPublicIdAlias, profile, ...restOfUser } = user;
-                
-                let formattedProfile = null;
-                if(profile) {
-                    const { publicId: profilePublicIdAlias, ...restOfProfile} = profile
+                  let formattedProfile = null;
+                  if (profile) {
+                    const { publicId: profilePublicIdAlias, ...restOfProfile } =
+                      profile;
                     formattedProfile = {
                       id: profilePublicIdAlias,
-                      ...restOfProfile
-                    }
+                      ...restOfProfile,
+                    };
+                  }
+
+                  formattedUser = {
+                    id: userPublicIdAlias,
+                    profile: formattedProfile,
+                    ...restOfUser,
+                  };
                 }
 
-                formattedUser = {
-                  id: userPublicIdAlias,
-                  profile: formattedProfile,
-                  ...restOfUser,
+                return {
+                  id: chatParticipantPublicIdAlias,
+                  ...restofParticipants,
+                  user: formattedUser,
                 };
-              }
+              },
+            )
+          : [],
+        messages: hasMessages
+          ? chatGroup.messages.map(
+              ({
+                publicId: messagePublicIdAlias,
+                sentBy,
+                ...restOfMessages
+              }) => {
+                let formattedUser = null;
+                if (sentBy) {
+                  const {
+                    publicId: userPublicIdAlias,
+                    profile,
+                    ...restOfUser
+                  } = sentBy;
 
-              return {
-                id: chatParticipantPublicIdAlias,
-                ...restofParticipants,
-                user: formattedUser,
-              };
-            },
-          )
-        : [],
-      messages: hasMessages
-        ? chatGroup.messages.map(({ publicId: messagePublicIdAlias, sentBy, ...restOfMessages }) =>{
+                  let formattedProfile = null;
+                  if (profile) {
+                    const { publicId: profilePublicIdAlias, ...restOfProfile } =
+                      profile;
+                    formattedProfile = {
+                      id: profilePublicIdAlias,
+                      ...restOfProfile,
+                    };
+                  }
 
+                  formattedUser = {
+                    id: userPublicIdAlias,
+                    profile: formattedProfile,
+                    ...restOfUser,
+                  };
+                }
+
+                return {
+                  id: messagePublicIdAlias,
+                  ...restOfMessages,
+                  sentBy: formattedUser,
+                };
+              },
+            )
+          : [],
+      };
+    },
+  );
+  return formattedGroups;
+};
+
+export const formatReturnChatGroupObject = (chatGroup, protocol, host) => {
+  const hasParticipants =
+    chatGroup.participants && chatGroup.participants.length > 0;
+  const hasMessages = chatGroup.messages && chatGroup.messages.length > 0;
+
+  const { publicId: chatGroupPublicIdAlias, ...restOfChatGroup } = chatGroup;
+
+  return {
+    id: chatGroupPublicIdAlias,
+    ...restOfChatGroup,
+    links: {
+      self: new URL(
+        `/api/v1/chat-groups/${chatGroupPublicIdAlias}`,
+        `${protocol}://${host}`,
+      ),
+      messages: new URL(
+        `/api/v1/messages?searchTerm=${chatGroupPublicIdAlias}`,
+        `${protocol}://${host}`,
+      ),
+      participants: new URL(
+        `/api/v1/chat-participants?searchTerm=${chatGroupPublicIdAlias}`,
+        `${protocol}://${host}`,
+      ),
+    },
+    participants: hasParticipants
+      ? chatGroup.participants.map(
+          ({
+            publicId: chatParticipantPublicIdAlias,
+            user,
+            ...restofParticipants
+          }) => {
             let formattedUser = null;
-            if(sentBy){
-              const { publicId: userPublicIdAlias, profile, ...restOfUser} = sentBy;
-              
+            if (user) {
+              const {
+                publicId: userPublicIdAlias,
+                profile,
+                ...restOfUser
+              } = user;
+
               let formattedProfile = null;
-              if(profile){
-                const { publicId: profilePublicIdAlias, ...restOfProfile } = profile;
+              if (profile) {
+                const { publicId: profilePublicIdAlias, ...restOfProfile } =
+                  profile;
                 formattedProfile = {
                   id: profilePublicIdAlias,
-                  ...restOfProfile
-                }
+                  ...restOfProfile,
+                };
               }
 
               formattedUser = {
                 id: userPublicIdAlias,
                 profile: formattedProfile,
+                ...restOfUser,
+              };
+            }
+
+            return {
+              id: chatParticipantPublicIdAlias,
+              ...restofParticipants,
+              user: formattedUser,
+            };
+          },
+        )
+      : [],
+    messages: hasMessages
+      ? chatGroup.messages.map(
+          ({ publicId: messagePublicIdAlias, sentBy, ...restOfMessages }) => {
+            let formattedUser = null;
+            if (sentBy) {
+              const {
+                publicId: userPublicIdAlias,
+                profile,
                 ...restOfUser
+              } = sentBy;
+
+              let formattedProfile = null;
+              if (profile) {
+                const { publicId: profilePublicIdAlias, ...restOfProfile } =
+                  profile;
+                formattedProfile = {
+                  id: profilePublicIdAlias,
+                  ...restOfProfile,
+                };
               }
+
+              formattedUser = {
+                id: userPublicIdAlias,
+                profile: formattedProfile,
+                ...restOfUser,
+              };
             }
 
             return {
               id: messagePublicIdAlias,
               ...restOfMessages,
-              sentBy: formattedUser
-            }
-          }
+              sentBy: formattedUser,
+            };
+          },
         )
-        : [],
-    };
-  });
-  return formattedGroups;
-}
+      : [],
+  };
+};
