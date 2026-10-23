@@ -80,6 +80,11 @@ export const updateChatGroup = async(publicId, data) => {
 }
 
 export const deleteChatGroup = async(publicId) => {
+  const chatGroup = await chatGroupsQuery.findChatGroupByPublicId(publicId);
+  if(!chatGroup){
+    throw new customError.BadRequest(`Chat group by this id does not exist, aborting deletion operation`);
+  }
+
   const deletedChatGroup = await chatGroupsQuery.deleteChatGroupByPublicId(publicId);
   return deletedChatGroup;
 }

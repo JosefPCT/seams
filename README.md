@@ -354,7 +354,7 @@ Returns a formatted object without sensitive fields
 
 #### DELETE /messages/:messagePublicId
 Deletes a specific message based on it route parameter (:messagePublicId), the message's public id in the database
-Also returns a JSON data of the deleted message
+Also returns a JSON message if deletion is successful
 Accessible only by a logged in user and if that user owns the message
 
 
@@ -485,6 +485,10 @@ NOTE: Can only update the name of the chat group
 Returns a formatted object without sensitive fields, and renamed fields
 
 #### DELETE /chat-groups/:chatGroupPublicId
+Deletes a specific chat group based on it route parameter (:chatGroupPublicId), the chat group's public id in the database
+Also returns a JSON message if deletion is successful
+TODO: Accessible only by a logged in user and the user must be an admin of the chat-group (chat-participants' role)
+
 
 ### #chat-participants
 
