@@ -52,6 +52,7 @@ export const chatGroupByPublicIdRoute = [
   }
 ]
 
+// TODO: add a authorization middleware that checks if the one accessing the route is a member/admin role of the chat-participant on this chat-group
 export const chatGroupPatchRoute = [
   validation.validateUpdateChatGroup,
   async(req, res, next) => {
@@ -63,7 +64,10 @@ export const chatGroupPatchRoute = [
     if(Object.keys(matchedData(req)).length === 0 && matchedData(req).constructor === Object){
       res.status(400).json({ status: 'warning', message: `No valid fields to update`});
     }
-    const updatedChatGroup = await service.updateChatGroup(chatGroupPublicId, matchedData(req))
+
+    const { name } = matchedData(req)
+
+    const updatedChatGroup = await service.updateChatGroup(chatGroupPublicId, { name })
 
     res.status(200).json({ status: "success", message: `In 'PATCH /chat-groups/${chatGroupPublicId}', Here is the updated chat group data`, data: updatedChatGroup});
   }

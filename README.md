@@ -474,6 +474,15 @@ Returned Object may include fields of:
     - group (url to the specific group attached to this messsage)
 
 #### PUT /chat-groups/:chatGroupPublicId
+Updates the content of a specific chat group based on it route parameter (:chatGroupPublicId), the chat-group's public id in the database
+Also returns a JSON data of the updated chat group
+TODO: Accessible only by a logged in user and the user must be an admin/member of the chat-group (chat-participants' role)
+Accepts a req.body of mostly optional:
+- name (string)
+
+NOTE: Can only update the name of the chat group
+
+Returns a formatted object without sensitive fields, and renamed fields
 
 #### DELETE /chat-groups/:chatGroupPublicId
 

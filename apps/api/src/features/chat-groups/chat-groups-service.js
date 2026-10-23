@@ -1,6 +1,7 @@
 import * as customError from "../../utils/extended-errors.js";
 import { isValidV4UUID } from "../../utils/stringUtils.js";
 import { createPrismaOrderByObjectArray  } from "../../utils/createOrderByObj.js";
+import { preparePatchData } from "../../utils/organizeDataUtils.js";
 import * as chatGroupUtils from "./chat-groups-utils.js";
 import * as chatGroupsQuery from "./chat-groups-query.js";
 
@@ -63,8 +64,19 @@ export const getChatGroupByPublicId = async(publicId, protocol, host, { includeA
 }
 
 export const updateChatGroup = async(publicId, data) => {
-  const updatedChatGroup = await chatGroupsQuery.updateChatGroupByPublicId(publicId, data);
-  return updatedChatGroup;
+  const chatGroup = await chatGroupsQuery.findChatGroupByPublicId(publicId)
+  if(!chatGroup){
+    throw new customError.BadRequest(`Chat Grou by this public id does not exist, aborting update operation`);
+  }
+  const preparedData = preparePatchData(data);
+  const updatedChatGroup = await chatGroupsQuery.updateChatGroupByPublicId(publicId, preparedData);
+
+  const { publicId: chatGroupPublicIdAlias, ...restOfChatGroup} = updatedChatGroup;
+
+  return {
+    id: chatGroupPublicIdAlias,
+    ...restOfChatGroup
+  }
 }
 
 export const deleteChatGroup = async(publicId) => {

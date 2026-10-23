@@ -49,7 +49,13 @@ export const updateChatGroupByPublicId = async(targetPublicId, data) => {
     where:{
       publicId: targetPublicId
     },
-    data
+    data: data,
+    select: {
+      publicId: true,
+      name: true,
+      createdAt: true,
+      updatedAt: true,
+    }
   })
 }
 
