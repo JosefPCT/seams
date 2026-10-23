@@ -29,7 +29,32 @@ export const getIdOfGroupByPublicId = async(targetPublicId) => {
 export const createChatParticipants = async(data) => {
   return await prisma.chatParticipant.create({
     data: data,
-    
+    select: {
+      publicId: true,
+      role: true,
+      joinedAt: true,
+      user: {
+        select: {
+          publicId: true,
+          email: true,
+          addtl: true,
+          profile: {
+            select: {
+              publicId: true,
+              name: true
+            }
+          }
+        }
+      },
+      group: {
+        select: {
+          publicId: true,
+          name: true,
+          createdAt: true,
+          updatedAt: true,
+        }
+      }
+    }
   })
 }
 

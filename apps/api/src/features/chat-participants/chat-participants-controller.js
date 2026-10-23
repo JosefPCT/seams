@@ -6,15 +6,17 @@ import * as validation from "../../middleware/validation.js";
 
 export const participantsPostRoute = [
   validation.validateCreateParticipant,
-  async(req, res) => {
+  async(req, res, next) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         return res.status(400).json(errors);
     }
 
     const { userPublicId, groupPublicId, role, joinedAt } = matchedData(req);
-    const result = await service.createChatParticipants({userPublicId, groupPublicId, role, joinedAt});
-    
+    const result = await service.createChatParticipants( req.protocol, req.get('host'), {userPublicId, groupPublicId, role, joinedAt});
+    if(!result){
+        return res.status(400).json({ error: true, message: "Participant not created successfully"});
+    }
     res.status(201).json({ status: "Ok", message: "In 'POST /chat-participants'", data: result});
   }
 ]

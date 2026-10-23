@@ -1,27 +1,33 @@
 import * as participantsQuery from "./chat-participants-query.js";
 import { BadRequest } from "../../utils/extended-errors.js";
 import { preparePatchData, preparePatchDataAlternative } from "../../utils/organizeDataUtils.js";
+import * as participantsUtils from "./chat-participants-utils.js";
+import * as customError from "../../utils/extended-errors.js"
 
-export const createChatParticipants = async(data) => {
+export const createChatParticipants = async( protocol, host, {userPublicId, groupPublicId, role, joinedAt} ) => {
   
-  const userId = data.userPublicId ? await participantsQuery.getIdOfUserByPublicId(data.userPublicId) : undefined
-  const groupId = data.groupPublicId ? await participantsQuery.getIdOfGroupByPublicId(data.groupPublicId) : undefined
-
-  console.log(`User id: ${userId.id}`);
-  console.log(`Group id: ${groupId.id}`)
-
-  const organizedData = {
-    userId: userId.id,
-    groupId: groupId.id,
-    role: data.role,
-    joinedAt: data.joinedAt
+  console.log("Showing public id...");
+  console.log(userPublicId)
+  const targetUser = await participantsQuery.getIdOfUserByPublicId(userPublicId)
+  if(!targetUser){
+    throw new customError.BadRequest(`No user with this public id exist in the database`);
   }
 
-  console.log(organizedData);
+  const targetGroup = await participantsQuery.getIdOfGroupByPublicId(groupPublicId)
+  if(!targetGroup){
+    throw new customError.BadRequest(`No user with this public id exist in the database`);
+  }
 
-  const createdParticipant = await participantsQuery.createChatParticipants(organizedData);
+  const createdDataObject = {
+    userId: targetUser.id,
+    groupId: targetGroup.id,
+    role: role,
+    joinedAt: joinedAt
+  }
+  const createdParticipant = await participantsQuery.createChatParticipants(createdDataObject);
+  const formattedParticipant = await participantsUtils.formatReturnCreatedParticipantObject(createdParticipant, protocol, host);
 
-  return createdParticipant;
+  return formattedParticipant;
 }
 
 // See controller file to check on what fields the data object have

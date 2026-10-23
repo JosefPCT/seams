@@ -493,6 +493,35 @@ TODO: Accessible only by a logged in user and the user must be an admin of the c
 ### #chat-participants
 
 #### POST /chat-participants
+Create a new chat participant
+TODO: Accessible only be a logged in user and ?
+Returns a JSON payload information of the created chat-participant
+Accepts a req.body of:
+- userPublicId (UUID) (public id of the user that will be a participant on the chat group)
+- groupPublicID (UUID) (public id of the group that will have the user participating to)
+- role (ADMIN/MEMBER) (optional) (enum, will default to MEMBER if omitted)
+- joinedAt (Date) (optional) (will default to the current date now if omitted)
+
+Returned object may include fields of:
+- id (UUID)
+- role
+- joinedAt
+- user (relation - user)
+    - id
+    - email
+    - addtl
+    - profile (relation - profile)
+        - id
+        - name
+- group (relation - chat group)
+    - id
+    - name
+    - createdAt
+    - updatedAt
+- links
+    - self (url to the GET route of the created chat participant)
+    - user (url to user linked)
+    - chatGroup (url to the chat group linked)
 
 #### POST /chat-participants/batch
 
