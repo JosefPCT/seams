@@ -119,12 +119,13 @@ export const getChatParticipant = async(targetPublicId, createdSelectObj) => {
   })
 }
 
-export const updateChatParticipant = async(targetPublicId, data) => {
+export const updateChatParticipant = async(targetPublicId, data, createdSelectObj) => {
   return await prisma.chatParticipant.update({
     where: {
       publicId: targetPublicId
     },
-    data: data
+    data: data,
+    select: createdSelectObj
   })
 }
 

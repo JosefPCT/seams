@@ -238,6 +238,7 @@ const validateCreateBatchParticipants = [
 
 const validatePatchParticipant = [
   body("role")
+    .optional()
     .trim()
     .notEmpty()
     .withMessage(`role field ${emptyErr}`)

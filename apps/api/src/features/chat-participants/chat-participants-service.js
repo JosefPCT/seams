@@ -112,19 +112,16 @@ export const getChatParticipant = async(protocol, host, publicId, { includeArr }
   return formattedParticipant;
 }
 
-export const patchChatParticipant = async(publicId, data) => {
-
+export const patchChatParticipant = async(protocol, host, publicId, data) => {
   const isValidChatParticipant = await participantsQuery.getChatParticipant(publicId);
   if(!isValidChatParticipant){
     throw BadRequest("This chat participant does not exist");
   }
-
   const organizedData = preparePatchData(data);
-//   console.log("Organized Data");
-//   console.log(organizedData);
 
-  const updatedParticipant = await participantsQuery.updateChatParticipant(publicId, organizedData);
-  return updatedParticipant;
+  const updatedParticipant = await participantsQuery.updateChatParticipant(publicId, organizedData, participantsUtils.prepareChatParticipantsSelectObj([]));
+  const formattedParticipant = participantsUtils.formatReturnParticipantObject(updatedParticipant, protocol, host)
+  return formattedParticipant;
 
 }
 

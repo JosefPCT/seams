@@ -630,5 +630,14 @@ Returned Object may include fields of:
 
 
 #### PATCH /chat-participants/:publicID
+Updates the content of a specific chat participant based on it route parameter (:publicId), the chat participant's public id in the database
+Also returns a JSON data of the updated chat participant
+TODO: Accessible only by a logged in user and ?
+Accepts a req.body of mostly optional:
+- role (enum) (ADMIN/MEMBER)
+
+NOTE: Can only update the role of the chat participant
+
+Returns a formatted object without sensitive fields, and renamed fields
 
 #### DELETE /chat-participants/:publicID

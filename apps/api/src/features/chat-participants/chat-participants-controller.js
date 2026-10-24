@@ -71,10 +71,14 @@ export const participantPatchRoute = [
         return res.status(400).json(errors);
     }
 
+    if(Object.keys(matchedData(req)).length === 0 && matchedData(req).constructor === Object){
+      res.status(400).json({ status: 'warning', message: `No valid fields to update`});
+    }
+
     const { publicId } = req.params;
     const { role } = matchedData(req)
 
-    const result = await service.patchChatParticipant(publicId, { role })
+    const result = await service.patchChatParticipant(req.protocol, req.get('host'), publicId, { role })
     res.status(200).json({ status: "ok", message: "In 'PATCH /chat-participants/:publicId'", data: result})
   }
 ]
