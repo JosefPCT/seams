@@ -110,11 +110,12 @@ export const fetchAllChatParticipants = async({take, skip, searchTerm, isSearchT
   })
 }
 
-export const getChatParticipant = async(targetPublicId) => {
+export const getChatParticipant = async(targetPublicId, createdSelectObj) => {
   return await prisma.chatParticipant.findUnique({
     where: {
         publicId: targetPublicId
-    }
+    },
+    select: createdSelectObj
   })
 }
 

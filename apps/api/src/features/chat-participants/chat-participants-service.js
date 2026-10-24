@@ -27,7 +27,7 @@ export const createChatParticipants = async( protocol, host, {userPublicId, grou
     joinedAt: joinedAt
   }
   const createdParticipant = await participantsQuery.createChatParticipants(createdDataObject);
-  const formattedParticipant = await participantsUtils.formatReturnCreatedParticipantObject(createdParticipant, protocol, host);
+  const formattedParticipant = await participantsUtils.formatReturnParticipantObject(createdParticipant, protocol, host);
 
   return formattedParticipant;
 }
@@ -103,9 +103,13 @@ export const listChatParticipants = async( protocol, host, {page = 1, limit = 5 
     }
 }
 
-export const getChatParticipant = async(publicId) => {
-  const participant = await participantsQuery.getChatParticipant(publicId);
-  return participant;
+export const getChatParticipant = async(protocol, host, publicId, { includeArr }) => {
+  const participant = await participantsQuery.getChatParticipant(publicId, participantsUtils.prepareChatParticipantsSelectObj(includeArr));
+  if(!participant){
+    throw new customError.NotFound(`Chat group with public id: ${publicId} not found`);
+  }
+  const formattedParticipant = participantsUtils.formatReturnParticipantObject(participant, protocol, host)
+  return formattedParticipant;
 }
 
 export const patchChatParticipant = async(publicId, data) => {

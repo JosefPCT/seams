@@ -435,7 +435,7 @@ Returned Object may include fields of:
         - participants (url to the participants attached to this chat group)
 
 
-#### GET /chat-groups/:chatGroupPublicId
+#### GET /chat-groups/:chatGroupPublicId?include=messages&include=participants
 Returns a JSON data of a specific chat-group based on its route parameter (:chatGroupPublicId), the chat group's public id in the database
 Optional Search Query Parameters:
 - include (declared by repeating the include variable to create an array, valid values are: participants, messages)
@@ -602,7 +602,32 @@ Returned Object may include fields of:
 
 
 
-#### GET /chat-participants/:publicId
+#### GET /chat-participants/:publicId?include=group&include=user
+Returns a JSON data of a specific chat participant based on its route parameter (:publicId), the chat participant's public id in the database
+Optional Search Query Parameters:
+- include (declared by repeating the include variable to create an array, valid values are: user, group)
+
+Returned Object may include fields of:
+- id (public id)
+- role
+- joinedAt
+- user (relation (user))
+    - id
+    - email
+    - addtl
+    - profile (relation (profile))
+        - id
+        - name
+- group (relation (group))
+    - id
+    - name
+    - createdAt
+    - updatedAt
+- links
+    - self (url to the GET route of the created chat participant)
+    - user (url to user linked)
+    - chatGroup (url to the chat group linked)
+
 
 #### PATCH /chat-participants/:publicID
 

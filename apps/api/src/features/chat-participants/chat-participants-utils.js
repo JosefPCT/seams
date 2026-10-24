@@ -62,7 +62,7 @@ export const prepareChatParticipantsSelectObj = (targetArray) => {
 }
 
 //  Formatting
-export const formatReturnCreatedParticipantObject = (participant, protocol, host) => {
+export const formatReturnParticipantObject = (participant, protocol, host) => {
   const { publicId: participantPublicIdAlias, user, group, ...restOfParticipant} = participant;
   const { publicId: userPublicIdAlias, profile, ...restOfUser } = user;
   const { publicId: profilePublicIdAlias, ...restOfProfile } = profile;

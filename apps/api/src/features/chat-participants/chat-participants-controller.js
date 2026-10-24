@@ -51,8 +51,13 @@ export const participantsGetRoute = [
 export const participantByPublicIdRoute = [
   async(req, res) => {
     const { publicId } = req.params;
-    
-    const result = await service.getChatParticipant(publicId)
+    const { include } = req.query;
+    const includeArr = Array.isArray(include) ?  include : [include].filter(Boolean);
+
+    const result = await service.getChatParticipant(req.protocol, req.get('host'), publicId, { includeArr });
+    if(!result){
+      res.status(404).json({ status: "not found", message: `Chat participant with public id of ${publicId} is not found`})
+    }
     res.status(200).json({ status: "ok", message: "In 'GET /chat-participants/:publicId'", data: result})
   }
 ]
