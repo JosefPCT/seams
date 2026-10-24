@@ -1,3 +1,45 @@
+export const prepareMessageWhereObject = (searchTerm, isSearchTermUUID, includeArr) => {
+  const orConditions = [];
+
+  isSearchTermUUID
+    ? orConditions.push(
+        { publicId: searchTerm },
+      )
+    : "";
+
+  isSearchTermUUID & includeArr.includes("sentBy")
+    ? orConditions.push(
+      { sentBy: { is: { publicId: searchTerm }}}
+    )
+    : "";
+  
+  isSearchTermUUID & includeArr.includes("group")
+    ? orConditions.push(
+      { group: { is: { publicId: searchTerm }}}
+    )
+    : "";  
+
+  includeArr.includes("sentBy")
+    ? orConditions.push(
+      { sentBy: { is: { email: { contains: searchTerm, mode: 'insensitive' }}}},
+      { sentBy: { is: { addtl: { contains: searchTerm, mode: 'insensitive' }}}},
+    )
+    : ""; 
+
+  includeArr.includes("group")
+    ? orConditions.push(
+      { group: { is: { name: { contains: searchTerm, mode: 'insensitive' }}}},
+    )
+    : "";   
+
+  orConditions.push(
+    { content: { contains: searchTerm, mode: 'insensitive'}},
+  )
+
+  const whereClause = orConditions.length > 0 ? { OR: orConditions } : {}
+  return whereClause
+}
+
 // Receives an array object that will be checked if certain strings (relations) are present
 // relations: sentBy(user), group
 export const prepareMessageSelectObject = (targetArray) => {
@@ -30,7 +72,7 @@ export const prepareMessageSelectObject = (targetArray) => {
   return selectObj;
 };
 
-export const formatReturnMessagesList = (messages, protocol, host) => {
+export const formatReturnMessagesArray = (messages, protocol, host) => {
 
   const formattedMessages = messages.map(({publicId: messagePublicIdAlias, sentBy, group, ...restOfMessages}) => {
     const hasSentBy = sentBy && sentBy !== null;

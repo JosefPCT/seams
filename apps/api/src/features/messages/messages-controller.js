@@ -84,7 +84,7 @@ export const messagePatchRoute = [
     const { messagePublicId } = req.params;
     const { content } = matchedData(req)
 
-    const editedMessage = await messagesServices.updateMessage(messagePublicId, { content } );
+    const editedMessage = await messagesServices.updateMessage(req.protocol, req.get('host'), messagePublicId, { content } );
     if(!editedMessage){
         return res.status(400).json({ error: true, message: "Editing the message not successful"});
     }

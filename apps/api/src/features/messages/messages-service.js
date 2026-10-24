@@ -1,7 +1,7 @@
 import * as messagesQueries from "./messages-queries.js";
 import { createPrismaOrderByObjectArray } from "../../utils/createOrderByObj.js";
 import { isValidV4UUID } from "../../utils/stringUtils.js";
-import { prepareMessageSelectObject, formatReturnMessagesList, formatReturnMessageObject } from "./messages-utils.js";
+import { prepareMessageWhereObject, prepareMessageSelectObject, formatReturnMessagesArray, formatReturnMessageObject } from "./messages-utils.js";
 import * as customError from "../../utils/extended-errors.js";
 import { preparePatchData } from "../../utils/organizeDataUtils.js";
 
@@ -21,28 +21,12 @@ export const sendMessage = async (data, userPublicId, groupPublicId, protocol, h
     data,
     currentUser.id,
     targetGroup.id,
+    prepareMessageSelectObject(['sentBy', 'group'])
   );
 
-  const { publicId: messagePublicIdAlias, sentBy, group , ...message} = newMessage;
-  const { publicId: userPublicIdAlias, ...restOfSentBy} = sentBy;
-  const { publicId: groupPublicIdAlias, ...restOfGroup} = group;
-  return {
-    id: messagePublicIdAlias,
-    ...message,
-    sentBy: {
-      id: userPublicIdAlias,
-      ...restOfSentBy
-    },
-    group: {
-      id: groupPublicIdAlias,
-      ...restOfGroup
-    },
-    links: {
-      self: new URL(`/api/v1/messages/${messagePublicIdAlias}`, `${protocol}://${host}`),
-      sentBy: new URL(`/api/v1/users/${userPublicIdAlias}`, `${protocol}://${host}`),
-      chatGroup: new URL(`/api/v1/chat-groups/${groupPublicIdAlias}`, `${protocol}://${host}`),
-    }
-  }
+  const formattedMessage = formatReturnMessageObject(newMessage, protocol, host);
+
+  return formattedMessage;
 };
 
 // Gets the user based on the user's public id to retrieve it's internal id
@@ -54,6 +38,7 @@ export const getAllMessages = async({page = 1, limit = 5 , searchTerm = "", sort
     skip: (Number(page) * Number(limit)) - Number(limit),
     searchTerm,
     isSearchTermUUID: isValidV4UUID(searchTerm),
+    createdWhereObj: prepareMessageWhereObject(searchTerm, isValidV4UUID(searchTerm), includeArr),
     createdSortObj: createPrismaOrderByObjectArray(sort),
     createdSelectObj: prepareMessageSelectObject(includeArr),
   }
@@ -64,14 +49,15 @@ export const getAllMessages = async({page = 1, limit = 5 , searchTerm = "", sort
     return [];
   }
 
-  const formattedMessages = await formatReturnMessagesList(messages, protocol, host)
+  const formattedMessages = await formatReturnMessagesArray(messages, protocol, host)
 
-  const totalMessages = await messagesQueries.getTotalMessages();
+  const totalMessages = await messagesQueries.getTotalMessages(options);
   const totalNumberOfPages = totalMessages.length / Number(limit) < 1 ? 1 : Math.ceil(totalMessages.length / Number(limit))
   return {
     meta: {
       "current_page": page,
       "per_page": limit,
+      "total_number_of_pages": totalMessages.length > 0 ? totalNumberOfPages : 0,
       "total_records": totalMessages.length,
     },
     links: {
@@ -93,7 +79,7 @@ export const getMessage = async(protocol, host, { messagePublicId, includeArr}) 
 }
 
 // data object fields include: content
-export const updateMessage = async(messagePublicId, { content }) => {
+export const updateMessage = async(protocol, host, messagePublicId, { content }) => {
 
   const message = await messagesQueries.fetchMessageByPublicId(messagePublicId)
   if(!message){
@@ -101,14 +87,9 @@ export const updateMessage = async(messagePublicId, { content }) => {
   }
   const preparedData = preparePatchData({content});
 
-  const updatedMessage = await messagesQueries.updateMessageByPublicId(messagePublicId, preparedData);
-
-  const { publicId, ...rest } = updatedMessage;
-  
-  return {
-    id: publicId,
-    ...rest,
-  }
+  const updatedMessage = await messagesQueries.updateMessageByPublicId(messagePublicId, preparedData, prepareMessageSelectObject([]));
+  const formattedMessage = formatReturnMessageObject(updatedMessage, protocol, host);
+  return formattedMessage;
 }
 
 export const deleteMessage = async(messagePublicId) => {

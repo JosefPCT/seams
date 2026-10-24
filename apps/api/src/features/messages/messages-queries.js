@@ -24,17 +24,18 @@ export const findChatGroupByPublicId = async(publicId) => {
   })
 }
 
-export const getTotalMessages = async () => {
+export const getTotalMessages = async ({createdWhereObj}) => {
   return await prisma.message.findMany({
     select: {
       id: true
-    }
+    },
+    where: createdWhereObj
   })
 }
 
 
 // Main Queries
-export const createMessage = async(messageData, userId, groupId) => {
+export const createMessage = async(messageData, userId, groupId, createdSelectObj) => {
   return await prisma.message.create({
     data: {
       senderId: userId,
@@ -42,69 +43,15 @@ export const createMessage = async(messageData, userId, groupId) => {
       groupId: groupId,
       content: messageData.content
     },
-    select: {
-      publicId: true,
-      content: true,
-      sentAt: true,
-      editedAt: true,
-      sentBy: {
-        select: {
-          publicId: true,
-          email: true,
-        }
-      },
-      group: {
-        select: {
-          publicId: true,
-          name: true
-        }
-      }
-    }
+    select: createdSelectObj
   })
 }
 
-export const fetchAllMessages = async({take, skip, searchTerm, isSearchTermUUID, createdSortObj, createdSelectObj}) => {
+export const fetchAllMessages = async({take, skip, searchTerm, isSearchTermUUID, createdWhereObj, createdSortObj, createdSelectObj}) => {
   return await prisma.message.findMany({
     take: take,
     skip: skip,
-    where: {
-      OR: [
-        { publicId: isSearchTermUUID ? searchTerm: undefined },
-        { content: { contains: searchTerm, mode: 'insensitive'}},
-        {
-          sentBy: isSearchTermUUID
-            ? {
-                is: {
-                  publicId: searchTerm,
-                },
-              }
-            : undefined,
-        },
-        {
-          group: isSearchTermUUID
-            ? {
-              is: {
-                publicId: searchTerm,
-              }
-            } : undefined
-        },
-        {
-          sentBy: { is: {
-            email: { contains: searchTerm, mode: 'insensitive'}
-          }}
-        },
-        {
-          sentBy: { is: {
-            addtl: { contains: searchTerm, mode: 'insensitive'}
-          }}
-        },
-        {
-          group: { is: {
-            name: { contains: searchTerm, mode: 'insensitive'}
-          }}
-        }
-      ],
-    },
+    where: createdWhereObj,
     orderBy: createdSortObj,
     select: createdSelectObj
   });
@@ -120,18 +67,13 @@ export const fetchMessageByPublicId = async(targetPublicId, selectObj) => {
   })
 }
 
-export const updateMessageByPublicId = async(targetPublicId, data) => {
+export const updateMessageByPublicId = async(targetPublicId, data, createdSelectObj) => {
   return await prisma.message.update({
     where: {
       publicId: targetPublicId
     },
     data: data,
-    select: {
-      publicId: true,
-      content: true,
-      sentAt: true,
-      editedAt: true,
-    }
+    select: createdSelectObj
   })
 }
 
