@@ -19,7 +19,7 @@ const MESSAGE_URL = `/api/v1/messages`;
 // Double checks if user's email already exists in the database
 // Uses password utility to transform the password string into hash, add the hash into the userData object and passed onto the query
 // Filters out sensitive data fields (using destructuring and creating a new object) before returning
-export const createUser = async(userData) => {
+export const createUser = async(protocol, host, userData) => {
     const user = await usersQueries.findUserByEmail(userData.email);
     if(user){
       throw new customError.BadRequest(`Email already exists`);
@@ -28,21 +28,10 @@ export const createUser = async(userData) => {
     const hashedPassword = await passwordUtils.genPassword(userData.password);
     userData.hash = hashedPassword.hash
 
-    const newUser = await usersQueries.createNewUser(userData);
+    const newUser = await usersQueries.createNewUser(userData, usersUtils.prepareUsersSelectObj([]));
 
-    const { publicId, ...rest } = newUser;
-
-    const filteredNewUser = {
-      id: publicId,
-      ...rest
-    }
-
-    return {
-      links: {
-        usersUrl: new URL(`${USERS_URL}/${publicId}`, `${protocol}://${host}`),
-      },
-      data: filteredNewUser
-    }
+    const formattedUser = usersUtils.formatUserObject(newUser, protocol, host);
+    return formattedUser;
 }
 
 // For GET '/users' routes, we also create 'profileUrl' fields to add onto the JSON response body for easy access to their user profiles
@@ -59,11 +48,12 @@ export const getAllUsers = async(protocol, host, { page = 1, limit = 5, searchTe
       skip: (Number(page) * Number(limit)) - limit,
       searchTerm,
       isSearchTermUUID: isValidV4UUID(searchTerm),
+      createdWhereObj: usersUtils.prepareUsersWhereObj(searchTerm, isValidV4UUID(searchTerm), includeArr),
       createdSortObj: createPrismaOrderByObjectArray(sort),
       createdSelectObj: usersUtils.prepareUsersSelectObj(includeArr)
     }
 
-    const totalUsers = await usersQueries.getAllUsersLength();
+    const totalUsers = await usersQueries.getTotalUsers(options);
     const totalNumberOfPages = totalUsers.length / Number(limit) <= 1 ? 1 : Math.ceil(totalUsers.length / Number(limit))
 
     const users = await usersQueries.fetchAllUsers(options);
@@ -73,12 +63,13 @@ export const getAllUsers = async(protocol, host, { page = 1, limit = 5, searchTe
     }
 
     // Call the helper function that helps format the list of users (removing internal ids, and renaming public ids to id in the returned object, adding urls)
-    const formattedUsers = await usersUtils.formatReturnUsersList(users, protocol, host);
+    const formattedUsers = await usersUtils.formatReturnUsersArray(users, protocol, host);
 
     return {
       meta: {
         "current_page": page,
         "per_page": limit,
+        "total_number_of_pages": totalUsers.length > 0 ? totalNumberOfPages : 0,
         "total_records": totalUsers.length,
       },
       links: {
@@ -124,7 +115,7 @@ export const getUserByPublicId = async(userPublicId, protocol, host, { includeAr
       throw new customError.NotFound(`User with public id: ${userPublicId} not found`);
     }
 
-    const formattedUser = await usersUtils.formatReturnUser(user, protocol, host);
+    const formattedUser = await usersUtils.formatUserObject(user, protocol, host);
     return formattedUser;
 
   } catch (error) {
@@ -134,7 +125,7 @@ export const getUserByPublicId = async(userPublicId, protocol, host, { includeAr
 }
 
 // Converts the password into a hash and creates an object with the hash along with other information to pass on to the query layer
-export const updateUser = async(userPublicId, userData) => {
+export const updateUser = async(protocol, host, userPublicId, userData) => {
   try {
     const user = await usersQueries.findUserByPublicId(userPublicId);
     if(!user){
@@ -156,13 +147,8 @@ export const updateUser = async(userPublicId, userData) => {
     // Can change to add a validation field for `addtl` instead
     cleanData.addtl = first_name + last_name
 
-    const updatedUser = await usersQueries.updateUserByPublicId(userPublicId, cleanData);
-
-    const { publicId, ...rest } = updatedUser;
-    const formattedUser = {
-      id: publicId,
-      ...rest,
-    }
+    const updatedUser = await usersQueries.updateUserByPublicId(userPublicId, cleanData, usersUtils.prepareUsersSelectObj([]));
+    const formattedUser = usersUtils.formatUserObject(updatedUser, protocol, host);
     return formattedUser;
 
   } catch (error) {

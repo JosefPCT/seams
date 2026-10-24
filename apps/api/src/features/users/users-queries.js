@@ -19,8 +19,9 @@ export const findUserByPublicId = async(targetUserPublicId, selectObj) => {
   })
 }
 
-export const getAllUsersLength = async() => {
+export const getTotalUsers = async({createdWhereObj}) => {
   return await prisma.user.findMany({
+    where: createdWhereObj,
     select: {
       id: true
     }
@@ -31,7 +32,7 @@ export const getAllUsersLength = async() => {
 // Main Queries
 
 // userData object has email, hash, first_name, last_name, isAdmin
-export const createNewUser = async(userData) => {
+export const createNewUser = async(userData, createdSelectObj) => {
   return await prisma.user.create({
     data: {
       email: userData.email,
@@ -39,59 +40,38 @@ export const createNewUser = async(userData) => {
       addtl: `${userData.first_name} ${userData.last_name}`,
       isAdmin: userData.isAdmin
     },
-    select: {
-      publicId: true,
-      email: true,
-      addtl: true,
-      isAdmin: true,
-    }
+    select: createdSelectObj
   })
 }
 
 // Will ignore undefined field and/or field values
 // Takes in an options object and a select object as an argument
-export const fetchAllUsers = async({take, skip, searchTerm, isSearchTermUUID, createdSortObj, createdSelectObj}) => {
+export const fetchAllUsers = async({take, skip, searchTerm, isSearchTermUUID, createdWhereObj, createdSortObj, createdSelectObj}) => {
   return await prisma.user.findMany({
     take: take,
     skip: skip,
-    where: {
-      OR: [
-        { publicId: isSearchTermUUID ? searchTerm : undefined },
-        { email: { contains: searchTerm, mode: 'insensitive'}},
-        { addtl: { contains: searchTerm, mode: 'insensitive'}},
-        { profile: { is: {
-          name: { contains: searchTerm, mode: 'insensitive'},
-          pronouns: { contains: searchTerm, mode: 'insensitive'},
-          bio: { contains: searchTerm, mode: 'insensitive'}
-        }}}
-      ]
-    },
+    where: createdWhereObj,
     orderBy: createdSortObj,
     select: createdSelectObj
   });
 }
 
-export const fetchUserByPublicId = async(targetPublicId, selectObj) => {
+export const fetchUserByPublicId = async(targetPublicId, createdSelectObj) => {
   return await prisma.user.findUnique({
     where: {
       publicId: targetPublicId
     },
-    select: selectObj
+    select: createdSelectObj
   })
 }
 
-export const updateUserByPublicId = async(userPublicId, data) => {
+export const updateUserByPublicId = async(userPublicId, data, createdSelectObj) => {
   return await prisma.user.update({
     where: {
       publicId: userPublicId
     },
     data: data,
-    select: {
-      publicId: true,
-      email: true,
-      addtl: true,
-      isAdmin: true,
-    }
+    select: createdSelectObj
   })
 }
 

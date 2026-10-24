@@ -22,7 +22,7 @@ export const usersPostRoute = [
     
     const { email, password, first_name, last_name, isAdmin} = matchedData(req);
 
-    const newUser = await usersService.createUser({ email, password, first_name, last_name, isAdmin});
+    const newUser = await usersService.createUser(req.protocol, req.get('host'), { email, password, first_name, last_name, isAdmin});
 
     res.status(200).json({ message: "You are in POST '/users' route", data: newUser});
   }
@@ -84,15 +84,19 @@ export const userPatchRoute = [
   isAdminOrIsOwnUserData,
   validation.validateUpdateUser,
   async(req, res, next) => {
-    const { userPublicId } = req.params;
     const errors = validationResult(req);
     if(!errors.isEmpty()){
       return res.status(400).json(errors);
     }
 
+    if(Object.keys(matchedData(req)).length === 0 && matchedData(req).constructor === Object){
+      res.status(400).json({ status: 'warning', message: `No valid fields to update`});
+    }
+
+    const { userPublicId } = req.params;
     const { email, password, first_name, last_name, isAdmin} = matchedData(req);
     
-    const updatedUser = await usersService.updateUser(userPublicId, {email, password, first_name, last_name, isAdmin});
+    const updatedUser = await usersService.updateUser(req.protocol, req.get('host'), userPublicId, {email, password, first_name, last_name, isAdmin});
 
     if(!updatedUser){
       return res.status(400).json({ error: true, message: "User was not updated succesfully"});
