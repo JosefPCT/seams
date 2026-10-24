@@ -14,15 +14,10 @@ export const getTotalChatGroups = async({createdWhereObj}) => {
 
 // Main Queries
 
-export const createChatGroup = async(data) => {
+export const createChatGroup = async(data, createdSelectObj) => {
   return await prisma.chatGroup.create({
     data: data,
-    select: {
-      publicId: true,
-      name: true,
-      createdAt: true,
-      updatedAt: true
-    }
+    select: createdSelectObj
   })
 }
 
@@ -44,18 +39,13 @@ export const findChatGroupByPublicId = async(targetPublicId, selectObj) => {
     select: selectObj
   })
 }
-export const updateChatGroupByPublicId = async(targetPublicId, data) => {
+export const updateChatGroupByPublicId = async(targetPublicId, data, createdSelectObj) => {
   return await prisma.chatGroup.update({
     where:{
       publicId: targetPublicId
     },
     data: data,
-    select: {
-      publicId: true,
-      name: true,
-      createdAt: true,
-      updatedAt: true,
-    }
+    select: createdSelectObj
   })
 }
 

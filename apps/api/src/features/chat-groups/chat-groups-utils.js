@@ -1,47 +1,58 @@
-export const prepareChatGroupsWhereObj = (searchTerm, isSearchTermUUID) => {
-  return {
-    OR: [
-      { publicId: isSearchTermUUID ? searchTerm : undefined },
-      { name: { contains: searchTerm, mode: "insensitive" } },
-      {
-        messages: {
-          some: {
-            publicId: isSearchTermUUID ? searchTerm : undefined,
-          },
-        },
-      },
-      {
-        messages: {
-          some: {
-            content: { contains: searchTerm, mode: "insensitive" },
-          },
-        },
-      },
-      {
-        messages: {
-          some: {
-            sentBy: {
-              is: { publicId: isSearchTermUUID ? searchTerm : undefined },
-            },
-          },
-        },
-      },
-      {
-        messages: {
-          some: {
-            sentBy: {
-              is: {
-                profile: {
-                  is: { name: { contains: searchTerm, mode: "insensitive" } },
-                },
-              },
-            },
-          },
-        },
-      },
-    ],
-  };
-};
+export const prepareChatGroupsWhereObj = (searchTerm, isSearchTermUUID, includeArr) => {
+  const orConditions = [];
+
+  isSearchTermUUID
+    ? orConditions.push(
+        { publicId: searchTerm },
+      )
+    : "";
+
+  isSearchTermUUID & includeArr.includes("messages")
+    ? orConditions.push(
+      { messages: { some: { publicId: searchTerm }}},
+      { messages: { some: { sentBy: { is: { publicId: searchTerm }}}}},
+      { messages: { some: { sentBy: { is: { profile: { is: { publicId: searchTerm }}}}}}}
+    )
+    : "";
+
+  isSearchTermUUID & includeArr.includes("participants")
+    ? orConditions.push(
+      { participants: { some: { publicId: searchTerm }}},
+      { participants: { some: { user: { is: { publicId: searchTerm }}}}},
+      { participants: { some: { user: { is: { profile: { is: { publicId: searchTerm }}}}}}}
+    ) 
+    : "";
+  
+  includeArr.includes("messages")
+    ? orConditions.push(
+      { messages: { some : { content: { contains: searchTerm, mode: 'insensitive'}}}},
+      { messages: { some: { sentBy: { is: { email: { contains: searchTerm, mode: 'insensitive'}}}}}},
+      { messages: { some: { sentBy: { is: { profile: { is: { name: { contains: searchTerm, mode: 'insensitive'}}}}}}}},
+    )
+    : "";
+
+  includeArr.includes("participants")
+    ? orConditions.push(
+      { participants: { some: { user: { is: { email: { contains: searchTerm, mode: 'insensitive'}}}}}},
+      { participants: { some: { user: { is: { addtl: { contains: searchTerm, mode: 'insensitive'}}}}}},
+      { participants: { some: { user: { is: { profile: { is: { name: { contains: searchTerm, mode: 'insensitive'}}}}}}}}
+    )
+    : "";
+
+  ["ADMIN", "MEMBER"].includes(searchTerm) && includeArr.includes("participants")
+    ? orConditions.push(
+      { participants: { some: { role: searchTerm }}}
+    )
+    : "";  
+
+  orConditions.push(
+     { name : { contains: searchTerm, mode: 'insensitive'}},
+  )
+
+  const whereClause = orConditions.length > 0 ? { OR: orConditions } : {}
+  return whereClause
+}
+
 
 export const prepareChatGroupSelectObj = (targetArray) => {
   const selectObj = {
@@ -109,7 +120,7 @@ export const prepareChatGroupSelectObj = (targetArray) => {
   return selectObj;
 };
 
-export const formatReturnChatGroupsList = (chatGroups, protocol, host) => {
+export const formatReturnChatGroupsArray = (chatGroups, protocol, host) => {
   const formattedGroups = chatGroups.map(
     ({ publicId: chatGroupPublicIdAlias, ...chatGroup }) => {
       const hasParticipants =
@@ -234,14 +245,14 @@ export const formatReturnChatGroupObject = (chatGroup, protocol, host) => {
         `/api/v1/chat-groups/${chatGroupPublicIdAlias}`,
         `${protocol}://${host}`,
       ),
-      messages: new URL(
+      messages: hasMessages ? new URL(
         `/api/v1/messages?searchTerm=${chatGroupPublicIdAlias}`,
         `${protocol}://${host}`,
-      ),
-      participants: new URL(
+      ): undefined,
+      participants: hasParticipants ? new URL(
         `/api/v1/chat-participants?searchTerm=${chatGroupPublicIdAlias}`,
         `${protocol}://${host}`,
-      ),
+      ): undefined,
     },
     participants: hasParticipants
       ? chatGroup.participants.map(
@@ -282,7 +293,7 @@ export const formatReturnChatGroupObject = (chatGroup, protocol, host) => {
             };
           },
         )
-      : [],
+      : undefined,
     messages: hasMessages
       ? chatGroup.messages.map(
           ({ publicId: messagePublicIdAlias, sentBy, ...restOfMessages }) => {
@@ -318,6 +329,6 @@ export const formatReturnChatGroupObject = (chatGroup, protocol, host) => {
             };
           },
         )
-      : [],
+      : undefined,
   };
 };

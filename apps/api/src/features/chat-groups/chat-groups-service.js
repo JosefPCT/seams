@@ -7,15 +7,9 @@ import * as chatGroupsQuery from "./chat-groups-query.js";
 
 // Since `name` field has a default value when creating, we can just pass the data object even if its empty(will use default value)
 export const createNewChatGroup = async(protocol, host, { name }) => {
-  const createdChatGroup = await chatGroupsQuery.createChatGroup( { name });
-  const { publicId, ...rest} = createdChatGroup;
-  return {
-    id: publicId,
-    ...rest,
-    links: {
-      getChatGroup: new URL(`/api/v1/chat-groups/${publicId}`, `${protocol}://${host}`),
-    }
-  }
+  const createdChatGroup = await chatGroupsQuery.createChatGroup( { name }, chatGroupUtils.prepareChatGroupSelectObj([]));
+  const formattedChatGroup = chatGroupUtils.formatReturnChatGroupObject(createdChatGroup, protocol, host);
+  return formattedChatGroup;
 }
 
 // Can add filtering, sorting, pagination logic here
@@ -24,23 +18,23 @@ export const getAllChatGroups = async(protocol, host, { page=1, limit=5, searchT
   const options = {
     take: Number(limit),
     skip: (Number(page) * Number(limit)) - limit,
-    createdWhereObj: chatGroupUtils.prepareChatGroupsWhereObj(searchTerm, isValidV4UUID(searchTerm)),
+    createdWhereObj: chatGroupUtils.prepareChatGroupsWhereObj(searchTerm, isValidV4UUID(searchTerm), includeArr),
     createdSortObj: createPrismaOrderByObjectArray(sort),
     createdSelectObj: chatGroupUtils.prepareChatGroupSelectObj(includeArr)
   }
 
   const chatGroups = await chatGroupsQuery.findAllChatGroups(options)
 
-  const formattedChatGroups = chatGroupUtils.formatReturnChatGroupsList(chatGroups, protocol, host)
+  const formattedChatGroups = chatGroupUtils.formatReturnChatGroupsArray(chatGroups, protocol, host)
 
   const totalChatGroups = await chatGroupsQuery.getTotalChatGroups(options);
   const totalNumberOfPages = totalChatGroups.length / Number(limit) <= 1 ? 1 : Math.ceil(totalChatGroups.length / Number(limit))
 
   return {
       meta: {
-        "current_page": page,
+        "current_page": Number(page),
         "per_page": limit,
-        "total_number_of_pages": totalNumberOfPages,
+        "total_number_of_pages": totalChatGroups.length > 0 ? totalNumberOfPages : 0,
         "total_records": totalChatGroups.length,
       },
       links: {
@@ -63,20 +57,15 @@ export const getChatGroupByPublicId = async(publicId, protocol, host, { includeA
   return formattedChatGroup;
 }
 
-export const updateChatGroup = async(publicId, data) => {
+export const updateChatGroup = async(protocol, host, publicId, data) => {
   const chatGroup = await chatGroupsQuery.findChatGroupByPublicId(publicId)
   if(!chatGroup){
     throw new customError.BadRequest(`Chat Grou by this public id does not exist, aborting update operation`);
   }
   const preparedData = preparePatchData(data);
-  const updatedChatGroup = await chatGroupsQuery.updateChatGroupByPublicId(publicId, preparedData);
-
-  const { publicId: chatGroupPublicIdAlias, ...restOfChatGroup} = updatedChatGroup;
-
-  return {
-    id: chatGroupPublicIdAlias,
-    ...restOfChatGroup
-  }
+  const updatedChatGroup = await chatGroupsQuery.updateChatGroupByPublicId(publicId, preparedData, chatGroupUtils.prepareChatGroupSelectObj([]));
+  const formattedChatGroup = chatGroupUtils.formatReturnChatGroupObject(updatedChatGroup, protocol, host);
+  return formattedChatGroup;
 }
 
 export const deleteChatGroup = async(publicId) => {

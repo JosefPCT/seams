@@ -67,7 +67,7 @@ export const chatGroupPatchRoute = [
 
     const { name } = matchedData(req)
 
-    const updatedChatGroup = await service.updateChatGroup(chatGroupPublicId, { name })
+    const updatedChatGroup = await service.updateChatGroup(req.protocol, req.get('host'), chatGroupPublicId, { name })
 
     res.status(200).json({ status: "success", message: `In 'PATCH /chat-groups/${chatGroupPublicId}', Here is the updated chat group data`, data: updatedChatGroup});
   }
