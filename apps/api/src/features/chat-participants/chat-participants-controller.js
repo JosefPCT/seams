@@ -88,6 +88,9 @@ export const participantDeleteRoute = [
     const { publicId } = req.params;
 
     const result = await service.deleteChatParticipant(publicId);
+    if(!result){
+      return res.status(400).json({ error: true, message: "Deleting the chat participant not successful"});
+    }
     res.status(204).json({ status: 'Ok', message: "In 'DELETE /chat-participants", data: result});
   }
 ]

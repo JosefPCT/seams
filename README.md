@@ -641,3 +641,6 @@ NOTE: Can only update the role of the chat participant
 Returns a formatted object without sensitive fields, and renamed fields
 
 #### DELETE /chat-participants/:publicID
+Deletes a specific chat participant based on it route parameter (:publicId), the chat participant's public id in the database
+Also returns a JSON message if deletion is successful
+TODO: Accessible only by a logged in user and the user must be its own participant?
