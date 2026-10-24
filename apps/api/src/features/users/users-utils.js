@@ -148,7 +148,7 @@ export const formatReturnUsersArray = (users, protocol, host) => {
       id: publicId,
       ...user,
       links: {
-        self: new URL(`/api/v1/users/${userPublicIdAlias}`, `${protocol}://${host}`),
+        self: new URL(`/api/v1/users/${publicId}`, `${protocol}://${host}`),
         createProfileUrl: hasProfile
         ? "Already created a profile"
         : new URL(`${PROFILE_URL}`, `${protocol}://${host}`),

@@ -83,7 +83,7 @@ export const specificProfileUpdateRoute = [
 
     const { name, pronouns, bio } = matchedData(req);
 
-    const updatedProfile = await profileService.updateSpecificProfile(profilePublicId, {name, pronouns, bio});
+    const updatedProfile = await profileService.updateSpecificProfile(req.protocol, req.get('host'), profilePublicId, {name, pronouns, bio});
 
     if(!updatedProfile){
       return res.status(400).json({ error: true, message: "Profile was not updated succesfully"});

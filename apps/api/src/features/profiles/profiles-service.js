@@ -27,21 +27,8 @@ export const createProfile = async(profileData, protocol, host) => {
       throw new customError.BadRequest(`User already has profile`);
     }
 
-    const createdProfile = await profileQueries.createProfileByUserId(profileData);
-    const {publicId, user, ...rest} = createdProfile;
-    const { publicId: userPublicIdAlias, ...restOfUser} = user;
-    const formattedProfile = {
-      id: publicId,
-      ...rest,
-      user: {
-        id: userPublicIdAlias,
-        ...restOfUser
-      }, 
-      links: {
-        self: new URL(`/api/v1/profiles/${publicId}`, `${protocol}://${host}`),
-        usersUrl: new URL(`${USERS_URL}/${userPublicIdAlias}`, `${protocol}://${host}`),
-      }
-    }
+    const createdProfile = await profileQueries.createProfileByUserId(profileData, profileUtils.prepareProfileSelectObj(['user']));
+    const formattedProfile = profileUtils.formatReturnProfileObject(createdProfile, protocol, host);
     return formattedProfile;
   } catch (error) {
     console.log(error);
@@ -58,11 +45,12 @@ export const fetchAllProfiles = async({page=1, limit=5, searchTerm="", sort="cre
     skip: (Number(page) * Number(limit)) - limit,
     searchTerm,
     isSearchTermUUID: isValidV4UUID(searchTerm),
+    createdWhereObj: profileUtils.prepareProfileWhereObj(searchTerm, isValidV4UUID(searchTerm), includeArr),
     createdSortObj: createPrismaOrderByObjectArray(sort),
     createdSelectObj: profileUtils.prepareProfileSelectObj(includeArr)
   }
 
-  const totalProfiles = await profileQueries.getTotalProfiles();
+  const totalProfiles = await profileQueries.getTotalProfiles(options);
   const totalNumberOfPages = totalProfiles.length / Number(limit) <= 1 ? 1 : Math.ceil(totalProfiles.length / Number(limit))
 
 
@@ -71,13 +59,14 @@ export const fetchAllProfiles = async({page=1, limit=5, searchTerm="", sort="cre
       return [];
   }
 
-  const formattedProfiles = await profileUtils.formatReturnProfilesList(profiles, protocol, host);
+  const formattedProfiles = await profileUtils.formatReturnProfilesArray(profiles, protocol, host);
 
 
   return {
       meta: {
         "current_page": page,
         "per_page": limit,
+        "total_number_of_pages": totalProfiles.length > 0 ? totalNumberOfPages : 0,
         "total_records": totalProfiles.length,
       },
       links: {
@@ -97,13 +86,13 @@ export const fetchSpecificProfile = async(publicId, { includeArr }, protocol, ho
   if(!profile){
     throw new customError.NotFound(`Profile with public id: ${userPublicId} not found`);
   }
-  const formattedProfile = profileUtils.formatReturnProfile(profile, protocol, host);
+  const formattedProfile = profileUtils.formatReturnProfileObject(profile, protocol, host);
   
   return formattedProfile;
 
 }
 // data object has potentially a field of either or all: name, pronouns, bio
-export const updateSpecificProfile = async(profilePublicId, data) => {
+export const updateSpecificProfile = async(protocol, host, profilePublicId, data) => {
   const profile = await profileQueries.getProfileByPublicId(profilePublicId);
   if(!profile){
     throw new customError.BadRequest(`Profile does not exist`);
@@ -111,13 +100,10 @@ export const updateSpecificProfile = async(profilePublicId, data) => {
 
   const preparedData = preparePatchData(data);
 
-  const updatedProfile = await profileQueries.updateProfileByPublicId(profilePublicId, preparedData);
-  const { publicId, ...rest } = updatedProfile;
-
-  return {
-    id: publicId,
-    ...rest
-  }
+  const updatedProfile = await profileQueries.updateProfileByPublicId(profilePublicId, preparedData, profileUtils.prepareProfileSelectObj(['user']));
+  const formattedProfile = profileUtils.formatReturnProfileObject(updatedProfile, protocol, host);
+  
+  return formattedProfile;
 }
 
 export const deleteSpecificProfile = async(profilePublicId) => {
