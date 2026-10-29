@@ -4,6 +4,11 @@ import * as validation from "../../middleware/validation.js"
 import * as messagesServices from "./messages-service.js";
 import { isAuth, isOwnMessage, isOwnProfile } from "../../middleware/authMiddleware.js";
 
+import { upload } from '../../config/multer.js';
+import { supabase } from '../../config/supabase.js';
+
+
+const uploadMiddleware = upload.fields([{ name: 'avatar', maxCount: 1}, { name: "gallery", maxCount: 8}])
 
 // Endpoint: POST '/messages
 // Route responsible for creating/sending a message
@@ -11,6 +16,8 @@ import { isAuth, isOwnMessage, isOwnProfile } from "../../middleware/authMiddlew
 // Might need to also create the chat group if new chat?
 export const messagesPostRoute = [
   isAuth,
+  // upload.single("test_file"),
+  uploadMiddleware,
   validation.validateMessage,
   async(req, res, next) => {
     const errors = validationResult(req);
@@ -22,12 +29,48 @@ export const messagesPostRoute = [
 
     const { userPublicId, groupPublicId , content } = matchedData(req);
     const targetUserPublicId = userPublicId || req.user.publicId;
+
     const createdMessage = await messagesServices.sendMessage({content}, targetUserPublicId, groupPublicId, req.protocol, req.get('host'));
     if(!createdMessage){
         return res.status(400).json({ error: true, message: "Message was not sent successfully"});
     }
 
     res.status(200).json({ message: 'You sent a new message', data: createdMessage});
+
+    // // Testing of storing a file to supabase and getting the url from it (cloud storage)
+    // const createdMessage = "";
+    // console.log("Showing data for POST /messages");
+    // console.log("Req body:");
+    // console.log(req.body);
+    // console.log("Req file:")
+    // console.log(req.files);
+
+    // const folderPath = req.user.publicId;
+    // const fileName = req.files.avatar[0].originalname;
+    // const filePath = `${folderPath}/${fileName}`;
+ 
+    // console.log(folderPath);
+    // console.log(fileName)
+    // console.log(filePath)
+
+    // const { data, error } = await supabase.storage.from('testbuck1').upload(filePath, req.files.avatar[0].buffer, {
+    //     cacheControl: '3600',
+    //     upsert: false,
+    //     // contentType: 'image/png',
+    //     contentType: req.files.avatar[0].mimetype
+    // });
+
+    // console.log("Data:")
+    // console.log(data);
+
+    // const { data: publicUrlData , error: getError } = await supabase.storage.from('testbuck1').getPublicUrl(filePath);
+    // console.log("Public URL data: ");
+    // console.log(publicUrlData);
+
+    // // console.log("Req files")
+    // // console.log(req.files.avatar[0].originalname);
+
+    // res.status(200).json({ message: 'You sent a new message', data: createdMessage});
   }
 ]
 

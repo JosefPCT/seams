@@ -152,8 +152,8 @@ const validateMessage = [
     .isUUID().withMessage(`userPublicId must be a valid UUID`),
   body("groupPublicId")
     .trim()
-    .notEmpty().withMessage(`userPublicId ${emptyErr}`)
-    .isUUID().withMessage(`userPublicId must be a valid UUID`),
+    .notEmpty().withMessage(`groupPublicId ${emptyErr}`)
+    .isUUID().withMessage(`groupdPublicId must be a valid UUID`),
   body("content")
     .trim()
     .notEmpty()
