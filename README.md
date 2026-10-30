@@ -250,6 +250,8 @@ Accepts a req.body of:
 - userPublicId (UUID string) (public id of the user sending the message)
 - groupPublicId (UUID string) (public id of the chat group that will the message be sent to)
 - content (string)
+- attachments (multipart form) (files) (optional)
+  - Parsed via multer and populates (req.files.attachments) if files are attached
 
 
 Returned object may include fields of:
@@ -263,10 +265,17 @@ Returned object may include fields of:
 - group (relation) (chat group)
     - id (UUID)
     - name
+- attachments
+    - id
+    - name
+    - size
+    - mimeType
+    - url
 - links
     - self (link to the actual profile (/profiles/:id))
     - sentBy (link to the related user)
     - chatGroup (link to the related chat group)
+    - attachments (link to the child attachments)
 
 
 #### GET /messages?page={num}&limit={num}&searchTerm={string|UUID}&sort={string1,string2,-string3}&include=sentBy&include=group
@@ -334,10 +343,17 @@ Returned Object may include fields of:
     - name
     - createdAt
     - updatedAt
+- attachments
+    - id
+    - name
+    - size
+    - mimeType
+    - url
 - links
     - self
     - sentBy (url to the specific user attached to this message ('/users/:publicId'))
     - group (url to the specific group attached to this messsage)
+    - attachments (link to the child attachments)
 
 
 #### PUT /messages/:messagePublicId

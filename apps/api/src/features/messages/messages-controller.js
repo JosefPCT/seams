@@ -5,10 +5,10 @@ import * as messagesServices from "./messages-service.js";
 import { isAuth, isOwnMessage, isOwnProfile } from "../../middleware/authMiddleware.js";
 
 import { upload } from '../../config/multer.js';
-import { supabase } from '../../config/supabase.js';
 
 
-const uploadMiddleware = upload.fields([{ name: 'avatar', maxCount: 1}, { name: "gallery", maxCount: 8}])
+
+const uploadMiddleware = upload.fields([{ name: 'avatar', maxCount: 1}, { name: "gallery", maxCount: 8}, { name: 'attachments', maxCount: 2}])
 
 // Endpoint: POST '/messages
 // Route responsible for creating/sending a message
@@ -30,7 +30,16 @@ export const messagesPostRoute = [
     const { userPublicId, groupPublicId , content } = matchedData(req);
     const targetUserPublicId = userPublicId || req.user.publicId;
 
-    const createdMessage = await messagesServices.sendMessage({content}, targetUserPublicId, groupPublicId, req.protocol, req.get('host'));
+    const attachments = req.files.attachments && req.files.attachments.length > 0
+      ? req.files.attachments.map(file => ({ 
+        name: file.originalname,
+        size: file.size,
+        type: file.mimetype,
+        buffer: file.buffer
+      }))
+      : undefined
+
+    const createdMessage = await messagesServices.sendMessage({content, attachments}, targetUserPublicId, groupPublicId, req.protocol, req.get('host'));
     if(!createdMessage){
         return res.status(400).json({ error: true, message: "Message was not sent successfully"});
     }
@@ -42,8 +51,25 @@ export const messagesPostRoute = [
     // console.log("Showing data for POST /messages");
     // console.log("Req body:");
     // console.log(req.body);
+    // console.log(req.body.avatar);
     // console.log("Req file:")
     // console.log(req.files);
+
+    // console.log("Avatar:")
+    // console.log(req.files.avatar);
+    // console.log("Gallery:")
+    // console.log(req.files.gallery);
+    // console.log("Attachments");
+    // console.log(req.files.attachments);
+
+    // console.log("Created object from attachments:");
+    // const testCreate = req.files.gallery.map(file => ({
+    //   name: file.originalname,
+    //   size: file.size,
+    //   type: file.mimetype,
+    //   buffer: file.buffer
+    // }))
+    // console.log(testCreate);
 
     // const folderPath = req.user.publicId;
     // const fileName = req.files.avatar[0].originalname;

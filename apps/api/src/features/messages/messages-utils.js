@@ -1,3 +1,65 @@
+import { supabase } from '../../config/supabase.js';
+
+// Function that uploads a
+export const prepareMessageCreateDataObject = async(userPublicId, content, userId, groupId, attachments) => {
+  console.log("Checking of attachments object");
+  console.log(attachments)
+  
+  let attachmentsWithUrl = undefined;
+  if(attachments){ 
+    for (const attachment of attachments) {
+      console.log("Under for each");
+      console.log(userPublicId);
+      console.log(attachment.name);
+      console.log(attachment.type);
+      const folderPath = userPublicId;
+      const fileName = attachment.name;
+      const filePath = `${folderPath}/${fileName}`;
+      console.log("File path:");
+      console.log(filePath);
+      const { data, error } = await supabase.storage.from('testbuck1').upload(filePath, attachment.buffer, {
+            cacheControl: '3600',
+            upsert: false,
+            // contentType: 'image/png',
+            contentType: attachment.type
+      });
+      console.log("Data for uploaded file");
+      console.log(data);
+      console.log(error);
+    }
+
+    // Creating the attachments object with the actual url from supabase's public url
+    attachmentsWithUrl = attachments.map(attachment => {
+      const folderPath = userPublicId;
+      const fileName = attachment.name;
+      const filePath = `${folderPath}/${fileName}`;
+      const { data: publicUrlData , error: getError } = supabase.storage.from('testbuck1').getPublicUrl(filePath);
+
+      return {
+        name: attachment.name,
+        mimeType: attachment.type,
+        size: attachment.size,
+        url: publicUrlData.publicUrl,
+      }
+    })
+    console.log("Attachments with URL");
+    console.log(attachmentsWithUrl);
+
+    console.log("Content");
+    console.log(content);
+  }
+
+  // Uses conditional spreading to build the attachments nested relation if present, empty if not present
+  return {
+    senderId: userId,
+    groupId: groupId,
+    content: content,
+    ...(attachments ? { attachments: {
+      create: attachmentsWithUrl
+    }} : {})
+  }
+}
+
 export const prepareMessageWhereObject = (searchTerm, isSearchTermUUID, includeArr) => {
   const orConditions = [];
 
@@ -67,7 +129,17 @@ export const prepareMessageSelectObject = (targetArray) => {
           createdAt: true,
           updatedAt: true,
         }
-      } : undefined
+      } : undefined,
+    attachments: targetArray.includes("attachments")
+     ? {
+      select: {
+        publicId: true,
+        name: true,
+        size: true,
+        mimeType: true,
+        url: true
+      }
+     } : undefined,
   };
   return selectObj;
 };
@@ -114,6 +186,7 @@ export const formatReturnMessagesArray = (messages, protocol, host) => {
 export const formatReturnMessageObject = (message, protocol, host) => {
   const hasSentBy = message.sentBy && message.sentBy !== null;
   const hasGroup = message.group && message.group !== null;
+  const hasAttachments = message.attachments && message.attachments.length > 0;
 
   const { publicId: messagePublicIdAlias, sentBy, group, ...restOfMessage } = message;
 
@@ -142,9 +215,20 @@ export const formatReturnMessageObject = (message, protocol, host) => {
       self: new URL(`/api/v1/messages/${messagePublicIdAlias}`, `${protocol}://${host}`),
       sentBy: hasSentBy ? new URL(`/api/v1/users/${formattedSentBy.id}`, `${protocol}://${host}`) : undefined,
       group: hasGroup ? new URL(`/api/v1/chat-groups/${formattedGroup.id}`, `${protocol}://${host}`) : undefined,
+      attachments: hasAttachments ? new URL(`/api/v1/messages/${messagePublicIdAlias}/attachments`, `${protocol}://${host}`) : undefined
     },
     sentBy: formattedSentBy,
     group: formattedGroup,
+    attachments: hasAttachments 
+      ? message.attachments.map(
+        ({ publicId: attachmentPublicId, ...restOfAttachment}) => {
+          return {
+            id: attachmentPublicId,
+            ...restOfAttachment
+          }
+        }
+      )
+      : null
   }
 
 }

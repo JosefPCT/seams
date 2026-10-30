@@ -35,14 +35,15 @@ export const getTotalMessages = async ({createdWhereObj}) => {
 
 
 // Main Queries
-export const createMessage = async(messageData, userId, groupId, createdSelectObj) => {
+export const createMessage = async(createdDataObject, createdSelectObj) => {
   return await prisma.message.create({
-    data: {
-      senderId: userId,
-      // Test value to allow creation of message, need to change to actual query (has to create or find the group chat first)
-      groupId: groupId,
-      content: messageData.content
-    },
+    // data: {
+    //   senderId: userId,
+    //   // Test value to allow creation of message, need to change to actual query (has to create or find the group chat first)
+    //   groupId: groupId,
+    //   content: messageData.content
+    // },
+    data: createdDataObject,
     select: createdSelectObj
   })
 }

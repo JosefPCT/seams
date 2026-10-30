@@ -1,11 +1,12 @@
 import * as messagesQueries from "./messages-queries.js";
 import { createPrismaOrderByObjectArray } from "../../utils/createOrderByObj.js";
 import { isValidV4UUID } from "../../utils/stringUtils.js";
-import { prepareMessageWhereObject, prepareMessageSelectObject, formatReturnMessagesArray, formatReturnMessageObject } from "./messages-utils.js";
+import { prepareMessageCreateDataObject, prepareMessageWhereObject, prepareMessageSelectObject, formatReturnMessagesArray, formatReturnMessageObject } from "./messages-utils.js";
 import * as customError from "../../utils/extended-errors.js";
 import { preparePatchData } from "../../utils/organizeDataUtils.js";
 
-// data object includes a field of: content
+
+// data object includes a field of: content, attachments
 export const sendMessage = async (data, userPublicId, groupPublicId, protocol, host) => {
   // Checks if user of the passed userPublicId argument exists on the database and to also get the user's internal id to be passed on to the query layer
   const currentUser = await messagesQueries.findUserByPublicId(userPublicId);
@@ -17,11 +18,14 @@ export const sendMessage = async (data, userPublicId, groupPublicId, protocol, h
     throw new customError.BadRequest(`Invalid group to send message on`);
   }
 
+  const createdDataObject = await prepareMessageCreateDataObject(userPublicId, data.content, currentUser.id, targetGroup.id, data.attachments);
+  
+  console.log("Created data object");
+  console.log(createdDataObject);
+
   const newMessage = await messagesQueries.createMessage(
-    data,
-    currentUser.id,
-    targetGroup.id,
-    prepareMessageSelectObject(['sentBy', 'group'])
+    createdDataObject,
+    prepareMessageSelectObject(['sentBy', 'group', 'attachments'])
   );
 
   const formattedMessage = formatReturnMessageObject(newMessage, protocol, host);
