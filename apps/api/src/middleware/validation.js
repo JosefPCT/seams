@@ -168,6 +168,22 @@ const validateUpdateMessage = [
     .optional(),
 ]
 
+const validateCreateAttachment = [
+  body("name")
+    .optional()
+    .trim()
+    .notEmpty().withMessage(`Content of the name ${emptyErr}`),
+  // body("size")
+  //   .trim()
+  //   .notEmpty().withMessage(`Size field ${emptyErr}`)
+  //   .isInt().withMessage(`Size field must be a valid integer`),
+  // body("mimeType")
+  //   .trim()
+  //   .notEmpty().withMessage(`Mime type ${emptyErr}`)
+  //   .isMimeType().withMessage(`Must be a valid mime type`),
+  // body("url")
+]
+
 const validateCreateChatGroup = [
   body("name")
     .optional({ values: 'falsy'})
@@ -251,7 +267,8 @@ export {
   validateProfile, 
   validateUpdateProfile, 
   validateMessage, 
-  validateUpdateMessage, 
+  validateUpdateMessage,
+  validateCreateAttachment,
   validateCreateChatGroup, 
   validateUpdateChatGroup,
   validateCreateParticipant,

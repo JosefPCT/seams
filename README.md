@@ -373,6 +373,29 @@ Deletes a specific message based on it route parameter (:messagePublicId), the m
 Also returns a JSON message if deletion is successful
 Accessible only by a logged in user and if that user owns the message
 
+### /messages/:messagePublicId/attachments
+
+#### POST /messages/:messagePublicId/attachments
+Creates an attachment, based on the current logged in user and from the dynamic route parameter (:messagePublicId)
+Accessible only be a logged in user
+Returns a JSON payload information of the created attachment
+Accepts a req.body of:
+- name (string) (optional)
+- attachments (multipart form) (files) (optional)
+  - Parsed via multer and populates (req.files.attachments) if files are attached
+  - This is where we will get most of the other data needed ( size, mimeType, url)
+
+Returned object may include fields of:
+- id (UUID)
+- name (string)
+- mimeType (string)
+- size (int)
+- url (public url in the uploaded file in supabase)
+- message (relation: message)
+    - id
+- links
+    - self (link to the actual attachment) (/messages/:messageId/attachments/:attachmentId)
+    - message (link to the message parent) (/messages/:messageId)
 
 ### /chat-groups
 

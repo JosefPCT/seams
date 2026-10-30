@@ -1,0 +1,74 @@
+import { supabase } from "../../../config/supabase.js";
+
+// Example of url that should be stored: https://peytonkdtxkjgvbphenq.supabase.co/storage/v1/object/public/testbuck1/e6f12a7b-ece7-4167-8fae-d81f57050632/JosefBig.png
+export const uploadAttachmentsToSupabase = async (attachments, userPublicId) => {
+  for (const attachment of attachments) {
+    console.log("Under for each");
+    console.log(userPublicId);
+    console.log(attachment.name);
+    console.log(attachment.mimeType);
+    const folderPath = userPublicId;
+    const fileName = attachment.name;
+    const filePath = `${folderPath}/${fileName}`;
+    console.log("File path:");
+    console.log(filePath);
+    const { data, error } = await supabase.storage
+      .from("testbuck1")
+      .upload(filePath, attachment.buffer, {
+        cacheControl: "3600",
+        upsert: false,
+        // contentType: 'image/png',
+        contentType: attachment.mimeType,
+      });
+    console.log("Data for uploaded file");
+    console.log(data);
+    console.log(error);
+  }
+};
+
+export const createAttachmentsObjectWithUrl = (
+  attachments,
+  userPublicId,
+) => {
+  return attachments.map((attachment) => {
+    const filePath = `${userPublicId}/${attachment.name}`;
+    const { data: publicUrlData, error: getError } = supabase.storage
+      .from("testbuck1")
+      .getPublicUrl(filePath);
+
+    return {
+      name: attachment.name,
+      mimeType: attachment.mimeType,
+      size: attachment.size,
+      url: publicUrlData.publicUrl,
+    };
+  });
+};
+
+
+
+export const formatReturnAttachmentObject = (attachment, protocol, host) => {
+  const hasMessage = attachment.message && attachment.message !== null;
+
+  const { publicId: attachmentPublicIdAlias, message, ...restOfAttachment } = attachment;
+
+  let formattedMessageParent = undefined;
+  if(hasMessage){
+    const { publicId: messagePublicIdAlias, ...restOfMessage} = message;
+    formattedMessageParent = {
+    id: messagePublicIdAlias,
+    ...restOfMessage 
+    }
+  }
+
+  return {
+    id: attachmentPublicIdAlias,
+    ...restOfAttachment,
+    links: {
+      self: new URL(`/api/v1/messages/${formattedMessageParent.id}/attachments/${attachmentPublicIdAlias}`, `${protocol}://${host}`),
+      message: hasMessage ? new URL(`/api/v1/messages/${formattedMessageParent.id}`, `${protocol}://${host}`) : undefined,
+    },
+    message: formattedMessageParent
+  }
+
+}
