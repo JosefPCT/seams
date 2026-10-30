@@ -1,5 +1,7 @@
 import express from "express";
 
+import attachmentsRouter from "./attachments/attachments-route.js";
+
 import * as messagesController from "./messages-controller.js";
 
 const messagesRouter = express.Router();
@@ -13,5 +15,7 @@ messagesRouter.get('/:messagePublicId', messagesController.messageByPublicIdGetR
 messagesRouter.patch('/:messagePublicId', messagesController.messagePatchRoute);
 
 messagesRouter.delete('/:messagePublicId', messagesController.messageDeleteRoute);
+
+messagesRouter.use('/:messagePublicId/attachments', attachmentsRouter);
 
 export default messagesRouter;
