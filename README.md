@@ -436,6 +436,24 @@ Returned object may include fields of:
         - self (link to the actual attachment) (/messages/:messageId/attachments/:attachmentId)
         - message (link to the message parent) (/messages/:messageId)
 
+#### GET /messages/:messagePublicId/attachments/:attachmentPublicId
+Returns a JSON data of a specific message attachment based on it route parameter (:messagePublicId) and (:attachmentPublicId), the message and  attachment's public id in the database
+Optional Search Query Parameters:
+- include (declared by repeating the include variable to create an array, valid values are: message)
+
+
+Returned object may include fields of:
+- id (UUID)
+- name (string)
+- mimeType (string)
+- size (int)
+- url (public url in the uploaded file in supabase)
+- message (relation: message)
+    - id
+- links
+    - self (link to the actual attachment) (/messages/:messageId/attachments/:attachmentId)
+    - message (link to the message parent) (/messages/:messageId)
+
 
 ### /chat-groups
 

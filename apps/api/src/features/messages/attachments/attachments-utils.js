@@ -126,8 +126,8 @@ export const formatReturnAttachmentObject = (attachment, messagePublicId, protoc
     id: attachmentPublicIdAlias,
     ...restOfAttachment,
     links: {
-      self: new URL(`/api/v1/messages/${formattedMessageParent.id}/attachments/${attachmentPublicIdAlias}`, `${protocol}://${host}`),
-      message: hasMessage ? new URL(`/api/v1/messages/${formattedMessageParent.id}`, `${protocol}://${host}`) : undefined,
+      self: new URL(`/api/v1/messages/${messagePublicId}/attachments/${attachmentPublicIdAlias}`, `${protocol}://${host}`),
+      message: hasMessage ? new URL(`/api/v1/messages/${messagePublicId}`, `${protocol}://${host}`) : undefined,
     },
     message: formattedMessageParent
   }

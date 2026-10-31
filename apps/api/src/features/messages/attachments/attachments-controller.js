@@ -52,8 +52,21 @@ export const attachmentsByMessageGetRoute = [
     const { messagePublicId } = req.params; 
     const result = await services.listAttachmentsByMessage(req.protocol, req.get('host'), messagePublicId, { page, limit, searchTerm, sort, includeArr });
     if(!result){
-        return res.status(400).json({ error: true, message: "No attachments retrieved"});
+      return res.status(400).json({ error: true, message: "No attachments retrieved"});
     }
     res.status(200).json({ message: `Retrieving all attachments, messageId (parent): ${messagePublicId}`, result: result});
+  }
+]
+
+export const messageAttachmentGetRoute = [
+  async(req, res) => {
+    const { messagePublicId, attachmentPublicId } = req.params;
+    const { include } = req.query;
+    const includeArr = Array.isArray(include) ?  include : [include].filter(Boolean);
+    const result = await services.getMessageAttachmentByPublicId(req.protocol, req.get('host'), messagePublicId, attachmentPublicId, { includeArr });
+    if(!result){
+      return res.status(400).json({ error: true, message: "No attachment retrieved"});
+    }
+    res.status(200).json({ message: `Retrieve attachment, message public id: ${messagePublicId}, attachment public id: ${attachmentPublicId}`, data: result})
   }
 ]

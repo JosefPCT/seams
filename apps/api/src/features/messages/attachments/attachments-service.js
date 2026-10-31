@@ -68,3 +68,14 @@ export const listAttachmentsByMessage = async(protocol, host, messagePublicId, {
     data: formattedAttachments
   }
 }
+
+export const getMessageAttachmentByPublicId = async(protocol, host, messagePublicId, attachmentPublicId, { includeArr }) => {
+  const messageParent = await attachmentQueries.getMessageByPublicId(messagePublicId);
+  if(!messageParent){
+    throw new customErrors.BadRequest("No message (parent) by this public id")
+  }
+
+  const attachment = await attachmentQueries.findMessageAttachmentByPublicId(messageParent.id, attachmentPublicId, attachmentsUtils.prepareAttachmentSelectObj(includeArr));
+  const formattedAttachment = await attachmentsUtils.formatReturnAttachmentObject(attachment, messagePublicId, protocol, host);
+  return formattedAttachment
+}

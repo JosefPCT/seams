@@ -69,3 +69,14 @@ export const findAllAttachmentsByMessage = async ({
     select: createdSelectObj
   })
 };
+
+
+export const findMessageAttachmentByPublicId = async(messageId, attachmentPublicId, selectObj) => {
+  return await prisma.attachment.findUnique({
+    where: {
+      publicId: attachmentPublicId,
+      messageId: messageId
+    },
+    select: selectObj
+  })
+}
