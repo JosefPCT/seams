@@ -397,6 +397,46 @@ Returned object may include fields of:
     - self (link to the actual attachment) (/messages/:messageId/attachments/:attachmentId)
     - message (link to the message parent) (/messages/:messageId)
 
+#### GET /messages/:messagePublicId/attachments?page={num}&limit={num}&searchTerm={string|UUID}&sort={string1,string2,-string3}&include=message
+Returns a JSON payload information of the list of all attachments of the message parent (:messagePublicId) in the database, or if passed a search query (searchTerm) filters the list to only show attachments that passes the searchTerm (id or string)
+Optional Search Query Parameters:
+- page(number) and limit(number) for pagination
+- searchTerm (string) for filtering, you can also use a UUID instead of a string to look for an exact match of a public ID
+- sort(fields separated by comma, add - symbol if descending, no symbol means ascending) for sorting (i.e sort=name,-createdAt)
+    - sort valid values (name, url, size, mimeType, uploadedAt, editedAt)
+    - Sorting priority will depend on what field was declared first (i.e sort=content,-createdAt) content will be the primary sort
+- include (declared by repeating the include variable to create an array, valid values are: message) 
+
+Returned object may include fields of:
+- meta
+    - current_page
+    - per_page
+    - total_number_of_pages
+    - total_records
+- links
+    - first
+    - prev
+    - self
+    - next
+    - last
+- data
+    - id (UUID)
+    - name (string)
+    - mimeType (string)
+    - size (int)
+    - url (public url in the uploaded file in supabase)
+    - uploadedAt
+    - editedAt
+    - messageParent (relation: message)
+        - id
+        - content
+        - sentAt
+        - editedAt
+    - links
+        - self (link to the actual attachment) (/messages/:messageId/attachments/:attachmentId)
+        - message (link to the message parent) (/messages/:messageId)
+
+
 ### /chat-groups
 
 #### POST /chat-groups

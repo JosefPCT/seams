@@ -45,9 +45,70 @@ export const createAttachmentsObjectWithUrl = (
   });
 };
 
+// Creation of objects for the query layer
+
+export const prepareAttachmentsWhereObj = (messageId, searchTerm, isSearchTermUUID, includeArr) => {
+  const orConditions = [];
+
+  isSearchTermUUID
+    ? orConditions.push(
+        { publicId: searchTerm },
+      )
+    : "";
+
+  isSearchTermUUID & includeArr.includes("message")
+    ? orConditions.push(
+      { message: { is: { publicId: searchTerm }}}
+    )
+    : "";
+
+  includeArr.includes("message")
+    ? orConditions.push(
+      { message: { is: { content: { contains: searchTerm, mode: 'insensitive' }}}},
+    )
+    : ""; 
+
+  orConditions.push(
+    { url: { contains: searchTerm, mode: 'insensitive'}},
+    { name: { contains: searchTerm, mode: 'insensitive'}},
+    { mimeType: { contains: searchTerm, mode: 'insensitive'}},
+
+    // Todo find a way to search through numbers (lt,lte,equals,gt,gte) (might need to have two inputs for the range)
+  )
+
+  const whereClause = orConditions.length > 0 ? { messageId: messageId, OR: orConditions } : { messageId: messageId }
+  return whereClause
+}
+
+export const prepareAttachmentSelectObj = (targetArray) => {
+  const selectObj = {
+    publicId: true,
+    name: true,
+    mimeType: true,
+    size: true,
+    url: true,
+    uploadedAt: true,
+    editedAt: true,
+    message: targetArray.includes("message")
+      ? {
+          select: {
+            publicId: true,
+            content: true,
+            sentAt: true,
+            editedAt: true,
+            // Can also include nested relation of this relation
+          },
+        }
+      : undefined
+  };
+  console.log("Showing created select obj");
+  console.log(selectObj);
+  return selectObj;
+}
 
 
-export const formatReturnAttachmentObject = (attachment, protocol, host) => {
+// Formatting
+export const formatReturnAttachmentObject = (attachment, messagePublicId, protocol, host) => {
   const hasMessage = attachment.message && attachment.message !== null;
 
   const { publicId: attachmentPublicIdAlias, message, ...restOfAttachment } = attachment;
@@ -71,4 +132,29 @@ export const formatReturnAttachmentObject = (attachment, protocol, host) => {
     message: formattedMessageParent
   }
 
+}
+
+export const formatReturnAttachmentsArray = (attachments, messagePublicId, protocol, host) => {
+  return attachments.map(( { publicId: attachmentPublicIdAlias, message, ...restOfAttachment}) => {
+    const hasMessage = message && message !== null;
+
+    let formattedMessageParent = undefined;
+    if(hasMessage){
+      const { publicId: messagePublicIdAlias, ...restOfMessage } = message;
+      formattedMessageParent = {
+        id: messagePublicIdAlias,
+        ...restOfMessage
+      }
+    }
+
+    return {
+      id: attachmentPublicIdAlias,
+      ...restOfAttachment,
+      links: {
+        self: new URL(`/api/v1/messages/${messagePublicId}/attachments/${attachmentPublicIdAlias}`, `${protocol}://${host}`),
+        message: hasMessage ? new URL(`/api/v1/messages/${formattedMessageParent.id}`, `${protocol}://${host}`) : undefined,
+      },
+      messageParent: formattedMessageParent
+    }
+  })
 }

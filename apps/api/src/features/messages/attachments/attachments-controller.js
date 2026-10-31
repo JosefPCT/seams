@@ -9,7 +9,7 @@ import * as services from "./attachments-service.js";
 const uploadMiddleware = upload.fields([{ name: 'attachments', maxCount: 2}])
 
 // Should accept a req.body of: name along with the req.params of messagePublicId to get the internal id for the `messageId` scalar field, parses the file attach for the other data needed
-export const attachmentsPostRoute = [
+export const attachmentsByMessagePostRoute = [
   isAuth,
   uploadMiddleware,
   validateCreateAttachment,
@@ -36,11 +36,24 @@ export const attachmentsPostRoute = [
       }))
       : undefined
 
-    const result = await services.createAttachment({ name, attachments }, userPublicId, messagePublicId, req.protocol, req.get('host') );
+    const result = await services.createAttachmentByMessage({ name, attachments }, userPublicId, messagePublicId, req.protocol, req.get('host') );
     if(!result){
       res.status(400).json({ status: 'error', message: 'Creation of attachment failed'});
     }
 
     res.status(200).json({ message: 'You attached an attachment on a message', messagePublicId, data: result});
+  }
+]
+
+export const attachmentsByMessageGetRoute = [
+  async(req, res) => {
+    const { page, limit, searchTerm, sort, include } = req.query;
+    const includeArr = Array.isArray(include) ?  include : [include].filter(Boolean);
+    const { messagePublicId } = req.params; 
+    const result = await services.listAttachmentsByMessage(req.protocol, req.get('host'), messagePublicId, { page, limit, searchTerm, sort, includeArr });
+    if(!result){
+        return res.status(400).json({ error: true, message: "No attachments retrieved"});
+    }
+    res.status(200).json({ message: `Retrieving all attachments, messageId (parent): ${messagePublicId}`, result: result});
   }
 ]

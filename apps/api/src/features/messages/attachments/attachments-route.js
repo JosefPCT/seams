@@ -4,6 +4,7 @@ import * as controller from "./attachments-controller.js";
 
 const attachmentsRouter = express.Router({ mergeParams: true });
 
-attachmentsRouter.post('/', controller.attachmentsPostRoute);
+attachmentsRouter.post('/', controller.attachmentsByMessagePostRoute);
+attachmentsRouter.get('/', controller.attachmentsByMessageGetRoute);
 
 export default attachmentsRouter;

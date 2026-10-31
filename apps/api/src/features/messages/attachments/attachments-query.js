@@ -1,29 +1,43 @@
-import { prisma } from "@repo/database"
+import { prisma } from "@repo/database";
 
 // Helper queries
 
-export const getMessageByPublicId = async(messagePublicId) => {
+export const getMessageByPublicId = async (messagePublicId) => {
   return await prisma.message.findUnique({
     where: {
       publicId: messagePublicId,
     },
     select: {
       id: true,
+    },
+  });
+};
+
+export const getTotalAttachmentsByMessage = async({ createdWhereObj }) => {
+  return await prisma.attachment.findMany({
+    where: createdWhereObj,
+    select: {
+      id: true
     }
   })
 }
 
 // Main Query
 
-
-export const createAttachment = async({ messageId, name, mimeType, size, url}) => {
+export const createAttachmentByMessage = async ({
+  messageId,
+  name,
+  mimeType,
+  size,
+  url,
+}) => {
   return await prisma.attachment.create({
     data: {
       messageId: messageId,
       name: name,
       mimeType: mimeType,
       size: size,
-      url: url
+      url: url,
     },
     select: {
       publicId: true,
@@ -33,9 +47,25 @@ export const createAttachment = async({ messageId, name, mimeType, size, url}) =
       url: true,
       message: {
         select: {
-          publicId: true
-        }
-      }
-    }
+          publicId: true,
+        },
+      },
+    },
+  });
+};
+
+export const findAllAttachmentsByMessage = async ({
+  take,
+  skip,
+  createdWhereObj,
+  createdSelectObj,
+  createdSortObj,
+}) => {
+  return await prisma.attachment.findMany({
+    take: take,
+    skip: skip,
+    where: createdWhereObj,
+    orderBy: createdSortObj,
+    select: createdSelectObj
   })
-}
+};
