@@ -7,7 +7,7 @@ import { createPrismaOrderByObjectArray } from "../../../utils/createOrderByObj.
 
 export const createAttachmentByMessage = async({ name, attachments }, userPublicId, messagePublicId, protocol, host) => {
   
-  const messageParent = await attachmentQueries.getMessageByPublicId(messagePublicId);
+  const messageParent = await attachmentQueries.getMessageByPublicIdMinimalist(messagePublicId);
   if(!messageParent){
     throw new customErrors.BadRequest("No message (parent) by this public id")
   }
@@ -27,7 +27,7 @@ export const createAttachmentByMessage = async({ name, attachments }, userPublic
 
 export const listAttachmentsByMessage = async(protocol, host, messagePublicId, { page = 1, limit = 5, searchTerm = "" , sort ="uploadedAt", includeArr = [] }) => {
   
-  const messageParent = await attachmentQueries.getMessageByPublicId(messagePublicId);
+  const messageParent = await attachmentQueries.getMessageByPublicIdMinimalist(messagePublicId);
   if(!messageParent){
     throw new customErrors.BadRequest("No message (parent) by this public id")
   }
@@ -70,12 +70,26 @@ export const listAttachmentsByMessage = async(protocol, host, messagePublicId, {
 }
 
 export const getMessageAttachmentByPublicId = async(protocol, host, messagePublicId, attachmentPublicId, { includeArr }) => {
-  const messageParent = await attachmentQueries.getMessageByPublicId(messagePublicId);
+  const messageParent = await attachmentQueries.getMessageByPublicIdMinimalist(messagePublicId);
   if(!messageParent){
     throw new customErrors.BadRequest("No message (parent) by this public id")
   }
 
   const attachment = await attachmentQueries.findMessageAttachmentByPublicId(messageParent.id, attachmentPublicId, attachmentsUtils.prepareAttachmentSelectObj(includeArr));
+  if(!attachment){
+    // throw new customErrors.BadRequest("No attachment by this public id");
+    return null
+  }
   const formattedAttachment = await attachmentsUtils.formatReturnAttachmentObject(attachment, messagePublicId, protocol, host);
   return formattedAttachment
+}
+
+export const deleteMessageAttachmentByPublicId = async(messagePublicId, attachmentPublicId) => {
+  const messageParent = await attachmentQueries.getMessageByPublicIdMinimalist(messagePublicId);
+  if(!messageParent){
+    throw new customErrors.BadRequest("No message (parent) by this public id, aborting delete operation");
+  }
+
+  const deletedAttachment = await attachmentQueries.deleteMessageAttachmentByPublicId(messageParent.id, attachmentPublicId);
+  return deletedAttachment;
 }

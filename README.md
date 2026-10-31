@@ -455,6 +455,11 @@ Returned object may include fields of:
     - message (link to the message parent) (/messages/:messageId)
 
 
+#### DELETE /messages/:messagePublicId/attachments/:attachmentPublicId
+Deletes a specific message attachment based on it route parameter (:messagePublicId and :attachmentPublicId), the message and attachment's public id in the database
+Returns a status message if deletion is successful or not
+Accessible only by a logged in user and if that user owns the message
+
 ### /chat-groups
 
 #### POST /chat-groups

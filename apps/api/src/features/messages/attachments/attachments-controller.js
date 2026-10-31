@@ -1,6 +1,6 @@
 import { validationResult, matchedData } from 'express-validator';
 
-import { isAuth } from "../../../middleware/authMiddleware.js";
+import { isAuth, isOwnMessage } from "../../../middleware/authMiddleware.js";
 import { upload } from "../../../config/multer.js";
 import { validateCreateAttachment } from "../../../middleware/validation.js";
 
@@ -69,4 +69,17 @@ export const messageAttachmentGetRoute = [
     }
     res.status(200).json({ message: `Retrieve attachment, message public id: ${messagePublicId}, attachment public id: ${attachmentPublicId}`, data: result})
   }
+]
+
+export const messageAttachmentDeleteRoute = [
+  isAuth,
+  isOwnMessage,
+  async(req, res) => {
+    const { messagePublicId, attachmentPublicId } = req.params;
+    const result = await services.deleteMessageAttachmentByPublicId(messagePublicId, attachmentPublicId);
+    if(!result){
+      return res.status(500).json({ message: `Delete attachment operation unsuccessful, something went wrong`});
+    }
+    res.status(200).json({ message: `Deleted attachment, message public id: ${messagePublicId}, attachment public id: ${attachmentPublicId}`});
+  } 
 ]

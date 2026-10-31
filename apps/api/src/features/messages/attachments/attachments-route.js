@@ -8,4 +8,6 @@ attachmentsRouter.post('/', controller.attachmentsByMessagePostRoute);
 attachmentsRouter.get('/', controller.attachmentsByMessageGetRoute);
 attachmentsRouter.get('/:attachmentPublicId', controller.messageAttachmentGetRoute)
 
+attachmentsRouter.delete('/:attachmentPublicId', controller.messageAttachmentDeleteRoute)
+
 export default attachmentsRouter;

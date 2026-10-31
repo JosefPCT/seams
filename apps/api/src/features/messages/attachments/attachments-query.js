@@ -2,7 +2,7 @@ import { prisma } from "@repo/database";
 
 // Helper queries
 
-export const getMessageByPublicId = async (messagePublicId) => {
+export const getMessageByPublicIdMinimalist = async (messagePublicId) => {
   return await prisma.message.findUnique({
     where: {
       publicId: messagePublicId,
@@ -78,5 +78,17 @@ export const findMessageAttachmentByPublicId = async(messageId, attachmentPublic
       messageId: messageId
     },
     select: selectObj
+  })
+}
+
+export const deleteMessageAttachmentByPublicId = async(messageId, attachmentPublicId) => {
+  return await prisma.attachment.delete({
+    where: {
+      publicId: attachmentPublicId,
+      messageId: messageId
+    },
+    select : {
+      publicId: true
+    }
   })
 }
