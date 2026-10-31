@@ -81,6 +81,28 @@ export const findMessageAttachmentByPublicId = async(messageId, attachmentPublic
   })
 }
 
+export const updateMessageAttachmentByPublicId = async(attachmentPublicId, messageId, preparedDataObject) => {
+  return await prisma.attachment.update({
+    where: {
+      publicId: attachmentPublicId,
+      messageId: messageId
+    },
+    data: preparedDataObject,
+    select: {
+      publicId: true,
+      name: true,
+      mimeType: true,
+      size: true,
+      url: true,
+      message: {
+        select: {
+          publicId: true,
+        },
+      },
+    },
+  })
+}
+
 export const deleteMessageAttachmentByPublicId = async(messageId, attachmentPublicId) => {
   return await prisma.attachment.delete({
     where: {

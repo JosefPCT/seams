@@ -356,10 +356,11 @@ Returned Object may include fields of:
     - attachments (link to the child attachments)
 
 
-#### PUT /messages/:messagePublicId
+#### PATCH /messages/:messagePublicId
 Updates the content of a specific message based on it route parameter (:messagePublicId), the message's public id in the database
 Also returns a JSON data of the updated message
 Accessible only by a logged in user and if that user owns the message
+IMPORTANT: If you want to update the attachments of the message use ('PATCH /messages/:messageId/attachments/:attachmentId), this route will only update its own data not its child
 Accepts a req.body of mostly optional:
 - content (string)
 
@@ -380,10 +381,11 @@ Creates an attachment, based on the current logged in user and from the dynamic 
 Accessible only be a logged in user
 Returns a JSON payload information of the created attachment
 Accepts a req.body of:
-- name (string) (optional)
-- attachments (multipart form) (files) (optional)
+- attachments (multipart form) (files) (required)
   - Parsed via multer and populates (req.files.attachments) if files are attached
   - This is where we will get most of the other data needed ( size, mimeType, url)
+- name (string) (optional)
+
 
 Returned object may include fields of:
 - id (UUID)
@@ -440,6 +442,29 @@ Returned object may include fields of:
 Returns a JSON data of a specific message attachment based on it route parameter (:messagePublicId) and (:attachmentPublicId), the message and  attachment's public id in the database
 Optional Search Query Parameters:
 - include (declared by repeating the include variable to create an array, valid values are: message)
+
+
+Returned object may include fields of:
+- id (UUID)
+- name (string)
+- mimeType (string)
+- size (int)
+- url (public url in the uploaded file in supabase)
+- message (relation: message)
+    - id
+- links
+    - self (link to the actual attachment) (/messages/:messageId/attachments/:attachmentId)
+    - message (link to the message parent) (/messages/:messageId)
+
+#### PATCH /messages/:messagePublicId/attachments/:attachmentPublicId
+Updates the content of a specific message attachmernt based on it route parameter (:messagePublicId and :attachmentPublicId), the message and attachment's public id in the database
+    - Can either update only the name of the attachment (if only passed a 'name' in req.body without new file)
+    - Or if a new uploaded file is detected, will update the whole attachment with the new name, size, mimeType, url
+Also returns a JSON data of the updated message
+Accessible only by a logged in user and if that user owns the message and attachment
+Accepts a req.body of mostly optional:
+- name (string) (optional)
+- and/or attachments (req.files.attachments) (new uploaded file) (optional)
 
 
 Returned object may include fields of:

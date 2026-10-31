@@ -47,6 +47,28 @@ export const createAttachmentsObjectWithUrl = (
 
 // Creation of objects for the query layer
 
+export const prepareAttachmentDataObject = (name, attachmentsWithUrl) => {
+  console.log("Preparing The Data Object");
+  console.log(attachmentsWithUrl);
+  let dataObject = undefined;
+  if(attachmentsWithUrl){
+    console.log("Attachments detected, creating data objects with all new updated fields:");
+    dataObject = {
+      messageId: attachmentsWithUrl.messageId,
+      name: attachmentsWithUrl.name,
+      mimeType: attachmentsWithUrl.mimeType,
+      size: attachmentsWithUrl.size,
+      url: attachmentsWithUrl.url,
+    }
+  } else {
+    console.log("No attachment detected, creating the data object with the name only");
+    dataObject = {
+      name: name
+    }
+  }
+  return dataObject;
+}
+
 export const prepareAttachmentsWhereObj = (messageId, searchTerm, isSearchTermUUID, includeArr) => {
   const orConditions = [];
 

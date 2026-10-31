@@ -2,7 +2,7 @@ import { validationResult, matchedData } from 'express-validator';
 
 import { isAuth, isOwnMessage } from "../../../middleware/authMiddleware.js";
 import { upload } from "../../../config/multer.js";
-import { validateCreateAttachment } from "../../../middleware/validation.js";
+import { validateCreateAttachment, validateUpdateAttachment } from "../../../middleware/validation.js";
 
 import * as services from "./attachments-service.js";
 
@@ -68,6 +68,43 @@ export const messageAttachmentGetRoute = [
       return res.status(400).json({ error: true, message: "No attachment retrieved"});
     }
     res.status(200).json({ message: `Retrieve attachment, message public id: ${messagePublicId}, attachment public id: ${attachmentPublicId}`, data: result})
+  }
+]
+
+export const messageAttachmentPatchRoute = [
+  isAuth,
+  isOwnMessage,
+  uploadMiddleware,
+  validateUpdateAttachment,
+  async(req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      return res.status(400).json(errors);
+    }
+
+    const { name } = matchedData(req);
+    const { messagePublicId, attachmentPublicId } = req.params; 
+    const userPublicId = req.user.publicId;
+
+    if(!(req.files && req.files.attachments) && !(name)){
+      res.status(400).json({ message: 'No uploaded file or valid field to update'})
+    }
+
+    const attachments = req.files.attachments && req.files.attachments.length > 0
+      ? req.files.attachments.map(file => ({ 
+        name: name || file.originalname,
+        size: file.size,
+        mimeType: file.mimetype,
+        buffer: file.buffer
+      }))
+      : undefined
+
+    const result = await services.updateMessageAttachmentByPublicId(req.protocol, req.get('host'), messagePublicId, attachmentPublicId, userPublicId, { name, attachments },  );
+    if(!result){
+      res.status(400).json({ status: 'error', message: 'Update of attachment failed, something went wrong'});
+    }
+
+    res.status(200).json({ message: `Updated attachment, message public id: ${messagePublicId}, attachment public id: ${attachmentPublicId}`, data: result})
   }
 ]
 

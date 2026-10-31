@@ -184,6 +184,13 @@ const validateCreateAttachment = [
   // body("url")
 ]
 
+const validateUpdateAttachment = [
+  body("name")
+    .optional()
+    .trim()
+    .notEmpty().withMessage(`Content of the name ${emptyErr}`)
+]
+
 const validateCreateChatGroup = [
   body("name")
     .optional({ values: 'falsy'})
@@ -269,6 +276,7 @@ export {
   validateMessage, 
   validateUpdateMessage,
   validateCreateAttachment,
+  validateUpdateAttachment,
   validateCreateChatGroup, 
   validateUpdateChatGroup,
   validateCreateParticipant,

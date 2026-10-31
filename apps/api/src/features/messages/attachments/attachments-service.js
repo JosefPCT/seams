@@ -19,7 +19,7 @@ export const createAttachmentByMessage = async({ name, attachments }, userPublic
 
   console.log(attachmentsWithUrl[0]);
 
-  const createdAttachment = await attachmentQueries.createAttachment(attachmentsWithUrl[0]);
+  const createdAttachment = await attachmentQueries.createAttachmentByMessage(attachmentsWithUrl[0]);
   const formattedAttachment = attachmentsUtils.formatReturnAttachmentObject(createdAttachment, messagePublicId, protocol, host);
 
   return formattedAttachment;
@@ -84,10 +84,49 @@ export const getMessageAttachmentByPublicId = async(protocol, host, messagePubli
   return formattedAttachment
 }
 
+export const updateMessageAttachmentByPublicId = async(protocol, host, messagePublicId, attachmentPublicId, userPublicId, { name, attachments}) => {
+  const messageParent = await attachmentQueries.getMessageByPublicIdMinimalist(messagePublicId);
+  if(!messageParent){
+    throw new customErrors.BadRequest("No message (parent) by this public id")
+  }
+
+  const attachment = await attachmentQueries.findMessageAttachmentByPublicId(messageParent.id, attachmentPublicId, attachmentsUtils.prepareAttachmentSelectObj([]));
+  if(!attachment){
+    throw new customErrors.BadRequest("No attachment by this public id, delete operation failed");
+    // return null
+  }
+
+  // Check if a new attachment is uploaded, upload and get the new public url if there is a new attachment, only update the name otherwise
+  let createdAttachment = null;
+  if(attachments){
+    console.log("Attachments files found!")
+    await attachmentsUtils.uploadAttachmentsToSupabase(attachments, userPublicId);
+    const attachmentsWithUrl = attachmentsUtils.createAttachmentsObjectWithUrl(attachments, userPublicId);
+    attachmentsWithUrl[0].messageId = messageParent.id;
+    
+    const preparedDataObject = attachmentsUtils.prepareAttachmentDataObject(name, attachmentsWithUrl[0])
+    createdAttachment = await attachmentQueries.updateMessageAttachmentByPublicId(attachmentPublicId, messageParent.id, preparedDataObject);
+  } else {
+    console.log("no attachment found");
+    const preparedDataObject = attachmentsUtils.prepareAttachmentDataObject(name);
+    createdAttachment = await attachmentQueries.updateMessageAttachmentByPublicId(attachmentPublicId, messageParent.id, preparedDataObject);
+  }
+
+  const formattedAttachment = attachmentsUtils.formatReturnAttachmentObject(createdAttachment, messagePublicId, protocol, host);
+
+  return formattedAttachment;
+}
+
 export const deleteMessageAttachmentByPublicId = async(messagePublicId, attachmentPublicId) => {
   const messageParent = await attachmentQueries.getMessageByPublicIdMinimalist(messagePublicId);
   if(!messageParent){
-    throw new customErrors.BadRequest("No message (parent) by this public id, aborting delete operation");
+    throw new customErrors.BadRequest("No message (parent) by this public id, aborting delete operation, update operation failed");
+  }
+
+  const attachment = await attachmentQueries.findMessageAttachmentByPublicId(messageParent.id, attachmentPublicId, attachmentsUtils.prepareAttachmentSelectObj(includeArr));
+  if(!attachment){
+    throw new customErrors.BadRequest("No attachment by this public id, delete operation failed");
+    // return null
   }
 
   const deletedAttachment = await attachmentQueries.deleteMessageAttachmentByPublicId(messageParent.id, attachmentPublicId);
