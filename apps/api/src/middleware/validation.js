@@ -1,5 +1,5 @@
 import { body } from 'express-validator';
-import { prisma, GroupRole } from "@repo/database"
+import { prisma, GroupRole, FriendRequestStatus } from "@repo/database"
 
 // Validation Messages
 const emptyErr = `must not be empty`;
@@ -33,6 +33,14 @@ const isValidRole = (targetValue) => {
     throw new Error(`Invalid role. Allowed roles are: ${Object.values(GroupRole).join(', ')}`)
   }
   return true
+}
+
+const isValidRequestStatus = (targetValue) => {
+  const isValid = Object.values(FriendRequestStatus).includes(targetValue);
+  if(!isValid){
+    throw new Error(`Invalid Friend Request Status, Allowed Status are : ${Object.values(FriendRequestStatus).join(', ')}`)
+  }
+  return true;
 }
 
 // Validation Middleware
@@ -143,6 +151,28 @@ const validateUpdateProfile = [
     .notEmpty()
     .withMessage(`Bio field ${emptyErr}`)
     .optional(),
+]
+
+const validateCreateFriendRequest = [
+  body("senderId")
+    .optional()
+    .trim()
+    .notEmpty().withMessage(`sender id field ${emptyErr}`)
+    .isUUID().withMessage("sender id must be a valid UUID"),
+  body("receiverId")
+    .trim()
+    .notEmpty().withMessage(`receiver id field ${emptyErr}`)
+    .isUUID().withMessage(`receiver id field must be a valid UUID`),
+  body("status")
+    .optional()
+    .trim()
+    .notEmpty().withMessage(`status field ${emptyErr}`)
+    .custom(isValidRequestStatus)
+
+]
+
+const validateUpdateFriendRequest = [
+
 ]
 
 const validateMessage = [
@@ -272,7 +302,9 @@ export {
   validateUser, 
   validateUpdateUser, 
   validateProfile, 
-  validateUpdateProfile, 
+  validateUpdateProfile,
+  validateCreateFriendRequest,
+  validateUpdateFriendRequest,
   validateMessage, 
   validateUpdateMessage,
   validateCreateAttachment,

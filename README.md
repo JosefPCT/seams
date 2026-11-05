@@ -239,6 +239,38 @@ Deletes a profile based on the route parameter(:profilePublicId) the profile's p
 Accessible only by a logged in user and if the user owns the profile
 
 
+### /friend-requests
+
+#### POST /friend-requests
+Create a new friend request, based on the current logged in user
+Accessible only be a logged in user
+Accepts a req.body of:
+- receiverId (UUID string) (public id of the chat group that will the message be sent to)
+- senderId (UUID string) (optional) (public id of the user sending the message)
+  - Will automatically get the current logged in user's public id if no 'senderId' is detected in the req.body
+- status (enum) (optional) (PENDING/ACCEPTED/REJECTED)
+
+Returns a JSON payload information of the created friend request
+Returned object may include fields of:
+- id (UUID)
+- status (string)
+- sentAt (Date)
+- updatedAt (Date)
+- links
+    - self (link to the actual friend request) (/friend-requests/:friendRequestId)
+    - sender (link to the user that sent the request) ('/users/:userId)
+    - receiver (link to the user that received the request) ('/users/:userId)
+- sender ( relation: user)
+  - id
+  - email
+  - addtl
+- receiver (relation: user)
+  - id
+  - email
+  - addtl
+
+
+
 ### /messages
 
 #### POST /messages
