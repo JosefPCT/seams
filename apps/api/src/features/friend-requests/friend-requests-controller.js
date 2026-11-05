@@ -1,7 +1,7 @@
 import { validationResult, matchedData } from 'express-validator';
 
 import { isAuth } from '../../middleware/authMiddleware.js';
-import { validateCreateFriendRequest } from '../../middleware/validation.js';
+import { validateCreateFriendRequest, validateUpdateFriendRequest } from '../../middleware/validation.js';
 import * as services from "./friend-requests-service.js";
 
 export const friendRequestsPostRoute = [
@@ -45,5 +45,26 @@ export const friendRequestGetRoute = [
       return res.status(400).json({ error: true, message: "No friend request retrieved"});
     }
     res.status(200).json({ status: "OK", message: `You are in /friend-requests/:id (${friendRequestPublicId}) GET route, retrieving a specific friend request`, result: result});
+  }
+]
+
+export const friendRequestPatchRoute = [
+  isAuth,
+  validateUpdateFriendRequest,
+  async(req, res) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+      return res.status(400).json(errors);
+    }
+
+    const { friendRequestPublicId } = req.params;
+    const { status } = matchedData(req);
+
+    const result = await services.updateFriendRequestById(req.protocol, req.get('host'), friendRequestPublicId, { status })
+    if(!result){
+      res.status(400).json({ status: 'error', message: 'Update of friend request failed, something went wrong'});
+    }
+
+    res.status(200).json({ status: "OK", message: `You are in PATCH /friend-requests/:id (${friendRequestPublicId}) PATCH route, updated friend request`, result: result});
   }
 ]

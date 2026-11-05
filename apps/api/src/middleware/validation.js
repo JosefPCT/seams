@@ -172,7 +172,10 @@ const validateCreateFriendRequest = [
 ]
 
 const validateUpdateFriendRequest = [
-
+  body("status")
+    .trim()
+    .notEmpty().withMessage(`status field ${emptyErr}`)
+    .custom(isValidRequestStatus)
 ]
 
 const validateMessage = [

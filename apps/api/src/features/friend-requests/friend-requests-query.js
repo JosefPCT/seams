@@ -48,3 +48,15 @@ export const getFriendRequest = async(targetPublicId, createdSelectObj) => {
     select: createdSelectObj
   })
 }
+
+export const updateFriendRequest = async(targetPublicId, status, createdSelectObj) => {
+  return await prisma.friendRequest.update({
+    where: {
+      publicId: targetPublicId
+    },
+    data: {
+      status: status
+    },
+    select: createdSelectObj
+  })
+}

@@ -337,6 +337,15 @@ Returned object may include fields of:
   - email
   - addtl
 
+#### PATCH /friend-requests/:friendRequestPublicId
+Updates the status of a friend request based on its route parameter (:friendRequestPublicId) and the 'status' field from req.body
+  - Only updates the status of the friend request
+Accessible only by a logged in user 
+    (TODO: add authorization middleware to check if the current logged in user received/sent the particular friend request)
+Accepts a req.body of mostly optional:
+- status (ENUM) (PENDING/ACCEPTED/DECLINED)
+
+Also returns a JSON data of the updated friend request
 
 ### /messages
 

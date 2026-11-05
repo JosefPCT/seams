@@ -8,6 +8,7 @@ friendRequestsRouter.post('/', controller.friendRequestsPostRoute);
 friendRequestsRouter.get('/', controller.friendRequestsGetRoute)
 
 friendRequestsRouter.get('/:friendRequestPublicId', controller.friendRequestGetRoute)
+friendRequestsRouter.patch('/:friendRequestPublicId', controller.friendRequestPatchRoute);
 
 // attachmentsRouter.post('/', controller.attachmentsByMessagePostRoute);
 // attachmentsRouter.get('/', controller.attachmentsByMessageGetRoute);
