@@ -5,6 +5,7 @@ import * as controller from "./friend-requests-controller.js"
 const friendRequestsRouter = express.Router();
 
 friendRequestsRouter.post('/', controller.friendRequestsPostRoute);
+friendRequestsRouter.get('/', controller.friendRequestsGetRoute)
 
 // attachmentsRouter.post('/', controller.attachmentsByMessagePostRoute);
 // attachmentsRouter.get('/', controller.attachmentsByMessageGetRoute);

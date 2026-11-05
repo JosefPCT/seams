@@ -269,6 +269,7 @@ Returned object may include fields of:
   - email
   - addtl
 
+#### GET /friend-requests
 
 
 ### /messages

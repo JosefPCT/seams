@@ -22,3 +22,10 @@ export const friendRequestsPostRoute = [
     res.status(200).json({ status: "OK", message: "You are in /friend-requests POST route", data: result });
   }
 ]
+
+export const friendRequestsGetRoute = [
+  async(req, res) => {
+    const result = await services.listFriendRequests();
+    res.status(200).json({ status: "OK", message: "You are in /friend-requests GET route", data: result});
+  }
+]

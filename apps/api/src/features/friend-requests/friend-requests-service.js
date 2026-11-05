@@ -18,3 +18,8 @@ export const createFriendRequest = async ({ receiverId, senderId, status}, proto
 
   return formattedFriendRequest
 }
+
+export const listFriendRequests = async() => {
+  const friendRequests = await friendRequestsQuery.getAllFriendRequests();
+  return friendRequests;
+}

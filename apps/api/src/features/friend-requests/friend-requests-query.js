@@ -20,3 +20,7 @@ export const createFriendRequest = async(createdDataObj, createdSelectObj) => {
     select: createdSelectObj
   })
 }
+
+export const getAllFriendRequests = async() => {
+  return await prisma.friendRequest.findMany();
+}
