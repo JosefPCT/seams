@@ -248,7 +248,7 @@ Accepts a req.body of:
 - receiverId (UUID string) (public id of the chat group that will the message be sent to)
 - senderId (UUID string) (optional) (public id of the user sending the message)
   - Will automatically get the current logged in user's public id if no 'senderId' is detected in the req.body
-- status (enum) (optional) (PENDING/ACCEPTED/REJECTED)
+- status (enum) (optional) (PENDING/ACCEPTED/DECLINED)
 
 Returns a JSON payload information of the created friend request
 Returned object may include fields of:
@@ -269,7 +269,50 @@ Returned object may include fields of:
   - email
   - addtl
 
-#### GET /friend-requests
+#### GET /friend-requests?page={num}&limit={num}&searchTerm={string|UUID}&sort={string1,string2,-string3}&include=sender&include=receiver
+Returns a JSON payload information of the list of all friend requests in the database, or if passed a search query (searchTerm) filters the list to only show friends requests that passes the searchTerm (id or string)
+Optional Search Query Parameters:
+- page(number) and limit(number) for pagination
+- searchTerm (string) for filtering, you can also use a UUID instead of a string to look for an exact match of a public ID
+- sort(fields separated by comma, add - symbol if descending, no symbol means ascending) for sorting (i.e sort=name,-createdAt)
+    - sort valid values (id, publicId, status, sentAt, updatedAt)
+    - Sorting priority will depend on what field was declared first (i.e sort=content,-createdAt) content will be the primary sort
+- include (declared by repeating the include variable to create an array, valid values are: sender, receiver) 
+
+Returned object may include fields of:
+- meta
+    - current_page
+    - per_page
+    - total_number_of_pages
+    - total_records
+- links
+    - first
+    - prev
+    - self
+    - next
+    - last
+- data
+    - id (UUID)
+    - status (string)
+    - sentAt (Date)
+    - updatedAt (Date)
+    - links
+        - self (link to the actual friend request) (/friend-requests/:friendRequestId)
+        - sender (link to the user that sent the request) ('/users/:userId)
+        - receiver (link to the user that received the request) ('/users/:userId)
+    - sender ( relation: user)
+        - id
+        - email
+        - addtl
+        - profile (relation: profile)
+            - name
+    - receiver (relation: user)
+        - id
+        - email
+        - addtl
+        - profile (relation: profile)
+            - name
+
 
 
 ### /messages

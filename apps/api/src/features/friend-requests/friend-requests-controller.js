@@ -25,7 +25,12 @@ export const friendRequestsPostRoute = [
 
 export const friendRequestsGetRoute = [
   async(req, res) => {
-    const result = await services.listFriendRequests();
-    res.status(200).json({ status: "OK", message: "You are in /friend-requests GET route", data: result});
+    const { page, limit, searchTerm, sort, include } = req.query;
+    const includeArr = Array.isArray(include) ?  include : [include].filter(Boolean);
+    const result = await services.listFriendRequests(req.protocol, req.get('host'), { page, limit, searchTerm, sort, includeArr });
+    if(!result){
+      return res.status(400).json({ error: true, message: "No friend requests retrieved"});
+    }
+    res.status(200).json({ status: "OK", message: "You are in /friend-requests GET route, retrieving all friend requests", data: result});
   }
 ]

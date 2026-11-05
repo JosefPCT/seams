@@ -46,7 +46,7 @@ enum FriendRequestStatus {
 
 model FriendRequest {
   id  Int  @id @default(autoincrement())
-  publicId  String  @unique @default(uuid()) @map("public_id") @db.Uuid
+  publicId  String  @unique @default(uuid()) @map("public_ id") @db.Uuid
   status  FriendRequestStatus  @default(PENDING)
   sentAt  DateTime  @default(now()) @map("sent_at") @db.Timestamptz(6)
   updatedAt  DateTime?  @updatedAt

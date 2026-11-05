@@ -12,6 +12,15 @@ export const getUserByPublicIdMinimal = async(targetPublicId) => {
   })
 }
 
+export const getTotalFriendRequests = async({createdWhereObj}) => {
+  return await prisma.friendRequest.findMany({
+    where: createdWhereObj,
+    select: {
+      id: true
+    }
+  })
+}
+
 // Main Queries
 
 export const createFriendRequest = async(createdDataObj, createdSelectObj) => {
@@ -21,6 +30,12 @@ export const createFriendRequest = async(createdDataObj, createdSelectObj) => {
   })
 }
 
-export const getAllFriendRequests = async() => {
-  return await prisma.friendRequest.findMany();
+export const getAllFriendRequests = async({ take, skip, createdWhereObj, createdSortObj, createdSelectObj}) => {
+  return await prisma.friendRequest.findMany({
+    take: take,
+    skip: skip,
+    where: createdWhereObj,
+    orderBy: createdSortObj,
+    select: createdSelectObj
+  });
 }
