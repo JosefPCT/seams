@@ -59,3 +59,12 @@ export const listFriendRequests = async(protocol, host, { page = 1, limit = 5, s
     data: formattedFriendRequests
   }
 }
+
+export const getFriendRequestById = async(protocol, host, targetPublicId, { includeArr }) => {
+  const friendRequest = await friendRequestsQuery.getFriendRequest(targetPublicId, prepareFriendRequestSelectObj(includeArr))
+  if(!friendRequest){
+    return null;
+  }
+  const formattedFriendRequest = formatFriendRequestObject(friendRequest, protocol, host);
+  return formattedFriendRequest;
+}

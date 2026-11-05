@@ -39,3 +39,12 @@ export const getAllFriendRequests = async({ take, skip, createdWhereObj, created
     select: createdSelectObj
   });
 }
+
+export const getFriendRequest = async(targetPublicId, createdSelectObj) => {
+  return await prisma.friendRequest.findUnique({
+    where: {
+      publicId: targetPublicId
+    },
+    select: createdSelectObj
+  })
+}

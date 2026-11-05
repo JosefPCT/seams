@@ -313,6 +313,29 @@ Returned object may include fields of:
         - profile (relation: profile)
             - name
 
+#### GET /friend-requests/:friendRequestPublicId?include=sender&include=receiver
+Returns a JSON data of a specific friend request based on its route parameter (:friendRequestPublicId) the friend request's public id in the database
+Optional Search Query Parameters:
+- include (declared by repeating the include variable to create an array, valid values are: sender, receiver)
+
+Returns a JSON payload information of the specific friend request
+Returned object may include fields of:
+- id (UUID)
+- status (string)
+- sentAt (Date)
+- updatedAt (Date)
+- links
+    - self (link to the actual friend request) (/friend-requests/:friendRequestId)
+    - sender (link to the user that sent the request) ('/users/:userId)
+    - receiver (link to the user that received the request) ('/users/:userId)
+- sender ( relation: user)
+  - id
+  - email
+  - addtl
+- receiver (relation: user)
+  - id
+  - email
+  - addtl
 
 
 ### /messages

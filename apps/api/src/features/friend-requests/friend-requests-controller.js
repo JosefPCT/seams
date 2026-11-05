@@ -34,3 +34,16 @@ export const friendRequestsGetRoute = [
     res.status(200).json({ status: "OK", message: "You are in /friend-requests GET route, retrieving all friend requests", data: result});
   }
 ]
+
+export const friendRequestGetRoute = [
+  async(req, res) => {
+    const { friendRequestPublicId } = req.params;
+    const { include } = req.query;
+    const includeArr = Array.isArray(include) ?  include : [include].filter(Boolean);
+    const result = await services.getFriendRequestById(req.protocol, req.get('host'), friendRequestPublicId, { includeArr });
+    if(!result){
+      return res.status(400).json({ error: true, message: "No friend request retrieved"});
+    }
+    res.status(200).json({ status: "OK", message: `You are in /friend-requests/:id (${friendRequestPublicId}) GET route, retrieving a specific friend request`, result: result});
+  }
+]

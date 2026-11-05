@@ -7,6 +7,8 @@ const friendRequestsRouter = express.Router();
 friendRequestsRouter.post('/', controller.friendRequestsPostRoute);
 friendRequestsRouter.get('/', controller.friendRequestsGetRoute)
 
+friendRequestsRouter.get('/:friendRequestPublicId', controller.friendRequestGetRoute)
+
 // attachmentsRouter.post('/', controller.attachmentsByMessagePostRoute);
 // attachmentsRouter.get('/', controller.attachmentsByMessageGetRoute);
 // attachmentsRouter.get('/:attachmentPublicId', controller.messageAttachmentGetRoute)
