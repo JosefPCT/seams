@@ -60,3 +60,11 @@ export const updateFriendRequest = async(targetPublicId, status, createdSelectOb
     select: createdSelectObj
   })
 }
+
+export const deleteFriendRequest = async(targetPublicId) => {
+  return await prisma.friendRequest.delete({
+    where: {
+      publicId: targetPublicId
+    }
+  })
+}

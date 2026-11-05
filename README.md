@@ -347,6 +347,12 @@ Accepts a req.body of mostly optional:
 
 Also returns a JSON data of the updated friend request
 
+#### DELETE /friend-requests/:friendRequestPublicId
+DELETE the status of a friend request based on its route parameter (:friendRequestPublicId)
+Accessibly only be a logged in user
+    - (TODO: add authorization middleware to check if the current logged in user received/sent the particular friend request)
+
+
 ### /messages
 
 #### POST /messages

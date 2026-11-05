@@ -79,3 +79,12 @@ export const updateFriendRequestById = async(protocol, host, targetPublicId, { s
   const formattedFriendRequest = formatFriendRequestObject(updatedFriendRequest, protocol, host);
   return formattedFriendRequest;
 }
+
+export const deleteFriendRequestById = async(targetPublicId) => {
+  const friendRequest = await friendRequestsQuery.getFriendRequest(targetPublicId, undefined);
+  if(!friendRequest){
+    throw new customErrors.BadRequest("No friend request by this public id, delete operation failed");
+  }
+  const deletedFriendRequest = await friendRequestsQuery.deleteFriendRequest(targetPublicId);
+  return deletedFriendRequest;
+}

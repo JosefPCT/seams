@@ -9,12 +9,7 @@ friendRequestsRouter.get('/', controller.friendRequestsGetRoute)
 
 friendRequestsRouter.get('/:friendRequestPublicId', controller.friendRequestGetRoute)
 friendRequestsRouter.patch('/:friendRequestPublicId', controller.friendRequestPatchRoute);
+friendRequestsRouter.delete('/:friendRequestPublicId', controller.friendRequestDeleteRoute);
 
-// attachmentsRouter.post('/', controller.attachmentsByMessagePostRoute);
-// attachmentsRouter.get('/', controller.attachmentsByMessageGetRoute);
-// attachmentsRouter.get('/:attachmentPublicId', controller.messageAttachmentGetRoute)
-
-// attachmentsRouter.patch('/:attachmentPublicId', controller.messageAttachmentPatchRoute);
-// attachmentsRouter.delete('/:attachmentPublicId', controller.messageAttachmentDeleteRoute)
 
 export default friendRequestsRouter;

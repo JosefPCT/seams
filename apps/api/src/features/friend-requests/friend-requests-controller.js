@@ -68,3 +68,15 @@ export const friendRequestPatchRoute = [
     res.status(200).json({ status: "OK", message: `You are in PATCH /friend-requests/:id (${friendRequestPublicId}) PATCH route, updated friend request`, result: result});
   }
 ]
+
+export const friendRequestDeleteRoute = [
+  isAuth,
+  async(req, res) => {
+    const { friendRequestPublicId } = req.params;
+    const result = await services.deleteFriendRequestById(friendRequestPublicId);
+    if(!result){
+      return res.status(500).json({ message: `Delete friend request operation unsuccessful, something went wrong`});
+    }
+    res.status(200).json({ status: "OK", message: `Successfully deleted the friend request, You are in DELETE /friend-requests/:id (${friendRequestPublicId})`})
+  }
+]
