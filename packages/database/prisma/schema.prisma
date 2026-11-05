@@ -30,6 +30,37 @@ model User {
   profile  Profile?
   messages Message[]
   groups   ChatParticipant[]
+
+  // Sent friend requests (user is the sender)
+  sentRequests FriendRequest[] @relation("SentRequests")
+
+  // Received friend requests( user is the receiver)
+  receivedRequests FriendRequest[] @relation("ReceivedRequests")
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model FriendRequest {
+  id  Int  @id @default(autoincrement())
+  publicId  String  @unique @default(uuid()) @map("public_id") @db.Uuid
+  status  FriendRequestStatus  @default(PENDING)
+  sentAt  DateTime  @default(now()) @map("sent_at") @db.Timestamptz(6)
+  updatedAt  DateTime?  @updatedAt
+
+  // Sender of the request
+  senderId  Int
+  sender User  @relation("SentRequests", fields: [senderId], references: [id], onDelete: Cascade)
+
+  // Receiver of the request
+  receiverId  Int
+  receiver  User  @relation("ReceivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([senderId, receiverId]) // Prevent duplicate requests between two same users
+
 }
 
 model ChatGroup {
