@@ -7,6 +7,7 @@ import chatGroupsRouter from "../../features/chat-groups/chat-groups-route.js";
 import profilesRoutes from "../../features/profiles/profiles-route.js";
 import messagesRoutes from "../../features/messages/messages-route.js"
 import chatParticipantsRouter from "../../features/chat-participants/chat-participants-route.js"
+import friendRequestsRouter from "../../features/friend-requests/friends-requests-route.js";
 
 const apiRouter = express.Router();
 
@@ -21,5 +22,6 @@ apiRouter.use('/api/v1/profiles', profilesRoutes);
 apiRouter.use('/api/v1/messages', messagesRoutes);
 apiRouter.use('/api/v1/chat-groups', chatGroupsRouter);
 apiRouter.use('/api/v1/chat-participants', chatParticipantsRouter);
+apiRouter.use('/api/v1/friend-requests', friendRequestsRouter);
 
 export default apiRouter;
