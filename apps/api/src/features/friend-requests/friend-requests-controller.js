@@ -44,7 +44,7 @@ export const friendRequestGetRoute = [
     if(!result){
       return res.status(400).json({ error: true, message: "No friend request retrieved"});
     }
-    res.status(200).json({ status: "OK", message: `You are in /friend-requests/:id (${friendRequestPublicId}) GET route, retrieving a specific friend request`, result: result});
+    res.status(200).json({ status: "OK", message: `You are in /friend-requests/:id (${friendRequestPublicId}) GET route, retrieving a specific friend request`, data: result});
   }
 ]
 
@@ -65,7 +65,7 @@ export const friendRequestPatchRoute = [
       res.status(400).json({ status: 'error', message: 'Update of friend request failed, something went wrong'});
     }
 
-    res.status(200).json({ status: "OK", message: `You are in PATCH /friend-requests/:id (${friendRequestPublicId}) PATCH route, updated friend request`, result: result});
+    res.status(200).json({ status: "OK", message: `You are in PATCH /friend-requests/:id (${friendRequestPublicId}) PATCH route, updated friend request`, data: result});
   }
 ]
 
@@ -78,5 +78,29 @@ export const friendRequestDeleteRoute = [
       return res.status(500).json({ message: `Delete friend request operation unsuccessful, something went wrong`});
     }
     res.status(200).json({ status: "OK", message: `Successfully deleted the friend request, You are in DELETE /friend-requests/:id (${friendRequestPublicId})`})
+  }
+]
+
+// Non-standard route
+
+export const friendRequestMyRequestsGetRoute = [
+  isAuth,
+  async(req, res) => {
+    const { type, status, page, limit, sort, include } = req.query;
+    const statusArr = Array.isArray(status) ?  status : [status].filter(Boolean);
+    
+    const targetType = type || 'all';
+    const transformStatusArr = statusArr.map(string => string.toUpperCase());
+    const targetStatusArr = statusArr.length !== 0 ? transformStatusArr : ['PENDING', 'ACCEPTED', 'DECLINED']
+    const targetUserPublicId = req.user.publicId;
+
+    const includeArr = Array.isArray(include) ?  include : [include].filter(Boolean);
+
+
+    const result = await services.getMyRequests(req.protocol, req.get('host'), { targetUserPublicId, targetType, targetStatusArr, page, limit, sort, includeArr } )
+    if(!result){
+      return res.status(500).json({ message: `User has no current friend-requests`});
+    }
+    res.status(200).json({ status: "OK", message: `Getting requests of the current logged in user, you are in GET /friend-request/-my-requests`, data: result});
   }
 ]

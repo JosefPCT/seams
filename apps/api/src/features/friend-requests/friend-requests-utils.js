@@ -109,6 +109,81 @@ export const prepareFriendRequestWhereObj = (searchTerm, isSearchTermUUID, inclu
   return whereClause
 }
 
+// Non-standard route utils
+
+export const prepareMyRequestsWhereObj = (userId, type, statusArr) => {
+  const orConditions = [];
+
+  if(type === 'all'){
+
+    if(statusArr.includes('PENDING')){
+      orConditions.push(
+        { senderId: userId, status: 'PENDING' },
+        { receiverId: userId, status: 'PENDING' }
+      )
+    }
+    
+    if(statusArr.includes('ACCEPTED')){
+      orConditions.push(
+        { senderId: userId, status: 'ACCEPTED' },
+        { receiverId: userId, status: 'ACCEPTED' }
+      )
+    }
+
+    if(statusArr.includes('DECLINED')){
+      orConditions.push(
+        { senderId: userId, status: 'DECLINED' },
+        { receiverId: userId, status: 'DECLINED' }
+      )
+    }
+  }
+
+  if(type === 'incoming'){
+    if(statusArr.includes('PENDING')){
+      orConditions.push(
+        { receiverId: userId, status: 'PENDING' }
+      )
+    }
+    
+    if(statusArr.includes('ACCEPTED')){
+      orConditions.push(
+        { receiverId: userId, status: 'ACCEPTED' }
+      )
+    }
+
+    if(statusArr.includes('DECLINED')){
+      orConditions.push(
+        { receiverId: userId, status: 'DECLINED' }
+      )
+    }    
+  }
+
+  if(type === 'outgoing'){
+    if(statusArr.includes('PENDING')){
+      orConditions.push(
+        { senderId: userId, status: 'PENDING' }
+      )
+    }
+    
+    if(statusArr.includes('ACCEPTED')){
+      orConditions.push(
+        { senderId: userId, status: 'ACCEPTED' }
+      )
+    }
+
+    if(statusArr.includes('DECLINED')){
+      orConditions.push(
+        { senderId: userId, status: 'DECLINED' }
+      )
+    }    
+  }
+
+
+  const whereClause = orConditions.length > 0 ? { OR: orConditions } : {}
+  return whereClause
+}
+
+
 // Formatting Utils
 
 export const formatFriendRequestObject = (friendRequest, protocol, host) => {

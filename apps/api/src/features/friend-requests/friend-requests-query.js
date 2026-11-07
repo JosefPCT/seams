@@ -68,3 +68,13 @@ export const deleteFriendRequest = async(targetPublicId) => {
     }
   })
 }
+
+// Non-standard route
+
+export const getAllMyRequests = async( { take, skip, createdWhereObj, createdSortObj, createdSelectObj}) => {
+  return await prisma.friendRequest.findMany({
+    where: createdWhereObj,
+    orderBy: createdSortObj,
+    select: createdSelectObj
+  }) 
+}

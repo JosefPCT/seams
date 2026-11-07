@@ -352,6 +352,62 @@ DELETE the status of a friend request based on its route parameter (:friendReque
 Accessibly only be a logged in user
     - (TODO: add authorization middleware to check if the current logged in user received/sent the particular friend request)
 
+#### Non-Standard Routes
+
+##### GET /friend-requests/my-requests?
+Optional Search Queries: (combine by using '&' )
+- type=incoming|outgoing|all
+    - If 'type' is omitted, will default to 'all'
+- status=PENDING&status=ACCEPTED&status=DECLINED
+    - If 'status' is omitted, will default to querying all the status
+- page={num}
+- limit={num}
+- searchTerm={string|UUID}
+- sort={string1,string2,-string3}
+    - sort valid values (id, publicId, status, sentAt, updatedAt)
+    - fields separated by comma, add - symbol if descending, no symbol means ascending for sorting (i.e sort=name,-createdAt)
+    - Sorting priority will depend on what field was declared first (i.e sort=content,-createdAt) content will be the primary sort
+- include=sender&include=receiver
+    - declared by repeating the include variable to create an array, valid values are: sender, receiver
+
+Return a list of friend-requests belonging to the logged in user via 'req.user'
+Omitting search queries will get all requests of the current logged in users both received and sent
+Note: Use GET `/friend-requests` route, if you want to search through all friend-requests, not just the logged-in user's request
+Route is mostly the same as GET /friend-requests but specific to the logged-in user
+
+Returned object may include fields of:
+- meta
+    - current_page
+    - per_page
+    - total_number_of_pages
+    - total_records
+- links
+    - first
+    - prev
+    - self
+    - next
+    - last
+- data
+    - id (UUID)
+    - status (string)
+    - sentAt (Date)
+    - updatedAt (Date)
+    - links
+        - self (link to the actual friend request) (/friend-requests/:friendRequestId)
+        - sender (link to the user that sent the request) ('/users/:userId)
+        - receiver (link to the user that received the request) ('/users/:userId)
+    - sender ( relation: user)
+        - id
+        - email
+        - addtl
+        - profile (relation: profile)
+            - name
+    - receiver (relation: user)
+        - id
+        - email
+        - addtl
+        - profile (relation: profile)
+            - name
 
 ### /messages
 

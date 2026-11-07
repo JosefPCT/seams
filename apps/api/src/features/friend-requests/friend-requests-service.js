@@ -1,5 +1,5 @@
 import * as friendRequestsQuery from "./friend-requests-query.js";
-import { prepareFriendRequestDataObj, prepareFriendRequestSelectObj, prepareFriendRequestWhereObj, formatFriendRequestObject, formatFriendRequestsArray } from "./friend-requests-utils.js";
+import { prepareFriendRequestDataObj, prepareFriendRequestSelectObj, prepareFriendRequestWhereObj, formatFriendRequestObject, formatFriendRequestsArray, prepareMyRequestsWhereObj } from "./friend-requests-utils.js";
 import { createPrismaOrderByObjectArray } from "../../utils/createOrderByObj.js";
 import { isValidV4UUID } from "../../utils/stringUtils.js";
 
@@ -87,4 +87,47 @@ export const deleteFriendRequestById = async(targetPublicId) => {
   }
   const deletedFriendRequest = await friendRequestsQuery.deleteFriendRequest(targetPublicId);
   return deletedFriendRequest;
+}
+
+// Non Standard Route
+
+export const getMyRequests = async(protocol, host, { targetUserPublicId: userPublicId, targetType: type, targetStatusArr: statusArr, page = 1, limit = 5, searchTerm = "" , sort ="sentAt", includeArr = [] }) => {
+  const user = await friendRequestsQuery.getUserByPublicIdMinimal(userPublicId)
+  if(!user){
+    throw new customErrors.BadRequest("No user by this public id")
+  }
+
+  const options = {
+    take: Number(limit),
+    skip: (Number(page) * Number(limit)) - Number(limit),
+    createdWhereObj: prepareMyRequestsWhereObj(user.id, type, statusArr),
+    createdSortObj: createPrismaOrderByObjectArray(sort),
+    createdSelectObj: prepareFriendRequestSelectObj(includeArr)
+  }
+
+  const myRequests = await friendRequestsQuery.getAllMyRequests(options);
+  if(myRequests.length === 0) {
+    return [];
+  }
+
+  const totalFriendRequests = await friendRequestsQuery.getTotalFriendRequests(options)
+  const totalNumberOfPages = totalFriendRequests.length / Number(limit) < 1 ? 1 : Math.ceil(totalFriendRequests.length / Number(limit))
+
+  const formattedRequests = formatFriendRequestsArray(myRequests, protocol, host);
+  return {
+    meta: {
+      "current_page": page,
+      "per_page": limit,
+      "total_number_of_pages": totalFriendRequests.length > 0 ? totalNumberOfPages : 0,
+      "total_records": totalFriendRequests.length,
+    },
+    links: {
+      first: new URL(`/api/v1/friend-requests/my-requests?page=1`, `${protocol}://${host}`),
+      prev: Number(page) === 1 ? null: new URL(`/api/v1/friend-requests/my-requests?page=${Number(page) - 1}`, `${protocol}://${host}`),
+      self: new URL(`/api/v1/friend-requests/my-requests?page=${page}&limit=${limit}`, `${protocol}://${host}`),
+      next: Number(page) >= totalNumberOfPages ? null: new URL(`/api/v1/friend-requests/my-requests?page=${Number(page) + 1}`, `${protocol}://${host}`),
+      last: new URL(`/api/v1/friend-requests/my-requests?page=${totalNumberOfPages}`, `${protocol}://${host}`)
+    },
+    data: formattedRequests
+  }
 }
