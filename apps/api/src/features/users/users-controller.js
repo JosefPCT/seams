@@ -132,3 +132,18 @@ export const userDeleteRoute = [
     });
   }
 ]
+
+
+// Non-standard routes
+
+export const userByIdFriendsGetRoute = [
+  async(req,res) => {
+    const { userPublicId } = req.params;
+
+    const result = await usersService.getUserFriends(userPublicId, req.protocol, req.get('host'));
+    if(!result){
+      return res.status(400).json({ error: true, message: "User was not found"});
+    }
+    res.status(200).json({ status: "OK", message: `Showing this user's friends, you are in /users/${userPublicId}/friends GET route`, data: result})
+  }
+]

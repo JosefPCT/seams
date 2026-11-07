@@ -82,3 +82,25 @@ export const deleteUserByPublicId = async(targetUserPublicId) => {
     }
   })
 }
+
+// For non-standard routes
+
+// Used the query for /users/:userId instead 
+// export const getUserFriendRequestRelation = async(userPublicId) => {
+//   return await prisma.user.findUnique({
+//     where: {
+//       publicId: true
+//     }, 
+//     select: {
+//       publicId: true,
+//       email: true,
+//       addtl: true,
+//       profile: {
+//         select: {
+//           publicId: true,
+
+//         }
+//       }
+//     }
+//   })
+// }

@@ -10,6 +10,10 @@ usersRouter.get('/', usersController.usersGetRoute);
 
 usersRouter.get('/me', usersController.userMeGetRoute);
 
+// Non-standard route
+
+usersRouter.get('/:userPublicId/friends', usersController.userByIdFriendsGetRoute);
+
 usersRouter.get('/:userPublicId', usersController.userByPublicIdGetRoute);
 
 usersRouter.patch('/:userPublicId', usersController.userPatchRoute);

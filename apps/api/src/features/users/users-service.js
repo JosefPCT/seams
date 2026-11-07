@@ -166,3 +166,24 @@ export const deleteUser = async(userPublicId) => {
   const deletedUser = await usersQueries.deleteUserByPublicId(userPublicId);
   return deletedUser;
 }
+
+// Non standard routes
+
+export const getUserFriends = async(userPublicId, protocol, host) => {
+  const user = await usersQueries.fetchUserByPublicId(userPublicId, usersUtils.prepareUsersSelectObj(['profile', 'sentRequests', 'receivedRequests']))
+  if(!user){
+    throw new customError.BadRequest(`User does not exist`);
+  }
+  const formattedUser = await usersUtils.formatUserObject(user, protocol, host);
+
+  console.log("Friend list creation")
+  const fullList = [].concat(formattedUser.sentRequests,formattedUser.receivedRequests);
+  console.dir(fullList);
+  const acceptedRequests = fullList.filter(request => request.status === 'ACCEPTED');
+  // console.log("Accepted requests");
+  // console.log(acceptedRequests)
+  const formattedFriends = acceptedRequests.map(({receiver, sender, ...restOfAccepted}) => {
+    return ( receiver || sender)
+  }) 
+  return formattedFriends
+}

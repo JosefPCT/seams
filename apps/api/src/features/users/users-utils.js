@@ -112,13 +112,61 @@ export const prepareUsersSelectObj = (targetArray) => {
           },
         }
       : undefined,
-    _count: ["messages", "groups"].some((relation) =>
+    // Instead of getting both relations (receiver/sender), get only the 'receiver' relation
+    sentRequests: targetArray.includes('sentRequests')
+      ? {
+        select: {
+          publicId: true,
+          status: true,
+          sentAt: true,
+          updatedAt: true,
+          receiver: {
+            select: {
+              publicId: true,
+              email: true,
+              addtl: true,
+              profile: {
+                select: {
+                  publicId: true,
+                  name: true
+                }
+              }
+            }
+          }
+        }
+      } : undefined,
+    // Instead of getting both relations (receiver/sender), get only the 'sender' relation
+    receivedRequests: targetArray.includes('receivedRequests')
+      ? {
+        select: {
+          publicId: true,
+          status: true,
+          sentAt: true,
+          updatedAt: true,
+          sender: {
+            select: {
+              publicId: true,
+              email: true,
+              addtl: true,
+              profile: {
+                select: {
+                  publicId: true,
+                  name: true
+                }
+              }
+            }
+          },
+        }
+      } : undefined,
+    _count: ["messages", "groups", "sentRequests", "receivedRequests"].some((relation) =>
       targetArray.includes(relation),
     )
       ? {
           select: {
             messages: targetArray.includes("messages") ? true : undefined,
             groups: targetArray.includes("groups") ? true : undefined,
+            sentRequests: targetArray.includes("sentRequests") ? true : undefined,
+            receivedRequests: targetArray.includes("receivedRequests") ? true : undefined,
           },
         }
       : undefined,
@@ -134,6 +182,8 @@ export const formatReturnUsersArray = (users, protocol, host) => {
     const hasProfile = profile && profile !== null;
     const hasMessages = user.messages && user.messages.length > 0;
     const hasGroups = user.groups && user.groups.length > 0;
+    const hasReceivedRequests = user.receivedRequests && user.receivedRequests.length > 0;
+    const hasSentRequests = user.sentRequests && user.sentRequests.length > 0;
 
     let formattedProfile = null;
     if (hasProfile) {
@@ -195,6 +245,36 @@ export const formatReturnUsersArray = (users, protocol, host) => {
             ...messages,
           }))
         : [],
+      sentRequests: hasSentRequests
+        ? user.sentRequests.map(({ publicId: sentRequestPublicIdAlias, receiver, ...restofSentRequest}) => {
+          let formattedReceiver = null;
+          if(receiver){
+            const{ publicId: receiverPublicIdAlias, profile: receiverProfile, ...restOfReceiver}  = receiver;
+            const hasReceiverProfile =  receiverProfile && receiverProfile !== null;
+
+            let formattedReceiverProfile = null;
+            if(hasReceiverProfile){
+              const { publicId: receiverProfilePublicIdAlias, ...restOfReceiverProfile} = receiverProfile
+              formattedReceiverProfile = {
+                id: receiverProfilePublicIdAlias,
+                ...restOfReceiverProfile
+              }
+            }
+
+            formattedReceiver = {
+              id: receiverPublicIdAlias,
+              profile: formattedReceiverProfile,
+              ...restOfReceiver
+            }
+          }
+
+          return {
+            id: sentRequestPublicIdAlias,
+            receiver: formattedReceiver,
+            ...restofSentRequest
+          }
+        })
+        : [],
     };
   });
   return formattedUsers;
@@ -206,6 +286,8 @@ export const formatUserObject = (user, protocol, host) => {
   const hasProfile = user.profile && user.profile !== null;
   const hasMessages = user.messages && user.messages.length > 0;
   const hasGroups = user.groups && user.groups.length > 0;
+  const hasReceivedRequests = user.receivedRequests && user.receivedRequests.length > 0;
+  const hasSentRequests = user.sentRequests && user.sentRequests.length > 0;
 
   const { publicId: userPublicIdAlias, profile, ...rest } = user;
 
@@ -269,6 +351,70 @@ export const formatUserObject = (user, protocol, host) => {
           },
         )
       : undefined,
+    sentRequests: hasSentRequests
+        ? user.sentRequests.map(({ publicId: sentRequestPublicIdAlias, receiver, ...restofSentRequest}) => {
+          let formattedReceiver = null;
+          if(receiver){
+            const{ publicId: receiverPublicIdAlias, profile: receiverProfile, ...restOfReceiver}  = receiver;
+            const hasReceiverProfile =  receiverProfile && receiverProfile !== null;
+
+            let formattedReceiverProfile = null;
+            if(hasReceiverProfile){
+              const { publicId: receiverProfilePublicIdAlias, ...restOfReceiverProfile} = receiverProfile
+              formattedReceiverProfile = {
+                id: receiverProfilePublicIdAlias,
+                ...restOfReceiverProfile,
+                link: new URL(`/api/v1/profiles/${receiverProfilePublicIdAlias}`, `${protocol}://${host}`)
+              }
+            }
+
+            formattedReceiver = {
+              id: receiverPublicIdAlias,
+              profile: formattedReceiverProfile,
+              ...restOfReceiver,
+              link: new URL(`/api/v1/users/${receiverPublicIdAlias}`, `${protocol}://${host}`),
+            }
+          }
+
+          return {
+            id: sentRequestPublicIdAlias,
+            ...restofSentRequest,
+            receiver: formattedReceiver
+          }
+        })
+        : [],
+    receivedRequests: hasReceivedRequests
+        ? user.receivedRequests.map(({ publicId: receivedRequestPublicIdAlias, sender, ...restOfReceivedRequest}) => {
+          let formattedSender = null;
+          if(sender){
+            const{ publicId: senderPublicIdAlias, profile: senderProfile, ...restOfSender}  = sender;
+            const hasSenderProfile =  senderProfile && senderProfile !== null;
+
+            let formattedSenderProfile = null;
+            if(hasSenderProfile){
+              const { publicId: senderProfilePublicIdAlias, ...restOfSenderProfile} = senderProfile
+              formattedSenderProfile = {
+                id: senderProfilePublicIdAlias,
+                ...restOfSenderProfile,
+                link: new URL(`/api/v1/profiles/${senderProfilePublicIdAlias}`, `${protocol}://${host}`)
+              }
+            }
+
+            formattedSender = {
+              id: senderPublicIdAlias,
+              profile: formattedSenderProfile,
+              ...restOfSender,
+              link: new URL(`/api/v1/users/${senderPublicIdAlias}`, `${protocol}://${host}`),
+            }
+          }
+
+          return {
+            id: receivedRequestPublicIdAlias,
+            ...restOfReceivedRequest,
+            sender: formattedSender
+          }
+        })
+        : [],
   };
   return formattedUser;
 };

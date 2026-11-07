@@ -132,6 +132,23 @@ Accepts a req.body of mostly optional:
 #### DELETE /users:userPublicId
 Deletes a user based on the passed :userPublicId
 
+
+#### Non-standard route
+##### GET /users/:userPublicId/friends
+Returns a list (array) of users that are friends with the target user (:userPublicId), by checking if their friend request status is 'ACCEPTED'
+
+Returned Array of objects may include fields of:
+- id (public id)
+- email
+- addtl
+- link (link to the specific user)
+- profile (relation: Profile)
+    - id
+    - name
+    - link (link to the specific user profile)
+
+
+
 ### /profiles
 
 #### POST /profiles
