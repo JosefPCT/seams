@@ -51,52 +51,56 @@ export const prepareFriendRequestSelectObj = (targetArray) => {
   return selectObj;
 }
 
-export const prepareFriendRequestWhereObj = (searchTerm, isSearchTermUUID, includeArr) => {
+export const prepareFriendRequestWhereObj = (searchTerm, isSearchTermUUID, includeArr, userId, type, statusArr) => {
   const orConditions = [];
 
-  isSearchTermUUID
+  if(searchTerm){
+    isSearchTermUUID
     ? orConditions.push(
         { publicId: searchTerm },
       )
     : "";
 
-  isSearchTermUUID & includeArr.includes("sender")
-    ? orConditions.push(
-      { sender: { is: { publicId: searchTerm }}},
-      { sender: { is: { profile: { is: { publicId: searchTerm }}}}}
-    )
-    : "";
+    isSearchTermUUID && includeArr.includes("sender")
+      ? orConditions.push(
+        { sender: { is: { publicId: searchTerm }}},
+        { sender: { is: { profile: { is: { publicId: searchTerm }}}}}
+      )
+      : "";
 
-  isSearchTermUUID & includeArr.includes("receiver")
-    ? orConditions.push(
-      { receiver: { is: { publicId: searchTerm }}},
-      { receiver: { is: { profile: { is: { publicId: searchTerm }}}}}
-    )
-    : "";  
+    isSearchTermUUID && includeArr.includes("receiver")
+      ? orConditions.push(
+        { receiver: { is: { publicId: searchTerm }}},
+        { receiver: { is: { profile: { is: { publicId: searchTerm }}}}}
+      )
+      : "";  
 
-  includeArr.includes("sender")
-    ? orConditions.push(
-      { sender: { is: { email: { contains: searchTerm, mode: 'insensitive' }}}},
-      { sender: { is: { addtl: { contains: searchTerm, mode: 'insensitive' }}}},
-      { sender: { is: { profile: { is: { name: { contains: searchTerm, mode: 'insensitive'}}}}}},
-      { sender: { is: { profile: { is: { bio: { contains: searchTerm, mode: 'insensitive'}}}}}},
-      { sender: { is: { profile: { is: { pronouns: { contains: searchTerm, mode: 'insensitive'}}}}}},
-    )
-    : "";
+    includeArr.includes("sender")
+      ? orConditions.push(
+        { sender: { is: { email: { contains: searchTerm, mode: 'insensitive' }}}},
+        { sender: { is: { addtl: { contains: searchTerm, mode: 'insensitive' }}}},
+        { sender: { is: { profile: { is: { name: { contains: searchTerm, mode: 'insensitive'}}}}}},
+        { sender: { is: { profile: { is: { bio: { contains: searchTerm, mode: 'insensitive'}}}}}},
+        { sender: { is: { profile: { is: { pronouns: { contains: searchTerm, mode: 'insensitive'}}}}}},
+      )
+      : "";
 
-  includeArr.includes("receiver")
-    ? orConditions.push(
-      { receiver: { is: { email: { contains: searchTerm, mode: 'insensitive' }}}},
-      { receiver: { is: { addtl: { contains: searchTerm, mode: 'insensitive' }}}},
-      { receiver: { is: { profile: { is: { name: { contains: searchTerm, mode: 'insensitive'}}}}}},
-      { receiver: { is: { profile: { is: { bio: { contains: searchTerm, mode: 'insensitive'}}}}}},
-      { receiver: { is: { profile: { is: { pronouns: { contains: searchTerm, mode: 'insensitive'}}}}}},
-    )
-    : ""; 
+    includeArr.includes("receiver")
+      ? orConditions.push(
+        { receiver: { is: { email: { contains: searchTerm, mode: 'insensitive' }}}},
+        { receiver: { is: { addtl: { contains: searchTerm, mode: 'insensitive' }}}},
+        { receiver: { is: { profile: { is: { name: { contains: searchTerm, mode: 'insensitive'}}}}}},
+        { receiver: { is: { profile: { is: { bio: { contains: searchTerm, mode: 'insensitive'}}}}}},
+        { receiver: { is: { profile: { is: { pronouns: { contains: searchTerm, mode: 'insensitive'}}}}}},
+      )
+      : ""; 
 
-  ["PENDING", "ACCEPTED", "DECLINED"].includes(searchTerm)
-    ? orConditions.push({ status: searchTerm })
-    : "";  
+    ["PENDING", "ACCEPTED", "DECLINED"].includes(searchTerm)
+      ? orConditions.push({ status: searchTerm })
+      : "";  
+  }
+
+
   // orConditions.push(
   //   { url: { contains: searchTerm, mode: 'insensitive'}},
   //   { name: { contains: searchTerm, mode: 'insensitive'}},
@@ -104,6 +108,72 @@ export const prepareFriendRequestWhereObj = (searchTerm, isSearchTermUUID, inclu
 
   //   // Todo find a way to search through numbers (lt,lte,equals,gt,gte) (might need to have two inputs for the range)
   // )
+
+
+  // Condition structure involving search query: userPublicId, type and statusArr
+  if(type === 'all'){
+
+    if(statusArr.includes('PENDING')){
+      orConditions.push(
+        { senderId: userId, status: 'PENDING' },
+        { receiverId: userId, status: 'PENDING' }
+      )
+    }
+    
+    if(statusArr.includes('ACCEPTED')){
+      orConditions.push(
+        { senderId: userId, status: 'ACCEPTED' },
+        { receiverId: userId, status: 'ACCEPTED' }
+      )
+    }
+
+    if(statusArr.includes('DECLINED')){
+      orConditions.push(
+        { senderId: userId, status: 'DECLINED' },
+        { receiverId: userId, status: 'DECLINED' }
+      )
+    }
+  }
+
+  if(type === 'incoming'){
+    if(statusArr.includes('PENDING')){
+      orConditions.push(
+        { receiverId: userId, status: 'PENDING' }
+      )
+    }
+    
+    if(statusArr.includes('ACCEPTED')){
+      orConditions.push(
+        { receiverId: userId, status: 'ACCEPTED' }
+      )
+    }
+
+    if(statusArr.includes('DECLINED')){
+      orConditions.push(
+        { receiverId: userId, status: 'DECLINED' }
+      )
+    }    
+  }
+
+  if(type === 'outgoing'){
+    if(statusArr.includes('PENDING')){
+      orConditions.push(
+        { senderId: userId, status: 'PENDING' }
+      )
+    }
+    
+    if(statusArr.includes('ACCEPTED')){
+      orConditions.push(
+        { senderId: userId, status: 'ACCEPTED' }
+      )
+    }
+
+    if(statusArr.includes('DECLINED')){
+      orConditions.push(
+        { senderId: userId, status: 'DECLINED' }
+      )
+    }    
+  }
 
   const whereClause = orConditions.length > 0 ? { OR: orConditions } : {}
   return whereClause

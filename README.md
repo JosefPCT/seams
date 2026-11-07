@@ -289,15 +289,27 @@ Returned object may include fields of:
   - email
   - addtl
 
-#### GET /friend-requests?page={num}&limit={num}&searchTerm={string|UUID}&sort={string1,string2,-string3}&include=sender&include=receiver
+#### GET /friend-requests?userPublicId={UUID}&type={incoming|outgoing|all}&status=PENDING&status=ACCEPTED&status=DECLINED&page={num}&limit={num}&searchTerm={string|UUID}&sort={string1,string2,-string3}&include=sender&include=receiver
 Returns a JSON payload information of the list of all friend requests in the database, or if passed a search query (searchTerm) filters the list to only show friends requests that passes the searchTerm (id or string)
+Can get the friend list of a user by inputting a userPublicId and status to ACCEPTED
+    - Then filter out the list further by comparing the userPublicId/id to the relation 'sender's id/public id, if true, return the 'receiver', if not true, return the 'sender'
+    - Useful to get friend lists of a specific user without relying on req.user
+Can get the pending received friend requests of a user by inputting a userPublicId and status to PENDING and type to incoming
+Can get the pending sent friend requests of a user by inputting a userPublicId and status to PENDING and type to outgoing
+
 Optional Search Query Parameters:
+- userPublicId={UUID}
+- type=incoming|outgoing|all
+    - If 'type' is omitted, will default to 'all'
+- status=PENDING&status=ACCEPTED&status=DECLINED
+    - If 'status' is omitted, will default to querying all the status
 - page(number) and limit(number) for pagination
 - searchTerm (string) for filtering, you can also use a UUID instead of a string to look for an exact match of a public ID
 - sort(fields separated by comma, add - symbol if descending, no symbol means ascending) for sorting (i.e sort=name,-createdAt)
     - sort valid values (id, publicId, status, sentAt, updatedAt)
     - Sorting priority will depend on what field was declared first (i.e sort=content,-createdAt) content will be the primary sort
 - include (declared by repeating the include variable to create an array, valid values are: sender, receiver) 
+
 
 Returned object may include fields of:
 - meta

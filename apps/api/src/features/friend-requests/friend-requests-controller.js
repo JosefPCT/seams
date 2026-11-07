@@ -25,9 +25,16 @@ export const friendRequestsPostRoute = [
 
 export const friendRequestsGetRoute = [
   async(req, res) => {
-    const { page, limit, searchTerm, sort, include } = req.query;
+    const { userPublicId, type, status, page, limit, searchTerm, sort, include } = req.query;
+
+    const targetType = type || 'all';
+
+    const statusArr = Array.isArray(status) ?  status : [status].filter(Boolean);
+    const transformStatusArr = statusArr.map(string => string.toUpperCase());
+    const targetStatusArr = statusArr.length !== 0 ? transformStatusArr : ['PENDING', 'ACCEPTED', 'DECLINED']
+
     const includeArr = Array.isArray(include) ?  include : [include].filter(Boolean);
-    const result = await services.listFriendRequests(req.protocol, req.get('host'), { page, limit, searchTerm, sort, includeArr });
+    const result = await services.listFriendRequests(req.protocol, req.get('host'), { userPublicId, targetType, targetStatusArr, page, limit, searchTerm, sort, includeArr });
     if(!result){
       return res.status(400).json({ error: true, message: "No friend requests retrieved"});
     }
@@ -87,11 +94,13 @@ export const friendRequestMyRequestsGetRoute = [
   isAuth,
   async(req, res) => {
     const { type, status, page, limit, sort, include } = req.query;
-    const statusArr = Array.isArray(status) ?  status : [status].filter(Boolean);
-    
+  
     const targetType = type || 'all';
+
+    const statusArr = Array.isArray(status) ?  status : [status].filter(Boolean);
     const transformStatusArr = statusArr.map(string => string.toUpperCase());
     const targetStatusArr = statusArr.length !== 0 ? transformStatusArr : ['PENDING', 'ACCEPTED', 'DECLINED']
+
     const targetUserPublicId = req.user.publicId;
 
     const includeArr = Array.isArray(include) ?  include : [include].filter(Boolean);

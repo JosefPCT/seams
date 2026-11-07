@@ -21,12 +21,21 @@ export const createFriendRequest = async ({ receiverId, senderId, status}, proto
   return formattedFriendRequest
 }
 
-export const listFriendRequests = async(protocol, host, { page = 1, limit = 5, searchTerm = "" , sort ="sentAt", includeArr = [] }) => {
+export const listFriendRequests = async(protocol, host, { userPublicId, targetType: type, targetStatusArr: statusArr, page = 1, limit = 5, searchTerm = "" , sort ="sentAt", includeArr = [] }) => {
+  console.log("Showign search term:");
+  console.log(searchTerm)
+  if(searchTerm){
+    console.log("Showing search termm true")
+  }
+  const user = userPublicId ? await friendRequestsQuery.getUserByPublicIdMinimal(userPublicId) : -1
+  if(!user){
+    throw new customErrors.BadRequest("No user by this public id")
+  }
 
   const options = {
       take: Number(limit),
       skip: (Number(page) * Number(limit)) - Number(limit),
-      createdWhereObj: prepareFriendRequestWhereObj(searchTerm, isValidV4UUID(searchTerm), includeArr),
+      createdWhereObj: prepareFriendRequestWhereObj(searchTerm, isValidV4UUID(searchTerm), includeArr, user.id, type, statusArr),
       createdSortObj: createPrismaOrderByObjectArray(sort),
       createdSelectObj: prepareFriendRequestSelectObj(includeArr)
   }
