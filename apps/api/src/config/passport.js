@@ -19,7 +19,10 @@ const verifyCallback = async (username, password, done) => {
       },
       include: {
         profile: true,
-        messages: true
+        messages: true,
+        groups: true,
+        sentRequests: true,
+        receivedRequests: true
       }
     });
 
@@ -60,7 +63,10 @@ passport.deserializeUser(async (userId, done) => {
       },
       include: {
         profile: true,
-        messages: true
+        messages: true,
+        groups: true,
+        sentRequests: true,
+        receivedRequests: true
       }
     });
 
