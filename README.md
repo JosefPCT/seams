@@ -136,6 +136,9 @@ Deletes a user based on the passed :userPublicId
 #### Non-standard route
 ##### GET /users/:userPublicId/friends
 Returns a list (array) of users that are friends with the target user (:userPublicId), by checking if their friend request status is 'ACCEPTED'
+- Use GET `/friend-requests/my-request` to get a paginated, sorted, and filtered list of requests of the current logged in user
+TODO: Might need to refactor this route to create a paginated/sorted/filtered friends list if friends list has a lot of entries
+    - Instead of querying 'User' model query the 'Friend-Request' model instead (can move the route logic to another folder)
 
 Returned Array of objects may include fields of:
 - id (public id)
