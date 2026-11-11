@@ -8,6 +8,7 @@ import profilesRoutes from "../../features/profiles/profiles-route.js";
 import messagesRoutes from "../../features/messages/messages-route.js"
 import chatParticipantsRouter from "../../features/chat-participants/chat-participants-route.js"
 import friendRequestsRouter from "../../features/friend-requests/friends-requests-route.js";
+import heartbeatRouter from "../../features/heartbeat/heartbeat-route.js";
 
 const apiRouter = express.Router();
 
@@ -23,5 +24,6 @@ apiRouter.use('/api/v1/messages', messagesRoutes);
 apiRouter.use('/api/v1/chat-groups', chatGroupsRouter);
 apiRouter.use('/api/v1/chat-participants', chatParticipantsRouter);
 apiRouter.use('/api/v1/friend-requests', friendRequestsRouter);
+apiRouter.use('/api/v1/heartbeat', heartbeatRouter);
 
 export default apiRouter;

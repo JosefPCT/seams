@@ -38,7 +38,8 @@ export const createNewUser = async(userData, createdSelectObj) => {
       email: userData.email,
       hash: userData.hash,
       addtl: `${userData.first_name} ${userData.last_name}`,
-      isAdmin: userData.isAdmin
+      isAdmin: userData.isAdmin,
+      lastSeen: new Date()
     },
     select: createdSelectObj
   })
@@ -79,6 +80,31 @@ export const deleteUserByPublicId = async(targetUserPublicId) => {
   return await prisma.user.delete({
     where: {
       publicId: targetUserPublicId
+    }
+  })
+}
+
+// Query for non-standard routes
+export const fetchUserStatus =  async(targetUserPublicId) => {
+  return await prisma.user.findUnique({
+    where: {
+      publicId: targetUserPublicId
+    },
+    select: {
+      lastSeen: true
+    }
+  })
+}
+
+export const fetchOnlineUsers = async(cutOffTime) => {
+  return await prisma.user.findMany({
+    where: {
+      lastSeen: {
+        gte: cutOffTime
+      }
+    },
+    orderBy: {
+      lastSeen: 'desc'
     }
   })
 }

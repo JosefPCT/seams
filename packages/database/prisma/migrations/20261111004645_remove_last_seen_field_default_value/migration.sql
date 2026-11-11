@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "lastSeen" DROP NOT NULL,
+ALTER COLUMN "lastSeen" DROP DEFAULT;

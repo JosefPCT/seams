@@ -187,3 +187,24 @@ export const getUserFriends = async(userPublicId, protocol, host) => {
   }) 
   return formattedFriends
 }
+
+export const getUserStatus = async(userPublicId) => {
+  const HEARTBEAT_THRESHOLD_MS = 2 * 60 * 1000; // 2 minutes
+
+  const user = await usersQueries.fetchUserStatus(userPublicId);
+  if(!user){
+    throw new customError.BadRequest(`User does not exist`);
+  }
+
+  const isOnline = (new Date() - new Date(user.lastSeen)) < HEARTBEAT_THRESHOLD_MS;
+  console.log("Is online? ,", isOnline);
+  return isOnline
+}
+
+export const listOnlineUsers = async() => {
+  const HEARTBEAT_THRESHOLD_MS = 2 * 60 * 1000; // 2 minutes
+  const cutoffTime = new Date(Date.now() - HEARTBEAT_THRESHOLD_MS);
+
+  const onlineUsers = await usersQueries.fetchOnlineUsers(cutoffTime);
+  return onlineUsers;
+}

@@ -147,3 +147,22 @@ export const userByIdFriendsGetRoute = [
     res.status(200).json({ status: "OK", message: `Showing this user's friends, you are in /users/${userPublicId}/friends GET route`, data: result})
   }
 ]
+
+// Route to fetch if you want to check if a specific user is online, will return true/false depending on their status
+export const userByIdStatusGetRoute = [
+  async(req, res) => {
+    const { userPublicId } = req.params;
+
+    const result = await usersService.getUserStatus(userPublicId);
+    res.status(200).json({ result })
+  }
+]
+
+// Route that returns a list of online users that checks heartbeats
+export const usersOnlineGetRoute = [
+  async(req, res) => {
+
+    const result = await usersService.listOnlineUsers();
+    res.status(200).json({ result })
+  }
+]
