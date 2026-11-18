@@ -1,7 +1,7 @@
 import express from 'express';
 import { expressSessionConfig } from './config/session.js';
 import passport from "passport";
-
+import cors from "cors";
 
 import apiRouter from './api/v1/routes.js';
 import { notFoundErrorHandler } from './middleware/NotFoundHandler.js';
@@ -12,6 +12,10 @@ const app = express();
 app.use(express.urlencoded({ extended: false}));
 app.use(express.json());
 
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
 // Setting up session and session store for prisma, using an exported object from a different file that holds the configuration
 app.use(expressSessionConfig);
 

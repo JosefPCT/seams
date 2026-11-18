@@ -1,3 +1,38 @@
+// Using React Context + Tanstack Query
+// import { createContext, useContext, useMemo } from "react";
+// import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+// const AuthContext = createContext(null);
+
+// // Reusable query key so profile mutations elsewhere can invalidate it
+// export const AUTH_QUERY_KEY = ["auth", "me"];
+
+// async function fetchMe() {
+//   const response = await fetch("api/v1/me", { credentials: "include" })
+
+//   // Return null instead of throwing on 401 so Tanstack Query treats "logged out" as a valid state
+//   if (response.status === 401) return null;
+//   if (!response.ok) throw new Error ("Failed to fech user session")
+
+//   return response.json();
+// }
+
+// export function AuthProvider({ children }) {
+//   const queryClient = useQueryClient();
+
+//   const { data: user = null, isLoading }  = useQuery({
+//     queryKey: AUTH_QUERY_KEY,
+//     queryFn: fetchMe,
+//     staleTime: 1000 * 60 * 5, // Keep user data fresh for 5 minutes
+//     retry: false, // Don't retry if the user is unauthenticated
+//   });
+// }
+
+
+// _______________________________________
+
+
+// Using React Context + Custom Hook
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { isAuth } from "../../../../api/src/middleware/authMiddleware";
 
@@ -11,7 +46,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const checkSession = async () => {
         try {
-          const response = await fetch("/api/v1/users/me", { credentials: "include"})
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/users/me`, { credentials: "include"})
           if(response.ok){
             const userData = await response.json();
             setUser(userData);
@@ -27,7 +62,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = useCallback(async (credentials) => {
-    const response = await fetch("/api/v1/login", {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),
@@ -40,7 +75,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   const logout = useCallback(async () => {
-    await fetch("api/v1/logout", { method: "POST", credentials: "include"})
+    await fetch(`${import.meta.env.VITE_API_URL}/api/v1/logout`, { method: "POST", credentials: "include"})
     setUser(null);
   }, []);
 
