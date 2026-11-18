@@ -10,6 +10,15 @@ Serves at the backend API with urls such as:
 - Prefixed routes to indicate api version
 
 ## Non-standard Endpoints
+### POST /heartbeat
+- Updates user's lastSeen field to the current time
+- Only logged in users can access the route
+- Uses `req.user` object to use for query in updating the 'lastSeen' field
+
+### GET /users/online
+- Gets a list of online users (checks the 'lastSeen' field and compare to the threshold: 2minutes)
+    - I
+
 
 ### POST /register
 Registers a user to access authorized routes
