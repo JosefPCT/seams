@@ -1,0 +1,19 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { SESSION_QUERY_KEY } from "../../../../entities/session";
+
+export function useLogout() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async() => {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/v1/logout`, {
+        method: "POST",
+        credentials: "include",
+      })
+    },
+    onSuccess: () => {
+      queryClient.setQueryData(SESSION_QUERY_KEY, null);
+      queryClient.removeQueries({ queryKey: SESSION_QUERY_KEY, exact: true })
+    }
+  })
+}

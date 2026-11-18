@@ -1,8 +1,10 @@
-import { useAuth } from "../../app/context/AuthContext"
+// import { useAuth } from "../../app/context/AuthContext"
+import { useLogin } from "../../features/auth/login";
 import { useState } from "react";
 
 export default function LoginPage(){
-    const { login } = useAuth();
+    // const { login } = useAuth();
+    const { mutate: login, isPending, isError, err } = useLogin();
 
     const apiUrl = import.meta.env.VITE_API_URL;
 

@@ -1,8 +1,10 @@
-import { useAuth } from "../../app/context/AuthContext"
+// import { useAuth } from "../../app/context/AuthContext"
+import { useLogout } from "../../features/auth/logout";
 import { useState } from "react";
 
 export default function LogoutPage(){
-    const { logout } = useAuth();
+    // const { logout } = useAuth();
+    const { mutate: logout, isPending, isError, err } = useLogout();
 
     const apiUrl = import.meta.env.VITE_API_URL;
 

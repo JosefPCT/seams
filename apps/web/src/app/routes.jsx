@@ -2,7 +2,7 @@
 import MainWrapper from "./provider/MainWrapper.jsx";
 import { LandingPage } from "../pages/landing";
 import LoginPage from "../pages/login/LoginPage.jsx";
-import ProtectedRoute from "../app/context/ProtectedRoute.jsx";
+import { ProtectedRoute } from "./routing/ProtectedRoute.jsx";
 import LogoutPage from "../pages/logout/LogoutPage.jsx";
 
 const routes = [
