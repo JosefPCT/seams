@@ -2,6 +2,7 @@
 import { useLogout } from "../../features/auth/logout";
 import { useState } from "react";
 
+
 export default function LogoutPage(){
     // const { logout } = useAuth();
     const { mutate: logout, isPending, isError, err } = useLogout();

@@ -1,12 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { SESSION_QUERY_KEY } from "../../../../entities/session";
 
+import { apiClient } from "../../../../shared/api";
+
 export function useLogin() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (credentials) => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/login`, {
+      const response = await apiClient(`${import.meta.env.VITE_API_URL}/api/v1/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials),
