@@ -11,7 +11,7 @@ authRouter.post('/login', authController.loginPostRoute);
 authRouter.get('/login-success', authController.loginSuccessGetRoute);
 authRouter.get('/login-failure', authController.loginFailureGetRoute);
 
-authRouter.get('/logout', authController.logoutGetRoute);
+authRouter.post('/logout', authController.logoutPostRoute);
 
 authRouter.get('/test-protected-route', authController.testProtectedGetRoute);
 

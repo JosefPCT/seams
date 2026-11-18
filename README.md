@@ -38,7 +38,7 @@ Accepts a req.body of:
 - email (custom)
 - password (default)
 
-### GET /logout
+### POST /logout
 Handles de-authentication of a user to disable them access of protected routes
 
 ## Standard Endpoints

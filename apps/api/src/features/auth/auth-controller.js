@@ -47,7 +47,7 @@ export const loginFailureGetRoute = [
 
 // Endpoint: 'GET /api/v1/logout'
 // Handles logging out of user via 'req.logout' uses the deserialize function to remove information from 'req.user' object
-export const logoutGetRoute = [
+export const logoutPostRoute = [
   async(req, res, next) => {
     req.logout((err) => {
       if(err) { return next(err) }
