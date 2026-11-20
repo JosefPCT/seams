@@ -8,6 +8,6 @@ export function ProtectedRoute() {
     return <div>Loading session...</div>
   }
 
-  //   return isAuthenticated ? <Outlet/> : <Navigate to="/login" replace />
-  return isAuthenticated ? <div> Authenticated! </div> :<div>Not Authenticated</div>
+    return isAuthenticated ? <Outlet/> : <Navigate to="/login" replace />
+  // return isAuthenticated ? <div> Authenticated! </div> :<div>Not Authenticated</div>
 }

@@ -72,7 +72,7 @@ Optional Search Query Parameters:
 - sort(fields separated by comma, add - symbol if descending, no symbol means ascending) for sorting (i.e sort=name,-createdAt)
     - sort valid values (id, publicId, email, addtl, isAdmin)
     - Sorting priority will depend on what field was declared first (i.e sort=content,-createdAt) content will be the primary sort
-- include (declared by repeating the include variable to create an array, valid values are: profile, messages, and groups)
+- include (declared by repeating the include variable to create an array, valid values are: profile, messages, and groups, sentRequests, receivedRequests)
 
 Returned Object may include fields of:
 - meta:
