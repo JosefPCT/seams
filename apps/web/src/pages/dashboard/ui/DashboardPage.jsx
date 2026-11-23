@@ -1,6 +1,6 @@
 import { useSession } from "../../../entities/session"
 // import { useUser } from "../../../entities/user/index.js";
-import { UserCard, UserChatGroupList } from "../../../entities/user";
+import { UserCard, UserChatGroupList, UserPendingRequestsList } from "../../../entities/user";
 
 export function DashboardPage() {
 
@@ -21,6 +21,7 @@ export function DashboardPage() {
       Dashboard
       <UserCard userId={user.data.publicId}/>
       <UserChatGroupList userId={user.data.publicId} />
+      <UserPendingRequestsList userId={user.data.publicId} />
       {/* <h1>Hello, {user.data.addtl}</h1> */}
       {/* <p>{user && user.data.id}</p> */}
       {/* <p>{user.data.profile.name}</p> */}

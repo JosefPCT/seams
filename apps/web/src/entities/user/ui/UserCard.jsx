@@ -13,8 +13,8 @@ export function UserCard({userId}){
 
   return(
     <div>
-      <p>Hello, {user.data.profile.name}</p>
-      <p>{user.data.profile.pronouns}</p>
+      <p>Hello, {user.data.profile ? user.data.profile.name : user.data.email}</p>
+      <p>{user.data.profile?.pronouns}</p>
     </div>
   )
 }
