@@ -5,7 +5,7 @@ import { useLogin } from "../api/useLogin";
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const { mutate: login, isPending, isError, error } = useLogin();
 
@@ -14,12 +14,16 @@ export function LoginForm() {
 
     login(
       { email, password },
-      {
-        onSuccess: () => {
-          // Redirect after the session cache is updated
-          navigate("/dashboard", { replace: true });
-        }
-      }
+      // {
+      //   onSuccess: () => {
+      //     console.log("`1. Inline onSucess fired!")
+      //     // Redirect after the session cache is updated
+      //     navigate("/dashboard", { replace: true });
+      //   },
+      //   onError: (err) => {
+      //     console.error(`Login failed:`, err);
+      //   }
+      // }
     )
   }
 

@@ -13,7 +13,8 @@ export function useLogout() {
         credentials: "include",
       })
     },
-    onSuccess: () => {
+    onSuccess: async() => {
+      await queryClient.cancelQueries({ queryKey: SESSION_QUERY_KEY });
       queryClient.setQueryData(SESSION_QUERY_KEY, null);
       queryClient.removeQueries({ queryKey: SESSION_QUERY_KEY, exact: true })
     }

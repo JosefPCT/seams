@@ -3,6 +3,7 @@ import MainWrapper from "./provider/MainWrapper.jsx";
 import { LandingPage } from "../pages/landing";
 import { LoginPage } from "../pages/login/index.js";
 import { ProtectedRoute } from "./routing/ProtectedRoute.jsx";
+import { GuestRoute } from "./routing/GuestRoute.jsx";
 import LogoutPage from "../pages/logout/LogoutPage.jsx";
 import { DashboardPage } from "../pages/dashboard/index.js";
 
@@ -15,8 +16,10 @@ const routes = [
     ]
   },
   {
-    path: '/login',
-    Component: LoginPage, 
+    Component: GuestRoute,
+    children: [
+      { path: '/login', Component: LoginPage}
+    ]
   },
   {
     path: '/logout',

@@ -21,13 +21,17 @@ export function useLogin() {
 
       return response.json();
     },
-    onSuccess: (userData) => {
+    onSuccess: async (userData) => {
+      await queryClient.cancelQueries({ queryKey: SESSION_QUERY_KEY });
+
       // Write directly to cache if /login returns the user object
       if (userData?.id){
+        console.log("Writing directly to cachee...");
         queryClient.setQueryData(SESSION_QUERY_KEY, userData);
       } else {
+        console.log("Triggering invalidation for login");
         // Otherwise trigger /api/v1/me to refetch
-        queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
+        await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
       }
     }
   })
