@@ -1,26 +1,28 @@
 import { useSession } from "../../../entities/session"
-import { useUser } from "../../../entities/user/index.js";
+// import { useUser } from "../../../entities/user/index.js";
+import { UserCard } from "../../../entities/user/ui/UserCard";
 
 export function DashboardPage() {
 
-  const { user: userMin } = useSession();
-  const { user, isLoading, isError, error } = useUser(userMin.data.publicId)
-  console.log(user);
+  const { user, isLoading, isError } = useSession();
+  // const { user, isLoading, isError, error } = useUser(userMin.data.publicId)
+  // console.log(user);
 
   if(isLoading){
     return <div>Loading...</div>
   }
 
   if(isError){
-    return <div>Error: {error.message}</div>
+    return <div>Error</div>
   }
 
   return (
     <main>
       Dashboard
-      <h1>Hello, {user.data.addtl}</h1>
-      <p>{user && user.data.id}</p>
-      <p>{user.data.profile.name}</p>
+      <UserCard userId={user.data.publicId}/>
+      {/* <h1>Hello, {user.data.addtl}</h1> */}
+      {/* <p>{user && user.data.id}</p> */}
+      {/* <p>{user.data.profile.name}</p> */}
     </main>
   )
 }
