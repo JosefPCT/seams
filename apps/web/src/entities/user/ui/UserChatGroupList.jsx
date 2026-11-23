@@ -13,13 +13,10 @@ export function UserChatGroupList({ userId }) {
   }
 
   return (
-    <>
-    <h2>Chat Groups</h2>
     <ul>
       {user.data.groups?.map((group)=> (
         <UserChatGroupListItem key={group.group.id} id={group.group.id} name={group.group.name} createdAt={group.group.createdAt}/>
       ))}
     </ul>
-    </>
   );
 }
