@@ -1,6 +1,7 @@
 import { useSession } from "../../../entities/session"
 // import { useUser } from "../../../entities/user/index.js";
 import { UserCard, UserChatGroupList, UserPendingReceivedRequestsList, UserPendingSentRequestsList, UserFriendList } from "../../../entities/user";
+import { OnlineUserList } from "../../../widgets/online-users-list";
 
 export function DashboardPage() {
 
@@ -29,6 +30,8 @@ export function DashboardPage() {
         <UserPendingSentRequestsList userId={user.data.publicId} />
       <h5>Friends</h5>
         <UserFriendList  userId={user.data.publicId} />
+      <h5>Online-Users</h5>
+        <OnlineUserList userId={user.data.publicId} />
       {/* <h1>Hello, {user.data.addtl}</h1> */}
       {/* <p>{user && user.data.id}</p> */}
       {/* <p>{user.data.profile.name}</p> */}
