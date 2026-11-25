@@ -1,3 +1,4 @@
+// The file that holds the configuration for tanstack's QueryClientProvider
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { setOnUnauthorized } from "../../shared/api";

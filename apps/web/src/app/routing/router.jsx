@@ -1,7 +1,7 @@
 //src/app/routes.jsx
+// File that holds the routing paths
 import { createBrowserRouter, Navigate } from "react-router";
 
-// import MainWrapper from "../provider/MainWrapper.jsx";
 import { LandingPage } from "../../pages/landing/index.js";
 import { LoginPage } from "../../pages/login/index.js";
 import { ProtectedRoute } from "./ProtectedRoute.jsx";
