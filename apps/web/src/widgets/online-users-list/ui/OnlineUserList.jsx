@@ -16,7 +16,7 @@ export function OnlineUserList({ userId }) {
   return(
     <ul>
       {onlineUsers.result.filter((onlineUser) => onlineUser.publicId !== userId).map((onlineUser)=> (
-        <OnlineUserListItem key={onlineUser.id} id={onlineUser.id} name={onlineUser.email} />
+        <OnlineUserListItem key={onlineUser.id} id={onlineUser.publicId} name={onlineUser.email} />
       ))}
     </ul>
   )

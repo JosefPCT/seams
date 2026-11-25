@@ -1,0 +1,1 @@
+export { OnlineFriendsList } from "./ui/OnlineFriendsList";

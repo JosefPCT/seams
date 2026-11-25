@@ -2,7 +2,7 @@ import { useSession } from "../../../entities/session"
 // import { useUser } from "../../../entities/user/index.js";
 import { UserCard, UserChatGroupList, UserPendingReceivedRequestsList, UserPendingSentRequestsList, UserFriendList } from "../../../entities/user";
 import { OnlineUserList } from "../../../widgets/online-users-list";
-
+import { OnlineFriendsList } from "../../../widgets/online-friends-list";
 export function DashboardPage() {
 
   const { user, isLoading, isError } = useSession();
@@ -35,6 +35,8 @@ export function DashboardPage() {
       {/* <h1>Hello, {user.data.addtl}</h1> */}
       {/* <p>{user && user.data.id}</p> */}
       {/* <p>{user.data.profile.name}</p> */}
+      <h5>Online-Friends</h5>
+        <OnlineFriendsList userId={user.data.publicId} />
     </main>
   )
 }
