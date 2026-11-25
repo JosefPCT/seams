@@ -5,7 +5,7 @@ import { apiClient } from "../../../shared/api";
 export const HEARTBEAT_QUERY_KEY = ["session", "heartbeat"];
 
 // The fetch function to post to `api/v1/heartbeat` and update the `lastSeen` field of a user
-export async function fetchHeartbeat() {
+export async function sendHeartbeat() {
   const response = await apiClient(`${import.meta.env.VITE_API_URL}/api/v1/heartbeat`, { method: 'POST'});
 
   // Treat 401 as unauthenticated (null) rather than a network error
